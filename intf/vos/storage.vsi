@@ -1,0 +1,11 @@
+[vos.storage:address:bytes:int]
+s
+
+!u // unaccessable
+
+store(s,a,t) !u
+load(s,a,i):t !u
+allocate(s,i):a !u
+free(s,a,i) !u
+
+? store(*1,*2,*3) ; load(*1,*2,length(*3)) = *3

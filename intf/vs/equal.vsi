@@ -1,0 +1,7 @@
+[vs.equal:bool]
+e
+
+equals(e,e):b
+
+? equals(*1,*2) = equals(*2,*1)
+

@@ -1,0 +1,27 @@
+[vs.int:compare]
+i = compare.c
+
+$0
+$1
+
+!o // overflow
+!d // division by zero
+
+next(i):i !o
+neg(i):i !o
+prev(i):i !o
+plus(i,i):i !o
+minus(i,i):i !o
+mult(i,i):i !o
+div(i,i):i !d
+
+? next($0) = $1
+? neg($0) = $1
+? prev(*) = neg(next(neg(*))))
+? plus(*,$0) = *
+? plus(*1,*2) = plus(*2,*1)
+? plus(*1,next(*2)) = next(plus(*1,*2)))
+? minus(*1,*2) = plus(*1,neg(*2)))
+? mult(*1,plus(*2,*3)) = plus(mult(*1,*2),mult(*1,*3)))
+? div(*,$1) = *
+? div(plus(*1,*2),*2) = next(div(*1,*2))

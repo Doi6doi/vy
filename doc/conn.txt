@@ -1,0 +1,12 @@
+VS kapcsolat
+
+használt fajta kódok
+
+1: parancs
+2: interfész
+
+használt parancsok
+
+1: helo
+2: call
+

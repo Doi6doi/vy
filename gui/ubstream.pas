@@ -20,14 +20,18 @@ type
       function Eos: Boolean;
       function NextChar: AnsiChar;
       function NextChars( N: Integer ): AnsiString;
+      function ReadChar: AnsiChar;
       function ReadChars( N: Integer ): AnsiString;
+      procedure WriteStr( S: AnsiString );
+      procedure ReadStr( S: AnsiString );
       function ReadIf( S: AnsiString ): Boolean;
       property Base: TStream read FBase write SetBase;
    end;
 
 implementation
 
-{ TBStream }
+uses
+   Math;
 
 const
    ReadStep = 512;
@@ -47,7 +51,7 @@ begin
    Part[0] := #0;
    Result := false;
    while Length( FBuffer ) < N do begin
-      M := FBase.Read( Part, ReadStep );
+      M := FBase.Read( Part, Min( N, ReadStep ) );
       if 0 = M then Exit;
       SetString( S, Part, N );
       FBuffer := FBuffer + S;
@@ -65,7 +69,7 @@ end;
 function TBStream.Eos: Boolean;
 begin
    if '' = FBuffer
-      then Result := Grow(1)
+      then Result := not Grow(1)
       else Result := false;
 end;
 
@@ -86,7 +90,30 @@ end;
 function TBStream.ReadChars(N: Integer): AnsiString;
 begin
    Result := NextChars(N);
-   FBuffer := Copy( FBuffer, Length(Result) );
+   Delete( FBuffer, 1, Length(Result) );
+end;
+
+function TBStream.ReadChar: AnsiChar;
+begin
+   if Eos then
+      raise EStreamError.Create( 'unexpected end of stream' );
+   Result := FBuffer[1];
+   Delete( FBuffer, 1, 1 );
+end;
+
+procedure TBStream.ReadStr(S: AnsiString);
+var
+   NS: AnsiString;
+begin
+   NS := ReadChars( Length(S) );
+   if NS <> S then
+      raise EStreamError.CreateFmt( '''%s'' expected but ''%s'' found', [S,NS] );
+end;
+
+
+procedure TBStream.WriteStr( S: AnsiString );
+begin
+   WriteBuffer( PAnsiChar(S)^, Length(S) );
 end;
 
 

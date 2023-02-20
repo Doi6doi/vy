@@ -1,11 +1,11 @@
 object FormMain: TFormMain
-  Left = 248
-  Height = 376
-  Top = 145
-  Width = 827
+  Left = 296
+  Height = 351
+  Top = 220
+  Width = 719
   Caption = 'VsGui'
-  ClientHeight = 376
-  ClientWidth = 827
+  ClientHeight = 351
+  ClientWidth = 719
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poDefault
@@ -14,7 +14,7 @@ object FormMain: TFormMain
     Left = 0
     Height = 34
     Top = 0
-    Width = 827
+    Width = 719
     ButtonHeight = 32
     ButtonWidth = 32
     Caption = 'ToolBar'
@@ -25,6 +25,33 @@ object FormMain: TFormMain
       Top = 2
       Action = AcConnect
     end
+  end
+  object PaBottom: TPanel
+    Left = 0
+    Height = 80
+    Top = 271
+    Width = 719
+    Align = alBottom
+    TabOrder = 1
+  end
+  object LVLocal: TListView
+    Left = 0
+    Height = 237
+    Top = 34
+    Width = 250
+    Align = alLeft
+    Columns = <>
+    TabOrder = 2
+  end
+  object LVRemote: TListView
+    Left = 250
+    Height = 237
+    Top = 34
+    Width = 469
+    Align = alClient
+    Columns = <>
+    Enabled = False
+    TabOrder = 3
   end
   object ActionList: TActionList
     Images = ImageList

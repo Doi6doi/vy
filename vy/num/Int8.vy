@@ -1,8 +1,8 @@
-interface vs.num.Int8 @20240117 {
+interface vy.num.Int8 @20240117 {
 
    extends BinInt;
 
-   check {
+   provide {
       next(127) = -128;
    }
 

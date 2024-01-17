@@ -1,6 +1,6 @@
-interface vs.num.Number @20240117 {
+interface vy.num.Number @20240117 {
 
-   extends Equals;
+   extend Equals;
 
    type N = Equals.E;
 
@@ -24,8 +24,8 @@ interface vs.num.Number @20240117 {
       }
    }
 
-   check {
-      let a,b,c:N;
+   provide {
+      given a,b,c:N;
       -0 = 0;
       a+b = b+a;
       a+0 = a;

@@ -1,15 +1,15 @@
 interface vs.bin.Bits @20240117 {
 
-   extends vs.comp.Equal;
-   import vs.bool.Bool;
+   extend vs.core.Equal;
+
    import vs.num.Uint;
 
-   type D = Equal.E;
+   type {
+      D = Equal.E;
+      U = Uint.U;
+   }
 
-   alias U = Uint.U;
-
-   const all:D;
-   consthex;
+   const &hex, all:D;
 
    function {
 
@@ -27,8 +27,8 @@ interface vs.bin.Bits @20240117 {
 
    }
 
-   check {
-      let a,b,c:D;
+   provide {
+      given a,b,c:D;
       not(not(a))=a;
       not($0)=all;
       a & $0 = $0;

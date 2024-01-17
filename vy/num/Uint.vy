@@ -1,14 +1,17 @@
-interface vs.num.Uint @20240117 {
+interface vy.num.Uint @20240117 {
 
-   extends 
-      Number, vs.comp.Compare, vs.comp.Ordinal;
+   extends {
+      Number;
+      vy.core.Compare;
+      vy.core.Ordinal;
+   }
 
    type U = Compare.C = Number.N;
 
-   constdecimal;
+   const &dec;
 
-   check {
-      let a:U;
+   provide {
+      given a:U;
       0 <= a;
    }
 

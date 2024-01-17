@@ -1,0 +1,13 @@
+[vs.bytes:uint8:int:equal]
+
+a = equal.e
+y = uint8.i
+
+!i // index out of bounds
+
+length(a):i
+get(a,i):y !i
+put(a,i,y) !i
+
+? get(*1,put(*1,*2,*3),*2) = *3
+

@@ -1,0 +1,5 @@
+[vs.uint8:int]
+
+$ff
+
+? next($ff) = 0

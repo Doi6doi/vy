@@ -1,9 +1,0 @@
-[vos.address:vs.compare:vs.int]
-a = compare.c
-
-!o = i.!o
-!c = compare.!c
-
-plus(a,i):a !o
-minus(a,i):a !o
-diff(a,a):i !c

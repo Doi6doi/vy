@@ -27,5 +27,9 @@ class VSHandle {
       $this->value = $value;
    }
 
+   function __toString() {
+      return sprintf("#%d/%d", $this->kind, $this->value );
+   }
+
 }
 

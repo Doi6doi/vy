@@ -5,11 +5,16 @@ class VIReflect extends VIntf {
 
    static $ins;
 
-   function name() { return "reflect"; }
+   function __construct() {
+      $this->addFunc( VRObjects::$ins );
+      $this->addFunc( VRFunctions::$ins );
+   }
+
+   function name() { return VSC::REFLECT; }
 
    function version() { return "20230218"; }
 
-   function pkg() { return "vs"; }
+   function pkg() { return VSC::VS; }
 
 }
 

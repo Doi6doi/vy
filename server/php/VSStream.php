@@ -17,7 +17,7 @@ class VSStream {
             if ( $x instanceof VSCommand )
                return $x->toVson();
             else if ( $x instanceof VSHandle )
-               return sprintf( "$%d:%d", $x->kind, $x->value );
+               return sprintf( "#%d/%d", $x->kind, $x->value );
             else
                throw new EVS("Unknown object: ".get_class($x));
          break;

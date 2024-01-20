@@ -1,4 +1,4 @@
-informal vy.vyb.Info @20240117 {
+informal vyb.Info @20240117 {
 
 Vy binary format
 ================

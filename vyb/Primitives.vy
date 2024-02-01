@@ -1,4 +1,4 @@
-informal vy.vyb.Primitives @20240117 {
+informal vyb.Primitives @20240117 {
 
 Vy binary primitives
 ====================
@@ -41,7 +41,7 @@ string
 
  - size: number of bytes following
 
-String values. Can be used as any "conststring" typed data. 
+String values. Can be used as any const &string typed data. 
 
 bytes
 -----
@@ -50,7 +50,7 @@ bytes
 
    size: number of bytes following
 
-Any binary data. Can be used as any "consthex" typed data.
+Any binary data. Can be used as any const &hex typed data.
 
 ref
 ---

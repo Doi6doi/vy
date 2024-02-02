@@ -9,12 +9,17 @@ class Ht {
          if ( ! is_array( $pars ))
             $pars = ["class"=>$pars];
       }
-      return self::paramed( "div", $pars, $part );
+      return self::elem( "div", $pars, $part );
    }
 
    /// link
    static function a( $href, $part ) {
-      return self::paramed( "a", ["href"=>$href], $part );
+      return self::elem( "a", ["href"=>$href], $part );
+   }
+
+   /// törés
+   static function br() {
+      return self::elem( "br" )."\n";
    }
 
    /// lista
@@ -26,16 +31,16 @@ class Ht {
       } else {
         $part = $items;
       }
-      return self::paramed( "ul", $pars, $part );
+      return self::elem( "ul", $pars, $part );
    }
 
    /// listaelem
    static function li( $item, $pars=null ) {
-      return self::paramed( "li", $pars, $item );
+      return self::elem( "li", $pars, $item );
    }
 
    /// paraméteres elem
-   static function paramed( $tag, $pars, $part ) {
+   static function elem( $tag, $pars=null, $part=null ) {
       $ret = "<$tag";
       if ( $pars ) {
          foreach ( $pars as $k=>$v )
@@ -44,6 +49,14 @@ class Ht {
       if ( $part )
          $ret .= ">".$part."</$tag>";
          else $ret .= "/>";
+      return $ret;
+   }
+
+   /// html escape-elés
+   static function escape( $s ) {
+      $ret = htmlspecialchars( $s );
+      $ret = str_replace( [" ","\n"],
+         ["&nbsp;",self::br()], $ret );
       return $ret;
    }
 

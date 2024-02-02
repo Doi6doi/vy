@@ -31,12 +31,12 @@ class VyStream {
       return $ret;
    }
 
-   function eos() { return self::EOS == $this->nextKind(); }
+   function eos() { return $this->at >= strlen( $this->data ); }
 
    function nextKind() {
-      if ( $this->at >= strlen( $this->data ))
+      if ( $this->eos() )
          return self::EOS;
-      $ch = $this->data[$this->at];
+      $ch = $this->nextChar(0);
       if ( $this->isWS($ch) )
          return self::WS;
       else if ( $this->isIdent($ch, true))
@@ -58,7 +58,7 @@ class VyStream {
             return $ret;
          $part = $this->read();
          $ret .= $part;
-         if ( self::WS == $nxt && false != strpos("\n", $part ))
+         if ( self::WS == $nxt && false !== strpos("\n", $part ))
             return $ret;
       }
    }
@@ -83,7 +83,9 @@ class VyStream {
       switch ($ch) {
          case ".": case "@": case "{": case "}": case ";":
          case "=": case ",": case ":": case "(": case ")":
-         case "&":
+         case "&": case "|": case "!": case "<": case ">":
+         case "[": case "]": case "+": case "-": case "*":
+         case "/": case "$":
             return true;
          default: return false;
       }
@@ -106,18 +108,26 @@ class VyStream {
    }
 
    function nextLength() {
+      $l = strlen( $this->data );
       switch ( $k = $this->nextKind() ) {
          case self::EOS: return 0;
          case self::WS: return 1;
          case self::IDENT:
             $i = 0;
-            while ( $this->at+$i < strlen( $this->data ) ) {
-               if ( $this->isIdent( $this->data[$this->at+$i], 0 == $i ))
+            while ( $this->at+$i < $l ) {
+               if ( $this->isIdent( $this->nextChar($i), 0 == $i ))
                   ++$i;
                   else return $i;
             }
             return $i;
          case self::SYMBOL: return 1;
+         case self::NUM:
+            $i = 0;
+            while ( $this->at+$i < $l ) {
+               if ( $this->isNum( $this->nextChar($i) ))
+                  ++$i;
+                  else return $i;
+            }
          default: throw new EVy("Unknown kind: $k" );
       }
    }
@@ -148,10 +158,14 @@ class VyStream {
       return false;
    }
 
+   function nextChar( $i ) {
+      return $this->data[ $this->at + $i ];
+   }
+
    function readNat() {
       $ret = 0;
-      while ( $this->at < strlen( $this->data )) {
-         $ch = $this->data[ $this->at ];
+      while ( ! $this->eos() ) {
+         $ch = $this->nextChar(0);
          if ( $this->isNum($ch)) {
             $ret = 10 * $ret + ord($ch)-ord('0');
             ++ $this->at;

@@ -78,8 +78,8 @@ class VyPage {
    }
 
    function html() {
-      switch ( $kind ) {
-         case self::INFOMRAL: return $this->htmlMd();
+      switch ( $this->kind ) {
+         case self::INFORMAL: return $this->htmlMd();
          default: return $this->htmlRows();
       }
    }
@@ -90,10 +90,17 @@ class VyPage {
    }
 
    function htmlRows() {
-      $ret = "";
+      $ret = [$this->htmlHead()];
       foreach ($this->rows as $r)
-         $ret .= htmlspecialchars( $r ).Ht::br();
-      return Ht::div( $ret, "rows" );
+         $ret [] = Ht::escape( $r );
+      return Ht::div( implode( "", $ret), "code" );
+   }
+
+   function htmlHead() {
+      $pre = str_replace( "/", ".", $this->path );
+      $pre = $pre ? "$pre." : "";
+      $head = sprintf( "%s %s%s %s ", $this->kind, $pre, $this->name, $this->ver );
+      return Ht::escape( $head );
    }
 
 

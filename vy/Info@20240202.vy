@@ -8,7 +8,7 @@ for a very wide variety of computers to run.
 
 Features which complete that task:
 
-There are some [core](#vy.core) interfaces which are supported in all vy environments.
+There are some core [Packages](#Packages) interfaces which are supported in all vy environments.
 The representation and implementation of these can differ in different
 architectures
 

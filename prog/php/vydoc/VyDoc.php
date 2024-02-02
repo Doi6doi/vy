@@ -11,6 +11,7 @@ class VyDoc {
 
    const
       BASE = "base",
+      CSS = "css",
       MAIN = "main";
 
    protected $conf;
@@ -53,9 +54,8 @@ class VyDoc {
       $arr = explode("\n", $e->getTraceAsString());
       array_unshift( $arr, $msg );
       foreach ( $arr as & $a )
-         $a = htmlspecialchars($a);
-      $err = '<div class="error">'
-         .implode("<br>\n", $arr ).'</div>';
+         $a = Ht::escape( $a );
+      $err = Ht::div( implode(Ht::br(), $arr ), "error" );
       $this->printHtml($err);
    }
 
@@ -93,17 +93,23 @@ class VyDoc {
       $pn = "$path/$name";
       if ( is_dir( $pn ))
          return $pn;
-      $ptn = "$pn$ver*.vy";
-      if ( false === ($arr = glob( "$path/$name$ver*.vy")))
+      if ( false === ($arr = glob( "$path/$name*.vy")))
          throw new EVy("Unkown path: $path");
-      if ( $arr )
-         return $arr[count($arr)-1];
+      for ( $i = count($arr)-1; 0 <= $i; --$i) {
+         $ai = $arr[$i];
+         if ( preg_match('#^.*/([^/@]+)(@\d+)?\.vy$#', $ai, $m )) {
+            if ( $m[1] == $name && (
+               !$ver || $ver >= Tools::g( $m, 2 )
+            ))
+               return $ai;
+         }
+      }
       return false;
    }
 
    /// elérési út felbontása
    function parse( $txt, & $path, & $name, & $ver ) {
-      if ( ! preg_match('#^([a-zA-Z.]+\.)?([a-zA-Z]+)(@\d+)?$#', $txt, $m ))
+      if ( ! preg_match('#^([a-zA-Z_0-9.]+\.)?([a-zA-Z_0-9]+)(@\d+)?$#', $txt, $m ))
          return false;
       $path = str_replace( ".", "/", Tools::g( $m, 1 ) );
       $name = $m[2];
@@ -119,6 +125,7 @@ class VyDoc {
          '<meta charset="UTF-8">',
          '<meta name="viewport" content="width=device-width, initial-scale=1" />',
          '<title>VyDoc</title>',
+         '<link rel="stylesheet" type="text/css" href="'.$this->conf( self::CSS ).'" />',
          '</head>',
          '<body>'
       ];

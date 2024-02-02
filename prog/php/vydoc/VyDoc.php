@@ -36,7 +36,7 @@ class VyDoc {
    function show( $page ) {
       if ( ! $fname = $this->find( $page ) )
          throw new EVy("Cannot find $page");
-      $vp = new VyPage( $fname );
+      $vp = VyPage::create( $this->base(), $fname );
       $this->path = $vp->path();
       $this->printHtml( $vp->html() );
    }
@@ -80,7 +80,7 @@ class VyDoc {
 
    /// oldal fájl megkeresése
    function find( $page ) {
-      if ( ! $this->parse( $page, $path, $name, $ver ))
+      if ( ! $this->parse( $page, $path, $name, $ver ) )
          throw new EVy("Unknown page format: '$page'");
       if ( ! $path )
          $path = $this->path;
@@ -90,7 +90,10 @@ class VyDoc {
 
    /// oldal fájl megkeresése egy könyvtárban
    function findAt( $path, $name, $ver ) {
-      $ptn = "$path/$name$ver*.vy";
+      $pn = "$path/$name";
+      if ( is_dir( $pn ))
+         return $pn;
+      $ptn = "$pn$ver*.vy";
       if ( false === ($arr = glob( "$path/$name$ver*.vy")))
          throw new EVy("Unkown path: $path");
       if ( $arr )

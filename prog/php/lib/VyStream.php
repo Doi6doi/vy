@@ -6,6 +6,7 @@ class VyStream {
    const
       EOS = "eos",
       IDENT = "ident",
+      NUM = "num",
       SYMBOL = "symbol",
       WS = "ws";
 
@@ -30,6 +31,8 @@ class VyStream {
       return $ret;
    }
 
+   function eos() { return self::EOS == $this->nextKind(); }
+
    function nextKind() {
       if ( $this->at >= strlen( $this->data ))
          return self::EOS;
@@ -43,15 +46,29 @@ class VyStream {
       else if ( $this->isSymbol($ch))
          return self::SYMBOL;
       else
-         throw new EVy("Unknown char: $ch");
+         throw new EVy("Unknown char: '$ch' (".ord($ch).")");
+   }
+
+   /// sor olvasása
+   function readLine() {
+      $ret = "";
+      while ( true ) {
+         $nxt = $this->nextKind();
+         if ( self::EOS == $nxt )
+            return $ret;
+         $part = $this->read();
+         $ret .= $part;
+         if ( self::WS == $nxt && false != strpos("\n", $part ))
+            return $ret;
+      }
    }
 
    function isWS( $ch ) {
       switch ($ch) {
-         case ' ':
-         case '\t':
-         case '\n':
-         case '\r':
+         case " ":
+         case "\t":
+         case "\n":
+         case "\r":
             return true;
          default:
             return false;
@@ -64,7 +81,9 @@ class VyStream {
 
    function isSymbol( $ch ) {
       switch ($ch) {
-         case ".": case "@": case "{": case "}":
+         case ".": case "@": case "{": case "}": case ";":
+         case "=": case ",": case ":": case "(": case ")":
+         case "&":
             return true;
          default: return false;
       }

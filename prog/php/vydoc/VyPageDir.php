@@ -30,7 +30,7 @@ class VyPageDir {
       $this->items = [];
       $ptn = sprintf( "%s/%s/*", $this->base, $this->path );
       foreach ( glob( $ptn ) as $f ) {
-         if ( preg_match('#^(.*)/(.*)(@\d+)?\.vy$#', $f, $m )) {
+         if ( preg_match('#^(.*)/(.+?)(@\d+)?\.vy$#', $f, $m )) {
             $name = $m[2];
             $ver = Tools::g( $m, 3 );
             if ( $this->better( $name, $ver ))

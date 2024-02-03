@@ -21,7 +21,14 @@ class Tools {
    }
 
    static function jsonDecode( $data ) {
-      return json_decode( $data, true, 512, JSON_THROW_ON_ERROR );
+      $ret = json_decode( $data, true );
+      self::checkJson();
+      return $ret;
+   }
+
+   static function checkJson() {
+      if ( JSON_ERROR_NONE != json_last_error() )
+         throw new Exception( "JSON error: ".json_last_error_msg() );
    }
 
 }

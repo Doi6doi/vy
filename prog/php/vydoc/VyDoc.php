@@ -30,6 +30,8 @@ class VyDoc {
          $this->show( $page );
       } catch (Throwable $e) {
          $this->error( $e );
+      } catch (Exception $e) { // PHP5 compat
+         $this->error( $e );
       }
    }
 

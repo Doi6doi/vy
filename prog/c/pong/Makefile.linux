@@ -1,0 +1,25 @@
+PONG=pong
+IDIR=../lib
+LDIR=../lib
+LIBS=m vy
+CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
+RM=rm -f
+
+run: build
+	LD_LIBRARY_PATH=$(LDIR) ./$(PONG)
+
+build: $(PONG)
+
+clean:
+	$(RM) $(PONG)
+
+head:
+	$(MAKE) build 2>&1 | head -n 20
+
+debug: build
+	LD_LIBRARY_PATH=$(LDIR) gdb -ex run $(PONG)
+
+pong: pong.c
+	$(CC) -o $@ $< $(LIBS:%=-l%)
+
+

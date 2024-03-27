@@ -1,0 +1,9 @@
+CC=gcc
+
+build: libvy.so
+
+libvy.so: vy.o
+	$(CC) -shared -o $@ -fpic $^
+
+%.o: %.c
+	$(CC) -c -o $@ $<

@@ -7,7 +7,7 @@ class VyPage {
 
    const
       INFORMAL = "informal",
-      INTERFACE = "interface";
+      SINTERFACE = "interface";
 
    protected $kind;
    protected $path;
@@ -31,7 +31,7 @@ class VyPage {
       $s->readWS();
       switch ( $n = $this->kind = $s->next() ) {
          case self::INFORMAL: return $this->readInformal( $s );
-         case self::INTERFACE: return $this->readRows( $s, self::INTERFACE );
+         case self::SINTERFACE: return $this->readRows( $s, self::SINTERFACE );
          default: throw new EVy("Unknown vy file: $n");
       }
    }

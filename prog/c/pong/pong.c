@@ -103,7 +103,8 @@ Rect padBounds( Sprite ) {
 
 /// pontszám kirajzolás
 void scoreDraw( Sprite ) {
-   pong.fonts.draw( pong.display, pong.score.text, 0, -0.8 );
+   pong.fonts.draw( pong.score.font, pong.display,
+      0, -0.8, pong.score.text );
 }
 
 /// labda kirajzolás
@@ -121,7 +122,7 @@ void padDraw( Sprite s ) {
    Rect r = padBounds( s );
    pong.rects.move( r, x, p->y );
    pong.displays.rect( pong.display, r, p->pen, p->brush );
-   vyFree( r );
+   vyDestroy( r );
 }
 
 /// új játék
@@ -134,17 +135,29 @@ void newRound( Side side ) {
 
 /// vy inicializálás
 void initVy() {
-   pong.vy = vyCreate();
+   pong.vy = vyInit();
    VyContext ctx = vyContext( pong.vy );
-   vyGetImplem( ctx, stringsArgs(), & pong.strings );
+
+   VyImplemArgs sa = stringsArgs();
+   vyGetImplem( ctx, sa, & pong.strings );
+   VyRepr s = vyGetImplemRepr( sa, "String" );
+
    vyGetImplem( ctx, keysArgs(), & pong.keys );
+
    vyGetImplem( ctx, timeArgs(), & pong.time );
-   vyGetImplem( ctx, rectsArgs(), & pong.rects );
-   vyGetImplem( ctx, fontsArgs(), & pong.fonts );
-   vyGetImplem( ctx, randomArgs(), & pong.random );
+
+   VyImplemArgs ra = rectsArgs();
+   vyGetImplem( ctx, ra, & pong.rects );
+   VyRepr r = vyGetImplemRepr( ra, "Rect" );
+
    VyImplemArgs da = displaysArgs();
    vyGetImplem( ctx, da, & pong.displays );
-   VyRepr d = vyGetImplemRepr( da, "D" );
+   VyRepr d = vyGetImplemRepr( da, "Display" );
+
+   vyGetImplem( ctx, fontsArgs( d, r, s ), & pong.fonts );
+
+   vyGetImplem( ctx, randomArgs(), & pong.random );
+
    vyGetImplem( ctx, spritesArgs(d), & pong.sprites );
 }
 

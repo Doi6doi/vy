@@ -1,7 +1,7 @@
 #ifndef VY_RECTH
 #define VY_RECTH
 
-typedef VyType Rect;
+typedef struct Rect * Rect;
 
 typedef struct Rects {
    Rect (* create)( float left, float top, float width, float height );
@@ -12,7 +12,7 @@ typedef struct Rects {
 
 VyImplemArgs rectsArgs() {
    VyImplemArgs ret = vyImplemArgs( "vy.graphic.Rect", vyVer( 20240301 ));
-   vyImplemArgsType(ret,"N",vyNative("float"));
+   vyImplemArgsType(ret,"Coord",vyNative("float"));
    return ret;
 }
 

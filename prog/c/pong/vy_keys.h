@@ -1,7 +1,7 @@
 #ifndef VY_KEYSH
 #define VY_KEYSH
 
-typedef VyType Key;
+typedef struct Key * Key;
 
 typedef struct Keys {
    Key (* byConst)( VyCStr cons );
@@ -9,8 +9,8 @@ typedef struct Keys {
 
 VyImplemArgs keysArgs() {
    VyImplemArgs ret = vyImplemArgs("vy.ui.Keys", vyVer(20240301) );
-   vyImplemArgsType( ret, "K", NULL );
-   vyImplemArgsType( ret, "B", vyNative("bool") );
+   vyImplemArgsType( ret, "Key", NULL );
+   vyImplemArgsType( ret, "Bool", vyNative("bool") );
    vyImplemArgsFunc( ret, "byConst" );
    vyImplemArgsFunc( ret, "pressed" );
 }

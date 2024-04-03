@@ -1,10 +1,10 @@
 #ifndef VY_DISPLAYH
 #define VY_DISPLAYH
 
-typedef VyType Display;
-typedef VyType Pen;
-typedef VyType Brush;
-typedef VyType Rect;
+typedef struct Display * Display;
+typedef struct Pen * Pen;
+typedef struct Brush * Brush;
+typedef struct Rect * Rect;
 
 typedef struct Displays {
    Display (* create)();
@@ -14,10 +14,10 @@ typedef struct Displays {
 
 VyImplemArgs displaysArgs() {
    VyImplemArgs ret = vyImplemArgs( "vy.random.Random", vyVer(20240301) );
-   vyImplemArgsType(ret, "D",NULL);
-   vyImplemArgsType(ret, "N", vyNative("float"));
-   vyImplemArgsType(ret, "P", NULL );
-   vyImplemArgsType(ret, "B", NULL );
+   vyImplemArgsType(ret, "Display",NULL);
+   vyImplemArgsType(ret, "Coord", vyNative("float"));
+   vyImplemArgsType(ret, "Pen", NULL );
+   vyImplemArgsType(ret, "Brush", NULL );
    vyImplemArgsFunc(ret, "create");
    vyImplemArgsFunc(ret, "destroy");
    vyImplemArgsFunc(ret, "rect");

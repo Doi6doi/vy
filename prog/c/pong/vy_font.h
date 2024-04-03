@@ -11,7 +11,6 @@ typedef struct Fonts {
    void (* draw)( Font, Display, float x, float y, String );
 } Fonts;
 
-
 VyImplemArgs fontsArgs( VyRepr display, VyRepr rect, VyRepr string ) {
    VyImplemArgs ret = vyImplemArgs( "vy.graphic.Font", vyVer( 20240301 ));
    vyImplemArgsType(ret,"Canvas",display);

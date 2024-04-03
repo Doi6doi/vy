@@ -122,7 +122,7 @@ void padDraw( Sprite s ) {
    Rect r = padBounds( s );
    pong.rects.move( r, x, p->y );
    pong.displays.rect( pong.display, r, p->pen, p->brush );
-   vyDestroy( r );
+   vyFree( r );
 }
 
 /// új játék
@@ -138,27 +138,28 @@ void initVy() {
    pong.vy = vyInit();
    VyContext ctx = vyContext( pong.vy );
 
-   VyImplemArgs sa = stringsArgs();
-   vyGetImplem( ctx, sa, & pong.strings );
+   VyImplemArgs sa = vyGetImplem( ctx, stringsArgs(), & pong.strings );
    VyRepr s = vyGetImplemRepr( sa, "String" );
 
-   vyGetImplem( ctx, keysArgs(), & pong.keys );
+   vyFree( vyGetImplem( ctx, keysArgs(), & pong.keys ));
 
-   vyGetImplem( ctx, timeArgs(), & pong.time );
+   vyFree( vyGetImplem( ctx, timeArgs(), & pong.time ));
 
-   VyImplemArgs ra = rectsArgs();
-   vyGetImplem( ctx, ra, & pong.rects );
+   VyImplemArgs ra = vyGetImplem( ctx, rectsArgs(), & pong.rects );
    VyRepr r = vyGetImplemRepr( ra, "Rect" );
 
-   VyImplemArgs da = displaysArgs();
-   vyGetImplem( ctx, da, & pong.displays );
+   VyImplemArgs da = vyGetImplem( ctx, displaysArgs(), & pong.displays );
    VyRepr d = vyGetImplemRepr( da, "Display" );
 
-   vyGetImplem( ctx, fontsArgs( d, r, s ), & pong.fonts );
+   vyFree( vyGetImplem( ctx, fontsArgs( d, r, s ), & pong.fonts ));
 
-   vyGetImplem( ctx, randomArgs(), & pong.random );
+   vyFree( vyGetImplem( ctx, randomArgs(), & pong.random ));
 
-   vyGetImplem( ctx, spritesArgs(d), & pong.sprites );
+   vyFree( vyGetImplem( ctx, spritesArgs(d), & pong.sprites ));
+
+   vyFree( sa );
+   vyFree( ra );
+   vyFree( da );
 }
 
 /// pong inicializálás
@@ -296,7 +297,7 @@ void step() {
 
 /// vége
 void done() {
-   vyDestroy( pong.vy );
+   vyFree( pong.vy );
 }
 
 int main() {

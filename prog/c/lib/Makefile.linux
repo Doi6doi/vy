@@ -1,9 +1,21 @@
-CC=gcc
+RM=rm -f
+CC=gcc -g
 
 build: libvy.so
 
+clean:
+	$(RM) *.o *.so
+
+head:
+	$(MAKE) build 2>&1 | head -n 20
+
+pong:
+	$(MAKE) -C ../pong clean build run
+
 libvy.so: vy.o
-	$(CC) -shared -o $@ -fpic $^
+	$(CC) -shared -o $@ $^
 
 %.o: %.c
-	$(CC) -c -o $@ $<
+	$(CC) -fPIC -c -o $@ $<
+
+vy.o: vy.c vy.h

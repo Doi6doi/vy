@@ -1,6 +1,7 @@
 #ifndef VYH
 #define VYH
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 /// konstans szöveg
@@ -10,7 +11,7 @@ typedef char * VyCStr;
 typedef struct Vy * Vy;
 
 /// verzió
-typedef int VyVer;
+typedef unsigned VyVer;
 
 /// reprezentáció
 typedef struct VyRepr * VyRepr;
@@ -23,8 +24,6 @@ typedef struct VyImplemArgs * VyImplemArgs;
 
 /// új vy rendszer
 Vy vyInit();
-/// vy rendszer vége
-void vyDone( Vy );
 /// aktuális kontextus
 VyContext vyContext( Vy );
 /// natív típus reprezentációja
@@ -32,7 +31,7 @@ VyRepr vyNative( VyCStr );
 /// verzió érték
 VyVer vyVer( unsigned );
 /// egy objektum megsemmisítése
-void vyDestroy( void * );
+void vyFree( void * );
 /// implementációs argumentumok készítése
 VyImplemArgs vyImplemArgs( VyCStr, VyVer );
 /// egy típus megadása
@@ -42,6 +41,6 @@ void vyImplemArgsFunc( VyImplemArgs, VyCStr );
 /// reprezentáció lekérése
 VyRepr vyGetImplemRepr( VyImplemArgs, VyCStr );
 /// implementáció kérése
-void vyGetImplem( VyContext, VyImplemArgs, void * );
+VyImplemArgs vyGetImplem( VyContext ctx, VyImplemArgs args, void * dest );
 
 #endif // VYH

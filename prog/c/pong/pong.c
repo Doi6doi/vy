@@ -2,8 +2,6 @@
 
 #include <stdbool.h>
 
-typedef float Coord;
-
 #include "vy_string.h"
 #include "vy_keys.h"
 #include "vy_time.h"
@@ -29,10 +27,10 @@ typedef struct Score {
 
 /// a golyó adatai
 typedef struct Ball {
-   Coord speed;
-   Coord x, y;
-   Coord dx, dy;
-   Coord rad;
+   float speed;
+   float x, y;
+   float dx, dy;
+   float rad;
    Pen pen;
    Brush brush;
    Sprite sprite;
@@ -40,9 +38,9 @@ typedef struct Ball {
 
 /// egy ütő adatai
 typedef struct Pad {
-   Coord y;
-   Coord size;
-   Coord width;
+   float y;
+   float size;
+   float width;
    int score;
    Key up;
    Key down;
@@ -64,7 +62,7 @@ typedef struct Pong {
    Rects rects;
    Fonts fonts;
    // adatok
-   Coord padSpeed;
+   float padSpeed;
    int maxScore;
    bool over;
    Stamp last;
@@ -79,7 +77,7 @@ typedef struct Pong {
 Pong pong;
 
 /// sebesség másik komponense
-Coord speedComp( Coord c ) {
+float speedComp( float c ) {
    return sqrt( pong.ball.speed * pong.ball.speed - c*c );
 }
 
@@ -93,7 +91,7 @@ Rect scoreBounds( Sprite ) {
 
 /// labda kiterjedés
 Rect ballBounds( Sprite ) {
-   Coord r = pong.ball.rad;
+   float r = pong.ball.rad;
    return pong.rects.create( -r, -r, 2*r, 2*r );
 }
 
@@ -119,7 +117,7 @@ void ballDraw( Sprite ) {
 void padDraw( Sprite s ) {
    bool left = (s == pong.pads[0].sprite);
    Pad * p = pong.pads + (left ? 0 : 1);
-   Coord x = (left ? -1 : 1 )*( 1 - p->width/2);
+   float x = (left ? -1 : 1 )*( 1 - p->width/2);
    Rect r = padBounds( s );
    pong.rects.move( r, x, p->y );
    pong.displays.rect( pong.display, r, p->pen, p->brush );
@@ -128,7 +126,7 @@ void padDraw( Sprite s ) {
 
 /// új játék
 void newRound( Side side ) {
-   Coord r = pong.random.random(1)-0.5;
+   float r = pong.random.random(1)-0.5;
    pong.ball.x = pong.ball.y = 0;
    pong.ball.dy = pong.ball.speed * MAXCOORD * r;
    pong.ball.dx = speedComp( pong.ball.dy ) * (RIGHT == side ? -1 : 1);
@@ -199,11 +197,11 @@ Side other( Side s ) {
 }
 
 /// visszapattanás
-void bounce( Side side, Coord d ) {
+void bounce( Side side, float d ) {
    Ball * b = &pong.ball;
    b->x -= b->dx;
    b->dy += d;
-   Coord s = fabs(b->dy) / b->speed;
+   float s = fabs(b->dy) / b->speed;
    if ( MAXCOORD < s )
       b->dy *= (MAXCOORD/s);
    b->dx = speedComp( b->dy );
@@ -219,7 +217,7 @@ void checkHit( Side side ) {
    if ( side && -1 <= b->x )
       return;
    Pad * p = &pong.pads[side];
-   Coord d = p->y - b->y;
+   float d = p->y - b->y;
    if ( p->size < fabs( d ) )
       score( other( side ) );
       else bounce( side, d );

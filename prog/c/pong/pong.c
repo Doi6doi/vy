@@ -1,65 +1,30 @@
-#include "vy.h"
+#include <vy.h>
+
 #include <stdbool.h>
-#include <stdlib.h>
+
+typedef float Coord;
+
+#include "vy_string.h"
+#include "vy_keys.h"
+#include "vy_time.h"
+#include "vy_random.h"
+#include "vy_sprite.h"
+#include "vy_rect.h"
+#include "vy_font.h"
+#include "vy_display.h"
+
 #include <math.h>
 
 #define MAXCOORD 0.7
 #define TICK 0.05
 
-typedef float Coord;
 typedef enum Side { LEFT=0, RIGHT=1 } Side;
-
-typedef VyType Key;
-typedef VyType Stamp;
-typedef VyType Sprite;
-typedef VyType String;
-typedef VyType Scene;
-typedef VyType Canvas;
-typedef VyType Display;
-
-/// billentyűzet
-typedef struct Keys {
-   Key (* byConst)( VyCStr cons );
-   bool (* pressed)( Key key );
-} Keys;
-
-/// string
-typedef struct Strings {
-   String (* create)();
-} Strings;
-
-/// véletlen
-typedef struct Random {
-   float (* random)( float limit );
-} Random;
-
-/// idő
-typedef struct Time {
-   Stamp (* stamp)();
-   Stamp (* addSecond)( Stamp, float );
-   bool (*waitUntil)( Stamp );
-} Time;
-
-/// felület
-typedef struct Displays {
-   Display (* create)();
-} Displays;
-
-/// spriteok
-typedef struct Sprites {
-   Scene (* createScene)();
-   void (* destroyScene)( Scene );
-   Sprite (* createSprite)( Scene );
-   void (* destroySprite)( Sprite );
-   void (* callbacks)( Sprite s, VyFunc1 onBounds, VyFunc1 onDraw );
-   void (* move)( Sprite s, float x, float y );
-   void (* draw)( Scene s, Display d );
-} Sprites;
 
 /// pontszám szöveg
 typedef struct Score {
    String text;
    Sprite sprite;
+   Font font;
 } Score;
 
 /// a golyó adatai
@@ -67,6 +32,9 @@ typedef struct Ball {
    Coord speed;
    Coord x, y;
    Coord dx, dy;
+   Coord rad;
+   Pen pen;
+   Brush brush;
    Sprite sprite;
 } Ball;
 
@@ -74,9 +42,12 @@ typedef struct Ball {
 typedef struct Pad {
    Coord y;
    Coord size;
+   Coord width;
    int score;
    Key up;
    Key down;
+   Pen pen;
+   Brush brush;
    Sprite sprite;
 } Pad;
 
@@ -90,6 +61,8 @@ typedef struct Pong {
    Random random;
    Sprites sprites;
    Displays displays;
+   Rects rects;
+   Fonts fonts;
    // adatok
    Coord padSpeed;
    int maxScore;
@@ -110,9 +83,52 @@ Coord speedComp( Coord c ) {
    return sqrt( pong.ball.speed * pong.ball.speed - c*c );
 }
 
+/// pontszám kiterjedés
+Rect scoreBounds( Sprite ) {
+   Rect ret = pong.fonts.textBounds( pong.score.font, pong.score.text );
+   Rects * r = & pong.rects;
+   r->move( ret, - r->width( ret ) / 2, - r->height( ret ) / 2 );
+   return ret;
+}
+
+/// labda kiterjedés
+Rect ballBounds( Sprite ) {
+   Coord r = pong.ball.rad;
+   return pong.rects.create( -r, -r, 2*r, 2*r );
+}
+
+/// ütő kiterjedés
+Rect padBounds( Sprite ) {
+   Pad * p = pong.pads;
+   return pong.rects.create( -p->width/2, -p->size/2, p->width, p->size );
+}
+
+/// pontszám kirajzolás
+void scoreDraw( Sprite ) {
+   pong.fonts.draw( pong.display, pong.score.text, 0, -0.8 );
+}
+
+/// labda kirajzolás
+void ballDraw( Sprite ) {
+   Ball * ball = & pong.ball;
+   pong.displays.circle( pong.display, ball->x, ball->y, ball->rad,
+      ball->pen, ball->brush );
+}
+
+/// ütő kirajzolás
+void padDraw( Sprite s ) {
+   bool left = (s == pong.pads[0].sprite);
+   Pad * p = pong.pads + (left ? 0 : 1);
+   Coord x = (left ? -1 : 1 )*( 1 - p->width/2);
+   Rect r = padBounds( s );
+   pong.rects.move( r, x, p->y );
+   pong.displays.rect( pong.display, r, p->pen, p->brush );
+   vyFree( r );
+}
+
 /// új játék
 void newRound( Side side ) {
-   float r = pong.random.random(1)-0.5;
+   Coord r = pong.random.random(1)-0.5;
    pong.ball.x = pong.ball.y = 0;
    pong.ball.dy = pong.ball.speed * MAXCOORD * r;
    pong.ball.dx = speedComp( pong.ball.dy ) * (RIGHT == side ? -1 : 1);
@@ -120,48 +136,18 @@ void newRound( Side side ) {
 
 /// vy inicializálás
 void initVy() {
-   Vy vy = pong.vy = vyCreate();
-   VyRepr rBool = vyNative(vy,VN_BOOL);
-   VyRepr rFloat = vyNative(vy,VN_FLOAT);
-   VyRepr rFunc = vyNative(vy,VN_FUNC);
-   VyVer ver = vyVer(20240327);
-   VyCStr sts [] = {"S"};
-   VyRepr srs [] = {NULL};
-   VyCStr sfs [] = {"create"};
-   VyImplemArgs sia = { .name="vy.string.String", .ver=ver, .ntypes=1, .types=sts,
-      .reprs=srs, .nfuncs=1, .funcs=sfs };
-   vyGetImplem( vy, &sia, &pong.strings );
-   VyCStr kts [] = {"K","B"};
-   VyRepr krs [] = {NULL,rBool};
-   VyCStr kfs [] = {"byName","pressed"};
-   VyImplemArgs kia = { .name="vy.ui.Keys", .ver=ver, .ntypes=2, .types=kts,
-      .reprs=krs, .nfuncs=2, .funcs=kfs };
-   vyGetImplem( vy, &kia, &pong.keys );
-   VyCStr tts [] = {"S","N","B"};
-   VyRepr trs [] = {NULL,rFloat,rBool};
-   VyCStr tfs [] = {"stamp","addSecond","waitUntil"};
-   VyImplemArgs tia = { .name="vy.time.Time", .ver=ver, .ntypes=3, .types=tts,
-      .reprs=trs, .nfuncs=3, .funcs=tfs };
-   vyGetImplem( vy, &tia, &pong.time );
-   VyCStr rts [] = {"N"};
-   VyRepr rrs [] = {rFloat};
-   VyCStr rfs [] = {"random"};
-   VyImplemArgs ria = { .name="vy.random.Random", .ver=ver, .ntypes=1, .types=rts,
-      .reprs=rrs, .nfuncs=1, .funcs=rfs };
-   vyGetImplem( vy, &ria, &pong.random );
-   VyCStr dts [] = {"D"};
-   VyRepr drs [] = {NULL};
-   VyCStr dfs [] = {"create","destroy"};
-   VyImplemArgs dia = { .name="vy.ui.CanvasDisplay", .ver=ver, .ntypes=1,
-      .types=dts, .reprs=drs, .nfuncs=2, .funcs=dfs };
-   vyGetImplem( vy, &dia, &pong.displays );
-   VyCStr nts [] = {"C","S","F","N","V"};
-   VyRepr nrs [] = {NULL,NULL,rFunc,rFloat,dia.reprs[0]};
-   VyCStr nfs [] = {"createScene","destroyScene","createSprite",
-         "destroySprite","callbacks","move","draw"};
-   VyImplemArgs nia = { .name="vy.ui.Sprite", .ver=ver, .ntypes =5,
-      .types=nts, .reprs=nrs, .nfuncs=7, .funcs=nfs };
-   vyGetImplem( vy, &nia, &pong.sprites );
+   pong.vy = vyCreate();
+   VyContext ctx = vyContext( pong.vy );
+   vyGetImplem( ctx, stringsArgs(), & pong.strings );
+   vyGetImplem( ctx, keysArgs(), & pong.keys );
+   vyGetImplem( ctx, timeArgs(), & pong.time );
+   vyGetImplem( ctx, rectsArgs(), & pong.rects );
+   vyGetImplem( ctx, fontsArgs(), & pong.fonts );
+   vyGetImplem( ctx, randomArgs(), & pong.random );
+   VyImplemArgs da = displaysArgs();
+   vyGetImplem( ctx, da, & pong.displays );
+   VyRepr d = vyGetImplemRepr( da, "D" );
+   vyGetImplem( ctx, spritesArgs(d), & pong.sprites );
 }
 
 /// pong inicializálás
@@ -181,7 +167,7 @@ void initPong() {
    b->x = b->y = b->dx = b->dy = 0;
    b->sprite = ss->createSprite( pong.scene );
    ss->callbacks( b->sprite, ballBounds, ballDraw );
-   for (int i=LEFT; s<=RIGHT; ++s) {
+   for (int i=LEFT; i<=RIGHT; ++i) {
       Pad * p = pong.pads+i;
       p->y = 0;
       p->size = 0.1;
@@ -275,7 +261,7 @@ void redraw() {
    s->move( p->sprite, -1, p->y );
    Pad * q = pong.pads+RIGHT;
    s->move( q->sprite, 1, q->y );
-   s->draw( update( pong.scene );
+   pong.sprites.draw( pong.scene, pong.display );
 }
 
 

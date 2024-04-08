@@ -1,13 +1,28 @@
 <?php
 
-function vyAutoload( $cls ) {
-   foreach ( [".","../lib"] as $dir ) {
-      $fname = $dir."/$cls.php";
-      if ( file_exists( $fname ))
-        require_once( $fname );
+class VyAutoload {
+
+   protected static $path = [".","../lib"];
+
+   /// hozzáadás az elérési úthoz
+   static function addPath( $dir ) {
+      if ( is_array( $dir )) {
+         foreach ( $dir as $d )
+            self::addPath($d);
+      } else {
+         array_push( self::$path, $dir );
+      }
    }
-   require_once("$cls.php");
+
+   static function autoload( $cls ) {
+      foreach ( self::$path as $dir ) {
+         $fname = $dir."/$cls.php";
+         if ( file_exists( $fname ))
+           require_once( $fname );
+      }
+      require_once("$cls.php");
+   }
+
 }
 
-
-spl_autoload_register( "vyAutoload");
+spl_autoload_register( ["VyAutoload","autoload"]);

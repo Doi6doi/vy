@@ -4,13 +4,15 @@
 typedef struct String * String;
 
 typedef struct Strings {
-   String (* create)();
+   String (* constAscii)( size_t, VyCStr );
 } Strings;
 
 VyImplemArgs stringsArgs() {
-   VyImplemArgs ret = vyImplemArgs("vy.string.String", vyVer(20240327) );
+   VyImplemArgs ret = vyImplemArgs("vy.char.String", vyVer(20240408) );
+   vyImplemArgsType( ret, "Char", NULL );
+   vyImplemArgsType( ret, "Index", NULL );
    vyImplemArgsType( ret, "String", NULL );
-   vyImplemArgsFunc( ret, "create" );
+   vyImplemArgsFunc( ret, "constAscii" );
    return ret;
 }
 

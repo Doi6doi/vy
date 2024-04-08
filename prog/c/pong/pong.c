@@ -171,7 +171,7 @@ void initPong() {
    pong.display = pong.displays.create();
    Sprites * ss = &pong.sprites;
    pong.scene = ss->createScene();
-   pong.score.text = pong.strings.create();
+   pong.score.text = pong.strings.constAscii(0,"");
    pong.score.sprite = ss->createSprite( pong.scene );
    ss->callbacks( pong.score.sprite, scoreBounds, scoreDraw );
    Ball * b = &pong.ball;

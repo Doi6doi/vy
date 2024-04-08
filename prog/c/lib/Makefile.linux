@@ -12,7 +12,7 @@ head:
 pong:
 	$(MAKE) -C ../pong clean build run
 
-libvy.so: vy.o
+libvy.so: vy.o vy_string.o
 	$(CC) -shared -o $@ $^
 
 %.o: %.c

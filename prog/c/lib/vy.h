@@ -32,6 +32,10 @@ VyRepr vyNative( VyCStr );
 VyVer vyVer( unsigned );
 /// egy objektum megsemmisítése
 void vyFree( void * );
+
+/// kivétel
+void vyThrow( VyCStr );
+
 /// implementációs argumentumok készítése
 VyImplemArgs vyImplemArgs( VyCStr, VyVer );
 /// egy típus megadása
@@ -42,5 +46,6 @@ void vyImplemArgsFunc( VyImplemArgs, VyCStr );
 VyRepr vyGetImplemRepr( VyImplemArgs, VyCStr );
 /// implementáció kérése
 VyImplemArgs vyGetImplem( VyContext ctx, VyImplemArgs args, void * dest );
+
 
 #endif // VYH

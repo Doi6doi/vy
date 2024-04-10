@@ -73,6 +73,11 @@ class VyTest {
       return $res;
    }
 
+   /// php futtatása
+   function execPhp( $php, $args ) {
+      return 0 == $this->exec( self::PHP, $this->escape($php)." ".$args );
+   }
+
    /// sor naplózása
    function log( $msg ) {
       fwrite( STDERR, "$msg\n" );

@@ -138,10 +138,19 @@ class VyStream {
       return $this->read();
    }
 
+   /// azonosító olvasása
    function readIdent() {
       if ( self::IDENT != $this->nextKind())
          throw $this->notexp("identifier");
       return $this->read();
+   }
+
+   /// azonosító sorozat olvasása
+   function readIdents( $sep="." ) {
+      $ret = [ $this->readIdent() ];
+      while ( $this->readIf( $sep ))
+         $ret [] = $this->readIdent();
+      return $ret;
    }
 
    function read() {

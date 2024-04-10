@@ -4,6 +4,7 @@
 class VyInterface {
 
    const
+      EXTEND = "extend",
       INTERFACE = "interface";
 
    /// csomag
@@ -12,6 +13,12 @@ class VyInterface {
    protected $name;
    /// verzió
    protected $ver;
+   /// ősinterfészek
+   protected $extend;
+
+   function __construct() {
+      $this->extend = [];
+   }
 
    /// fájl beolvasása
    function read( VyStream $s ) {
@@ -30,11 +37,8 @@ class VyInterface {
       $s->readWS();
       $s->readToken( self::INTERFACE );
       $s->readWS();
-      $this->name = $s->readIdent();
-      while ( $s->readIf(".")) {
-         $this->pkg = ($this->pkg ? $this->pkg."." : "" ).$this->name;
-         $this->name = $s->readIdent();
-      }
+      $this->pkg = $s->readIdents();
+      $this->name = array_pop( $this->pkg );
       $s->readWS();
       $this->ver = $s->readVer();
       $s->readWS();
@@ -45,8 +49,35 @@ class VyInterface {
    protected function readPart( $s ) {
       $s->readWS();
       switch ( $n = $s->next() ) {
+         case self::EXTEND: return $this->readExtend( $s );
          default: throw new Exception("Unknown part: $n");
       }
+   }
+
+   /// extend rész olvasása
+   protected function readExtend( $s ) {
+      $s->readToken( self::EXTEND );
+      $s->readWS();
+      if ( $s->readIf("{")) {
+         while (true) {
+            $this->readExtendItem( $s );
+            $s->readWS();
+            if ( ! $s->readIf(","))
+               break;
+         }
+         $s->readToken("}");
+      } else {
+         $this->readExtendItem($s);
+         $s->readWS();
+         $s->readToken(";");
+      }
+   }
+
+   /// extend elem olvasása
+   protected function readExtendItem( $s ) {
+      $pkg = $s->readIdents();
+      $name = array_pop( $pkg );
+      throw new Exception("nyf");
    }
 
 }

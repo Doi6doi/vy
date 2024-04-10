@@ -3,33 +3,18 @@
 require_once( "../lib/autoload.php" );
 
 /// vy fordító
-class Vyc {
+class VyC {
 
-   /// bemeneti fájl
-   protected $infile;
-   /// stream
-   protected $stream;
-   /// kimeneti fájl
-   protected $outfile;
-   /// a feldolgozott struktúra
-   protected $obj;
+   /// fordító
+   protected $comp;
+
+   function __construct() {
+      $this->comp = new VyCompiler();
+   }
 
    function run( $argv ) {
       $this->getParams( $argv );
-      $this->read();
-      $this->transform();
-      $this->write();
-   }
-
-   /// bemeneti fájl olvasása
-   function read() {
-      $s = $this->stream = new VyStream( $this->infile );
-      $s->readWS();
-      switch ( $k = $s->next() ) {
-         case VyInterface::INTERFACE: $this->obj = new VyInterface(); break;
-         default: throw new Exception("Unknown file: $k" );
-      }
-      $this->obj->read( $s );
+      $this->comp->run();
    }
 
    /// paraméterek olvasása
@@ -48,22 +33,58 @@ class Vyc {
       if ( $i >= count($argv))
          return false;
       switch ($argv[$i]) {
-         case "-i": return $this->getParFile( $argv, $i, $this->infile );
-         case "-o": return $this->getParFile( $argv, $i, $this->outfile );
+         case "-r": return $this->getParRepo( $argv, $i );
+         case "-i": return $this->getParInput( $argv, $i );
+         case "-o": return $this->getParOutput( $argv, $i );
          default: throw new Exception("Unknown parameter: $argv[$i]");
       }
    }
 
-   /// fájl paraméter olvasása
-   function getParFile( $argv, & $i, & $fname ) {
-      ++$i;
-      if ( $i >= count($argv))
-         throw new Exception("File name expected");
-      $fname = $argv[$i++];
+   /// következő paraméter
+   function nextPar( $argv, & $i, $kind ) {
+      if ( count($argv) <= ++$i )
+         throw new Exception("Missing $kind");
+      return $argv[$i++];
+   }
+
+   /// repo paraméter olvasása
+   function getParRepo( $argv, & $i ) {
+      $this->comp->repo()->add( $this->nextPar( $argv, $i, "repo uri" ) );
       return true;
+   }
+
+   /// input paraméter olvasása
+   function getParInput( $argv, & $i ) {
+      $this->comp->addInput( $this->nextPar( $argv, $i, "input" ));
+      return true;
+   }
+
+   /// output paraméter olvasása
+   function getParOutput( $argv, & $i ) {
+      $this->comp->addOutput( $this->nextPar( $argv, $i, "output" ));
+      return true;
+   }
+
+   /// használat
+   function usage( $msg ) {
+      $ret = [
+         "",
+         "Usage: php vyc.php <options>",
+         "",
+         "Options:",
+         "   -r <path>: add <path> as repository",
+         "   -i <item>: add <item> as input",
+         "   -o <filename>: add <filename> as output",
+         "",
+         ""
+      ];
+      fprintf( STDERR, implode("\n",$ret) );
+      if ( $msg )
+         fprintf( STDERR, "$msg\n" );
+      exit(1);
    }
 
 }
 
-(new Vyc())->run( $argv );
+(new VyC())->run( $argv );
 

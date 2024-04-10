@@ -8,13 +8,14 @@ class TestVyc extends VyTest {
    const
       ROOT = "../../..",
       VYC = "vyc.php",
-      STRINGV = self::ROOT."/vy/char/String@20240408.vy",
+      STRING = "vy.char.String",
       STRINGH = "vy_string.h";
 
    function run() {
       $this->chdir( ".." );
-      $this->buildFile( self::STRINGH, self::STRINGV, self::PHP,
-         self::VYC." -i %source% -o %dest%" );
+      $this->execPhp( self::VYC, sprintf( "-r %s -i %s -o %s",
+         $this->escape(self::ROOT), self::STRING, self::STRINGH
+      ));
    }
 }
 

@@ -4,7 +4,10 @@ interface vy.num.Number @20240117 {
 
    type N = Equals.E;
 
-   const 0,1:N;
+   const {
+      0: N;
+      1: N;
+   }
 
    function {
       function neg(N):N {

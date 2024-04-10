@@ -22,6 +22,12 @@ class VyStream {
       if ( false === $this->data )
         throw new Evy("Could not load file '$filename'");
       $this->at=0;
+      $this->row = 1;
+      $this->col = 1;
+   }
+
+   function position() {
+      return sprintf("%s (%d:%d)", $this->filename, $this->row, $this->col );
    }
 
    function readWS() {
@@ -146,7 +152,7 @@ class VyStream {
    }
 
    /// azonosító sorozat olvasása
-   function readIdents( $sep="." ) {
+   function readPath( $sep="." ) {
       $ret = [ $this->readIdent() ];
       while ( $this->readIf( $sep ))
          $ret [] = $this->readIdent();
@@ -156,6 +162,7 @@ class VyStream {
    function read() {
       $ret = $this->next();
       $this->at += strlen( $ret );
+      $this->incPosition( $ret );
       return $ret;
    }
 
@@ -178,14 +185,34 @@ class VyStream {
          if ( $this->isNum($ch)) {
             $ret = 10 * $ret + ord($ch)-ord('0');
             ++ $this->at;
-         } else
+         } else {
+            $this->incPosition("".$ret);
             return $ret;
+         }
       }
    }
 
+   /// útvonal és feltétel olvasása
+   function readPathVerCond() {
+      $ret = $this->readPath();
+      if ( "@" == $this->next() )
+         $ret .= $this->readVerCond();
+      return $ret;
+   }
+
+   /// verzió olvasása
    function readVer() {
       $this->readToken("@");
       return "@".$this->readNat();
+   }
+
+   /// verzió feltétel olvasása
+   function readVerCond() {
+      $ret = $this->readToken("@");
+      while ( in_array( $this->next(), ["<","=",">"] ))
+         $ret .= $this->read();
+      $ret .= $this->readNat();
+      return $ret;
    }
 
    function notexp( $exp ) {
@@ -197,5 +224,20 @@ class VyStream {
       $this->at = strlen( $this->data );
       return $ret;
    }
+
+   /// pozíció aktualizálása
+   protected function incPosition( $s ) {
+      $n = strlen( $s );
+      for ( $i=0; $i<$n; ++$i ) {
+         if ( "\n" == $s[$i] ) {
+            ++ $this->row;
+            $this->col = 1;
+         } else {
+           ++ $this->col;
+         }
+      }
+   }
+
+
 
 }

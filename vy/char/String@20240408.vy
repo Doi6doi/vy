@@ -1,11 +1,18 @@
 interface vy.char.String @20240408 {
 
-   extend vy.core.Compare, vy.cont.Array;
+   extend {
+      vy.core.Compare;
+      vy.cont.Array;
+   }
 
-   type Char = Array.Base;
-   type String = Compare.C;
+   type {
+      Char = Array.Base;
+      String = Compare.C;
+   }
 
-   const &ascii: String;
-   const &utf: String;   
+   const {
+      &ascii: String;
+      &utf: String;   
+   }
    
 }

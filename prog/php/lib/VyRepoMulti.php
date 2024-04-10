@@ -6,6 +6,7 @@ class VyRepoMulti extends VyRepo {
    protected $choices;
 
    function __construct() {
+      parent::__construct();
       $this->choices = [];
    }
 
@@ -16,15 +17,15 @@ class VyRepoMulti extends VyRepo {
       $this->choices [] = $repo;
    }
 
-   function read( $i, $ver ) {
+   function force( $x, $ver ) {
       foreach ( $this->choices as $c ) {
-         if ( $c->contains( $i ))
-            return $c->read($i);
+         if ( $c->contains($x, $ver))
+            return $c->force($x, $ver);
       }
-      return parent::read( $i );
+      throw new EVy("Item not found: $x$ver");
    }
 
-   function contains( $i, $ver ) {
+   function contains( $x, $ver ) {
       foreach ( $this->choices as $c ) {
          if ( $c->contains( $i, $ver ))
             return true;

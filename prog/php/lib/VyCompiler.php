@@ -33,16 +33,16 @@ class VyCompiler {
 
    /// futtatás
    function run() {
-      $this->readAll();
+      $this->forceInputs();
       $this->transform();
       $this->writeAll();
    }
 
    /// minden bemenet beolvasása
-   function readAll() {
+   function forceInputs() {
       foreach ($this->inputs as $i) {
          if ( ! array_key_exists( $i, $this->objs ))
-            $this->read( $i );
+            $this->forceInput( $i );
       }
    }
 
@@ -57,8 +57,11 @@ class VyCompiler {
    }
 
    /// egy bemenet olvasása
-   function read( $i ) {
-      $this->objs[ $i ] = $this->repo->read( $i );
+   function forceInput( $i ) {
+      if ( preg_match('#^(.+)(@.+)$#',$i,$m))
+         $o = $this->repo->force( $m[1], $m[2] );
+         else $o = $this->repo->force( $i, null );
+      $this->objs[ $i ] = $o;
    }
 
 /*

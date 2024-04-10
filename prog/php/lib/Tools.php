@@ -8,6 +8,12 @@ class Tools {
       return null;
    }
 
+   static function debug( $x ) {
+      if ( ! is_string( $x ))
+         $x = json_encode( $x );
+      fprintf( STDERR, "$x\n" );
+   }
+
    static function allErrors() {
       ini_set('display_errors', 1);
       ini_set('display_startup_errors', 1);
@@ -31,4 +37,30 @@ class Tools {
          throw new Exception( "JSON error: ".json_last_error_msg() );
    }
 
+   /// csomagnév útvonallá
+   static function pkgDir( $x ) {
+      return str_replace( ".","/",$x);
+   }
+
+   /// útvonal csomaggá
+   static function dirPkg( $x ) {
+      return str_replace( "/",".",$x);
+   }
+
+   /// változat feltétel teljesül-e
+   static function verCond( $cond, $ver ) {
+      if ( ! preg_match('#^@[0-9]{8}$#', $ver ))
+         throw new EVy("Unknown version: $ver");
+      if ( ! $cond )
+         return true;
+      if ( ! preg_match('#^@([<=>]*)([0-9]{8})$#', $cond, $m ))
+         throw new EVy("Unknown condition: $cond");
+      $cv = "@".$m[2];
+      switch ( $cr = $m[1] ) {
+         case "=": return $ver == $cv;
+         case "<=": return $ver <= $cv;
+         case ">=": return $ver >= $cv;
+         default: throw new EVy("Unknown condition rel: $cr");
+      }
+   }
 }

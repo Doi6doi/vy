@@ -4,7 +4,10 @@ interface vy.core.Bool @20240117 {
 
    type B = Equal.E;
 
-   const true, false: B;
+   const {
+      true: B;
+      false: B;
+   }
 
    function {
 
@@ -20,7 +23,7 @@ interface vy.core.Bool @20240117 {
          prefix ! 35;
       }
 
-      function xor(B,B):B;
+      xor(B,B):B;
 
    }
 

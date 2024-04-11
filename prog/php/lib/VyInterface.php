@@ -1,14 +1,21 @@
 <?php
 
 /// interfész leíró fájl
-class VyInterface {
+class VyInterface
+   implements VyExprReader
+{
 
    const
+      CONST = "const",
       EXTEND = "extend",
+      FUNCTION = "function",
       IMPORT = "import",
-      TYPE = "type",
-      INTERFACE = "interface";
+      INTERFACE = "interface",
+      PROVIDE = "provide",
+      TYPE = "type";
 
+   /// használt repo
+   protected $repo;
    /// csomag
    protected $pkg;
    /// név
@@ -19,15 +26,25 @@ class VyInterface {
    protected $xtends;
    /// importok
    protected $imports;
+   /// konstansok
+   protected $consts;
    /// típusok
    protected $types;
-   /// használt repo
-   protected $repo;
+   /// függvények
+   protected $funcs;
+   /// provide rész
+   protected $provides;
+   /// kifejezés olvasó verem
+   protected $stack;
 
    function __construct() {
+      $this->consts = [];
       $this->xtends = [];
       $this->imports = [];
       $this->types = [];
+      $this->funcs = [];
+      $this->provides = [];
+      $this->stack = new VyStack( $this );
    }
 
    function name() { return $this->name; }
@@ -40,6 +57,7 @@ class VyInterface {
    /// fájl beolvasása
    function read( VyStream $s, VyRepo $repo ) {
       $this->repo = $repo;
+      $this->stack->setStream( $s );
       $this->readHead( $s );
       while (true) {
          $s->readWS();
@@ -48,6 +66,21 @@ class VyInterface {
          else
             $this->readPart( $s );
       }
+   }
+
+   /// típus olvasása
+   function readType( $s ) {
+      $s->readWS();
+      $ret = $s->readIdent();
+      $this->checkType( $ret );
+      return $ret;
+   }
+
+   /// típus ellenőrzése
+   function checkType( $type ) {
+      if ( ! array_key_exists($type, $this->types) )
+         throw new EVy("Unknown type: $type" );
+//         $this->types[ $type ] = new VyInterfType($this);
    }
 
    /// fejrész beolvasása
@@ -69,9 +102,12 @@ class VyInterface {
    protected function readPart( $s ) {
       $s->readWS();
       switch ( $n = $s->next() ) {
+         case self::CONST: $meth = "readConst"; break;
          case self::EXTEND: $meth = "readExtend"; break;
+         case self::FUNCTION: $meth = "readFunction"; break;
          case self::IMPORT: $meth = "readImport"; break;
-         case self::TYPE: $meth = "readType"; break;
+         case self::PROVIDE: $meth = "readProvide"; break;
+         case self::TYPE: $meth = "readTypePart"; break;
          default: throw new Exception("Unknown part: $n");
       }
       return $this->readPartBlock( $s, $meth );
@@ -99,6 +135,17 @@ class VyInterface {
       if ( array_key_exists( $name, $arr ))
          throw new EVy("Duplicate name: $name");
       $arr[$name] = $obj;
+   }
+
+   /// const elem olvasása
+   protected function readConst( $s ) {
+      $name = ($s->readIf("&") ? "&" : "").$s->readIdent();
+      $s->readWS();
+      $s->readToken(":");
+      $type = $this->readType( $s );
+      $this->add( $this->consts, $name, $type );
+      $s->readWS();
+      $s->readToken(";");
    }
 
    /// extend elem olvasása
@@ -129,10 +176,28 @@ class VyInterface {
    }
 
    /// type elem olvasása
-   protected function readType( $s ) {
-      $ret = new VyInterfType( $this, $s->readIdent() );
+   protected function readTypePart( $s ) {
+      $ret = new VyInterfType( $this );
+      $ret->read( $s );
       $this->add( $this->types, $ret->name(), $ret );
-      $ret->readDetails( $s );
+   }
+
+   /// függvény olvasása
+   protected function readFunction( $s ) {
+      $ret = new VyFunction( $this );
+      $ret->read( $s );
+      $this->add( $this->funcs, $ret->name(), $ret );
+   }
+
+   /// provide olvasása
+   protected function readProvide( $s ) {
+      $this->provides [] = $this->readExpr( $s );
+      $s->readWS();
+   }
+
+   /// kifejezés olvasása
+   protected function readExpr( $s ) {
+      return $this->stack->readExpr();
    }
 
 }

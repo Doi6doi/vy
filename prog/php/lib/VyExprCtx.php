@@ -1,10 +1,11 @@
 <?php
 
-interface VyExprReader {
+interface VyExprCtx {
 
    function checkType( $type );
 
    function readType( VyStream $s );
 
+   function resolve( $token );
 
 }

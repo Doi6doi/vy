@@ -1,7 +1,7 @@
 <?php
 
 /// függvény paraméterek és visszatérési érték
-class VySign implements VyExprReader {
+class VySign implements VyExprCtx {
 
    /// tulajdonos
    protected $owner;
@@ -10,7 +10,7 @@ class VySign implements VyExprReader {
    /// visszatérési érték
    protected $result;
 
-   function __construct( VyExprReader $owner ) {
+   function __construct( VyExprCtx $owner ) {
       $this->owner = $owner;
       $this->args = [];
    }
@@ -36,6 +36,9 @@ class VySign implements VyExprReader {
    function readType( VyStream $s ) {
       return $this->owner->readType( $s );
    }
+
+   function resolve( $token ) { return null; }
+
 
    /// argumentum olvasás
    protected function readArg( $s ) {

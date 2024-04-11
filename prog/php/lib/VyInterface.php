@@ -2,7 +2,7 @@
 
 /// interfész leíró fájl
 class VyInterface
-   implements VyExprReader
+   implements VyExprCtx
 {
 
    const
@@ -44,6 +44,7 @@ class VyInterface
       $this->types = [];
       $this->funcs = [];
       $this->provides = [];
+Tools::debug("VYSTACK");
       $this->stack = new VyStack( $this );
    }
 
@@ -80,7 +81,19 @@ class VyInterface
    function checkType( $type ) {
       if ( ! array_key_exists($type, $this->types) )
          throw new EVy("Unknown type: $type" );
-//         $this->types[ $type ] = new VyInterfType($this);
+   }
+
+   /// azonosító feloldás
+   function resolve( $token ) {
+      if ( array_key_exists( $token, $this->funcs ))
+         return $this->funcs[$token];
+      if ( array_key_exists( $token, $this->types ))
+         return $this->types[$token];
+      if ( array_key_exists( $token, $this->xtends ))
+         return $this->xtends[$token];
+      if ( array_key_exists( $token, $this->imports ))
+         return $this->imports[$token];
+      return null;
    }
 
    /// fejrész beolvasása

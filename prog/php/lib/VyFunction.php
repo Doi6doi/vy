@@ -2,7 +2,7 @@
 
 /// interfész függvény
 class VyFunction
-   implements VyExprReader
+   implements VyExprCtx
 {
 
    /// tulajdonos
@@ -16,7 +16,7 @@ class VyFunction
    /// művelet
    protected $oper;
 
-   function __construct( VyExprReader $owner ) {
+   function __construct( VyExprCtx $owner ) {
       $this->owner = $owner;
       $this->sign = new VySign( $this );
    }
@@ -29,6 +29,10 @@ class VyFunction
 
    function readType( VyStream $s ) {
       return $this->owner->readType( $s );
+   }
+
+   function resolve( $token ) {
+      return null;
    }
 
    function read( VyStream $s ) {

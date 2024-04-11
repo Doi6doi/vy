@@ -7,7 +7,7 @@ class VyStack {
    protected $stream;
    protected $items;
 
-   function ___construct( VyExprReader $owner ) {
+   function __construct( VyExprCtx $owner ) {
       $this->owner = $owner;
       $this->items = [];
    }
@@ -55,7 +55,27 @@ class VyStack {
 
    /// egy lehetséges összevonás
    protected function joinOne() {
-      return false;
+      return $this->joinNullary();
+   }
+
+   /// nulláris összevonás
+   protected function joinNullary() {
+      return $this->joinIdent();
+   }
+
+   /// azonosító kiértékelés
+   protected function joinIdent() {
+      if ( ! $this->isToken(0) ) return false;
+      $t = $this->items[0];
+      if ( ! $this->stream->isIdent( $t[0], true )) return false;
+      if ( ! $ret = $this->owner->resolve( $t ))
+         throw new EVy("Unknown identifier: $t");
+      return $this->join( 1, $ret );
+   }
+
+   /// token van-e ezen a helyen
+   protected function isToken($i) {
+      return is_string( $this->items[$i] );
    }
 
    /// verem tartalom

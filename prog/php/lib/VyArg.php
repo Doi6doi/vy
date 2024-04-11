@@ -7,7 +7,7 @@ class VyArg {
    protected $name;
    protected $type;
 
-   function __construct( VyExprReader $owner ) {
+   function __construct( VyExprCtx $owner ) {
       $this->owner = $owner;
    }
 

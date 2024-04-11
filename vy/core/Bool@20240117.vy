@@ -2,43 +2,46 @@ interface vy.core.Bool @20240117 {
 
    extend Equal;
 
-   type B = Equal.E;
+   type Bool = Equal.E;
 
    const {
-      true: B;
-      false: B;
+      true: Bool;
+      false: Bool;
    }
 
    function {
 
-      and(B,B):B {
-         infix && 30;
+      and(Bool,Bool):Bool {
+         infix &&;
       }
 
-      or(B,B):B {
-         infix || 20;
+      or(Bool,Bool):Bool {
+         infix ||;
       }  
 
-      not(B):B {
-         prefix ! 35;
+      not(Bool):Bool {
+         prefix !;
       }
 
-      xor(B,B):B;
+      xor(Bool,Bool):Bool;
 
    }
 
    provide {
       ! (true = false);
-      given a,b:B;
-      and( true, a ) = a;
-      and( false, a ) = false;
-      and( a, b ) = and( b, a );
-      or( true, a ) = true;
-      or( false, a ) = a;
-      or( a, b ) = or( b, a );
       not( true ) = false;
-      not( not( a ) ) = a;
-      xor(a,b) = !(a=b);
+      given ( a: Bool ) {
+         and( true, a ) = a;
+         and( false, a ) = false;
+         or( true, a ) = true;
+         or( false, a ) = a;
+         not( not( a ) ) = a;
+         given ( b: Bool ) {
+            and( a, b ) = and( b, a );
+            or( a, b ) = or( b, a );
+            xor(a,b) = !(a=b);
+         }
+      }
    }
 
 }

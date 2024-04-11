@@ -11,9 +11,8 @@ class VyOper {
    protected $owner;
    protected $kind;
    protected $oper;
-   protected $pref;
 
-   function __construct( VyExprReader $owner ) {
+   function __construct( VyExprCtx $owner ) {
       $this->owner = $owner;
    }
 
@@ -26,13 +25,19 @@ class VyOper {
          default:
             throw $s->notexp( "operator" );
       }
-      $s->readWS();
-      while ( VyStream::SYMBOL == $s->nextKind() )
-         $this->oper .= $s->read();
-      $s->readWS();
-      $this->pref = $s->readNat();
+      $this->readOper( $s );
       $s->readWS();
       $s->readToken(";");
+   }
+
+   /// operátor olvasása
+   protected function readOper( $s ) {
+      $s->readWS();
+      $this->oper = "";
+      while ( Tools::operCont( $this->oper, $s->next() ) )
+         $this->oper .= $s->read();
+      if ( ! $this->oper )
+         throw $s->notexp("operator");
    }
 
 }

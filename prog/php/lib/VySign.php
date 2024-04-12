@@ -24,9 +24,14 @@ class VySign implements VyExprCtx {
          $s->readToken(")");
          $s->readWS();
       }
-      if ( $s->readIf(":") ) {
+      $this->readResult( $s );
+   }
+
+   /// visszatérési típus olvasása
+   function readResult( VyStream $s ) {
+      $s->readWS();
+      if ( $s->readIf(":") )
          $this->result = $this->readType( $s );
-      }
    }
 
    function checkType( $type ) {
@@ -37,7 +42,13 @@ class VySign implements VyExprCtx {
       return $this->owner->readType( $s );
    }
 
-   function resolve( $token ) { return null; }
+   function resolve( $token, $kind ) { return null; }
+
+   function __toString() { return $this->dump(); }
+
+   function dump() {
+      return sprintf( "(%s):%s", implode(",",$this->args), $this->result );
+   }
 
 
    /// argumentum olvasás

@@ -2,13 +2,15 @@
 
 /// interfész függvény
 class VyFunction
-   implements VyExprCtx
+   implements VyExpr, VyExprCtx
 {
 
    /// tulajdonos
    protected $owner;
    /// név
    protected $name;
+   /// konstans
+   protected $cons;
    /// argumentumok
    protected $sign;
    /// visszatérési érték
@@ -23,6 +25,8 @@ class VyFunction
 
    function name() { return $this->name; }
 
+   function oper() { return $this->oper; }
+
    function checkType( $type ) {
       $this->owner->checkType( $type );
    }
@@ -31,9 +35,11 @@ class VyFunction
       return $this->owner->readType( $s );
    }
 
-   function resolve( $token ) {
+   function resolve( $token, $kind ) {
       return null;
    }
+
+   function __toString() { return $this->name()."()"; }
 
    function read( VyStream $s ) {
       $this->name = $s->readIdent();
@@ -42,6 +48,16 @@ class VyFunction
       if ( "{" == $s->next() )
          $this->readDetails( $s );
          else $s->readToken(";");
+   }
+
+   /// konstans függvény olvasása
+   function readConst( VyStream $s ) {
+      $this->cons = true;
+      $pre = $s->readIf("&") ? "&" : "";
+      $this->name = $pre.$s->readIdent();
+      $this->sign->readResult( $s );
+      $s->readWS();
+      $s->readToken(";");
    }
 
    /// további részletek olvasása

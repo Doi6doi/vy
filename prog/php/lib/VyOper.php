@@ -1,4 +1,4 @@
-7<?php
+<?php
 
 /// operátor (prefix, infix, postfix )
 class VyOper {
@@ -16,6 +16,10 @@ class VyOper {
       $this->owner = $owner;
    }
 
+   function kind() { return $this->kind; }
+
+   function oper() { return $this->oper; }
+
    function read( VyStream $s ) {
       $s->readWS();
       switch ( $s->next() ) {
@@ -26,6 +30,7 @@ class VyOper {
             throw $s->notexp( "operator" );
       }
       $this->readOper( $s );
+Tools::debug("READ OPER", $this->oper);
       $s->readWS();
       $s->readToken(";");
    }

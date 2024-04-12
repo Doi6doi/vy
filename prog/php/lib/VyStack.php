@@ -30,6 +30,24 @@ class VyStack {
       throw new EVy("Could not read expr: ".$this->dump());
    }
 
+   /// elemek száma
+   function count() { return count($this->items); }
+
+   /// műveleti precedencia
+   function precedence( $t ) {
+      switch ($t) {
+         case ":=": return 10;
+         case "||": return 20;
+         case "&&": return 21;
+         case "!": return 22;
+         case "=": case "!=": case "<=": case ">=": case "<": case ">":
+            return 25;
+         case "+": case "-": return 30;
+         case "*": case "/": case "%": return 40;
+         default: return null;
+      }
+   }
+
    /// elemk törlése
    protected function clear() {
       $this->items = [];
@@ -42,6 +60,7 @@ class VyStack {
       if ( $s->eos() || ! $this->allowed( $s->next() ))
          return false;
       array_unshift( $this->items, $s->read() );
+      $s->readWS();
       return true;
    }
 
@@ -55,27 +74,61 @@ class VyStack {
 
    /// egy lehetséges összevonás
    protected function joinOne() {
-      return $this->joinNullary();
+      return $this->joinNullary()
+         || $this->joinBinary();
    }
 
    /// nulláris összevonás
    protected function joinNullary() {
-      return $this->joinIdent();
+      return $this->joinFunc();
+   }
+
+   /// bináris összevonás
+   protected function joinBinary() {
+      return $this->joinInfix();
    }
 
    /// azonosító kiértékelés
-   protected function joinIdent() {
+   protected function joinFunc() {
       if ( ! $this->isToken(0) ) return false;
       $t = $this->items[0];
       if ( ! $this->stream->isIdent( $t[0], true )) return false;
-      if ( ! $ret = $this->owner->resolve( $t ))
-         throw new EVy("Unknown identifier: $t");
+      if ( ! $ret = $this->owner->resolve( $t, VyExprCtx::FUNC ))
+         return false;
       return $this->join( 1, $ret );
+   }
+
+   /// következő stream elem
+   protected function next() {
+      return $this->stream->next();
+   }
+
+   /// bináris művelet összevonás
+   protected function joinInfix() {
+      if ( $this->count() < 3 )
+         return;
+      if ( ! ($this->isExpr(2) && $this->isToken(1) && $this->isExpr(0)))
+         return false;
+      $t = $this->items[1];
+      if ( $this->precedence( $t ) < $this->precedence( $this->next() ))
+         return false;
+      return $this->join( 3, new VyInfix( $t, $this->items[2], $this->items[0] ));
+   }
+
+   /// összevonás
+   protected function join( $n, $ret ) {
+      array_splice( $this->items, 0, $n, [$ret] );
+      return true;
    }
 
    /// token van-e ezen a helyen
    protected function isToken($i) {
       return is_string( $this->items[$i] );
+   }
+
+   /// kifejezés van-e ezen a helyen
+   protected function isExpr($i) {
+      return $this->items[$i] instanceof VyExpr;
    }
 
    /// verem tartalom

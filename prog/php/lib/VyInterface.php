@@ -44,11 +44,16 @@ class VyInterface
       $this->types = [];
       $this->funcs = [];
       $this->provides = [];
-Tools::debug("VYSTACK");
       $this->stack = new VyStack( $this );
    }
 
    function name() { return $this->name; }
+
+   function types() { return $this->types; }
+
+   function consts() { return $this->consts; }
+
+   function funcs() { return $this->funcs; }
 
    /// teljes név útvonallal és verzióval
    function fullName() {
@@ -83,17 +88,42 @@ Tools::debug("VYSTACK");
          throw new EVy("Unknown type: $type" );
    }
 
+   function __toString() { return $this->fullName(); }
+
    /// azonosító feloldás
-   function resolve( $token ) {
-      if ( array_key_exists( $token, $this->funcs ))
-         return $this->funcs[$token];
-      if ( array_key_exists( $token, $this->types ))
-         return $this->types[$token];
-      if ( array_key_exists( $token, $this->xtends ))
-         return $this->xtends[$token];
-      if ( array_key_exists( $token, $this->imports ))
-         return $this->imports[$token];
+   function resolve( $token, $kind ) {
+      switch ($kind) {
+         case VyExprCtx::FUNC:
+            foreach ( [$this->consts, $this->funcs] as $a ) {
+               if ( $ret = Tools::g( $a, $token ))
+                  return $ret;
+            }
+         break;
+         case VyExprCtx::INFIX:
+            foreach ($this->funcs as $f) {
+               if ( ($o = $f->oper()) && VyOper::INFIX == $o->kind()
+                  && $o->oper() == $token )
+                  return $f;
+            }
+         break;
+         default: throw new EVy("Unknown resolve kind: $kind");
+      }
       return null;
+   }
+
+   /// típusok és függvények átvétele
+   protected function inherit( $name, $o, $extend ) {
+      foreach ( $o->types() as $t ) {
+         if ( ! $tt = Tools::g( $this->types, $t->name() ))
+            $tt = new VyInterfType( $this, $t );
+         $tt->add( $name.".".$t );
+      }
+      if ( $extend ) {
+         foreach ( $o->consts() as $c )
+            $this->add( $this->consts, $c->name(), $c );
+         foreach ( $o->funcs() as $f )
+            $this->add( $this->funcs, $f->name(), $f );
+      }
    }
 
    /// fejrész beolvasása
@@ -103,6 +133,7 @@ Tools::debug("VYSTACK");
       $s->readWS();
       $path = $s->readPath();
       $this->name = array_pop( $path );
+Tools::debug("READING ".$this->name());
       $this->pkg = implode(".",$path);
       $s->readWS();
       $this->ver = $s->readVer();
@@ -144,35 +175,58 @@ Tools::debug("VYSTACK");
       return true;
    }
 
+   /// hozzáadás egy listához
    protected function add( & $arr, $name, $obj ) {
-      if ( array_key_exists( $name, $arr ))
-         throw new EVy("Duplicate name: $name");
+      $arrs = $this->addArrays( $arr );
+      foreach ( $arrs as $a ) {
+         if ( array_key_exists( $name, $a ))
+            throw new EVy("Duplicate name: $name");
+      }
       $arr[$name] = $obj;
    }
 
-   /// const elem olvasása
-   protected function readConst( $s ) {
-      $name = ($s->readIf("&") ? "&" : "").$s->readIdent();
-      $s->readWS();
-      $s->readToken(":");
-      $type = $this->readType( $s );
-      $this->add( $this->consts, $name, $type );
-      $s->readWS();
-      $s->readToken(";");
+   /// egy kategóriába eső tömbök
+   protected function addArrays( $arr ) {
+      switch ( $arr ) {
+         case $this->consts: case $this->funcs:
+            return [$this->consts, $this->funcs];
+         case $this->xtends: case $this->imports:
+            return [$this->xtends, $this->imports];
+         default:
+            return [$arr];
+      }
    }
+
+   /// függvény olvasása
+   protected function readConst( $s ) {
+      $ret = new VyFunction( $this );
+      $ret->readConst( $s );
+      $this->add( $this->consts, $ret->name(), $ret );
+   }
+
 
    /// extend elem olvasása
    protected function readExtend( $s ) {
-      $this->readPathVer( $s, $path, $ver );
-      $obj = $this->repo->force( $path, $ver );
-      $this->add( $this->xtends, $obj->name(), $obj );
+      $this->readAlias( $s, $name, $path, $ver );
+      $ret = $this->repo->force( $path, $ver );
+      $this->add( $this->xtends, $name, $ret );
       $s->readWS();
       $s->readToken(";");
+      $this->inherit( $name, $ret, true );
    }
 
-   /// útvonal és verzió feltétel olvasása
-   protected function readPathVer( $s, & $path, & $ver ) {
-      $path = $s->readPath();
+   /// alias olvasása
+   protected function readAlias( $s, & $name, & $path, & $ver ) {
+      $name = $s->readIdent();
+      $s->readWS();
+      $path = [];
+      if ( ($alias = $s->readIf("="))
+            || $s->readIf("."))
+         $path = $s->readPath();
+      if ( ! $alias ) {
+         array_unshift( $path, $name );
+         $name = $path[ count($path)-1 ];
+      }
       if (1 == count($path))
          $path = sprintf( "%s.%s", $this->pkg, $path[0] );
          else $path = implode(".",$path);
@@ -183,9 +237,12 @@ Tools::debug("VYSTACK");
 
    /// import elem olvasása
    protected function readImport( $s ) {
-      $this->readPathVer( $s, $path, $ver );
-      $obj = $this->repo->force( $path, $ver );
-      $this->add( $this->imports, $obj->name(), $obj );
+      $this->readAlias( $s, $name, $path, $ver );
+      $ret = $this->repo->force( $path, $ver );
+      $this->add( $this->imports, $name, $ret );
+      $s->readWS();
+      $s->readToken(";");
+      $this->inherit( $name, $ret, false );
    }
 
    /// type elem olvasása

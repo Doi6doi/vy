@@ -9,7 +9,7 @@ interface vy.core.Equal @20240117 {
 
    function {
       equal(E,E):B {
-         infix = 40;
+         infix =;
       }
 
       noteq(E,E):B {

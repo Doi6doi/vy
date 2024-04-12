@@ -8,10 +8,14 @@ class Tools {
       return null;
    }
 
-   static function debug( $x ) {
-      if ( ! is_string( $x ))
-         $x = json_encode( $x );
-      fprintf( STDERR, "$x\n" );
+   static function debug() {
+      $ret = [];
+      foreach (func_get_args() as $x) {
+//         if ( ! is_string( $x ))
+//            $x = json_encode( $x );
+         $ret [] = $x;
+      }
+      fprintf( STDERR, implode(", ",$ret)."\n" );
    }
 
    static function allErrors() {

@@ -1,0 +1,5 @@
+<?php
+
+/// kifejezés
+interface VyExpr {
+}

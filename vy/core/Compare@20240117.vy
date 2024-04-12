@@ -6,20 +6,20 @@ interface vy.core.Compare @20240117 {
       
    function {
 
-      less(C:C):B {
-         infix < 50;
+      less(C:C):Bool {
+         infix <;
       }
 
-      greater(C,C):B {
-         infix > 50;
+      greater(C,C):Bool {
+         infix >;
       }
 
-      lesseq(C,C):B {
-         infix <= 50;
+      lesseq(C,C):Bool {
+         infix <=;
       }
 
-      greatereq(C,C):B {
-         infix >= 50;
+      greatereq(C,C):Bool {
+         infix >=;
       }
 
    }

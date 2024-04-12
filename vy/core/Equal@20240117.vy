@@ -4,22 +4,22 @@ interface vy.core.Equal @20240117 {
 
    type {
       E;
-      B = Bool.B;
+      Bool = Bool.Bool;
    }
 
    function {
-      equal(E,E):B {
+      equal(E,E):Bool {
          infix =;
       }
 
-      noteq(E,E):B {
+      noteq(E,E):Bool {
          infix !=;
       }
    }
 
    provide {
       given( a,b:E ) {
-         if (a=b) b=a;
+         (a=b) = (b=a);
          (a!=b) = !(a=b);
       }
    }

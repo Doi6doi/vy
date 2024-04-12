@@ -16,12 +16,17 @@ class Oper {
          case "":
             switch ( $ch ) {
                case "&": case "|": case "!": case "=":
-               case "<": case ">":
+               case "<": case ">": case "+": case "-":
+               case "*": case "/":
                   return true;
             }
          break;
-         case "&": case "|": return $pre == $ch;
-         case "!": case "<": case ">": return "=" == $ch;
+         case "&": case "|":
+            return $pre == $ch;
+         case "!": case "<": case ">": case "*": case "/":
+            return "=" == $ch;
+         case "+": case "-":
+            return $pre == $ch || "=" == $ch;
       }
       return false;
    }
@@ -59,7 +64,7 @@ class Oper {
             throw $s->notexp( "operator" );
       }
       $this->readOper( $s );
-Tools::debug("READ OPER", $this->oper);
+// Tools::debug("READ OPER", $this->oper);
       $s->readWS();
       $s->readToken(";");
    }

@@ -1,24 +1,21 @@
 interface vy.core.Equal @20240117 {
 
+   type Equal;
+
    import Bool;
 
-   type {
-      E;
-      Bool = Bool.Bool;
-   }
-
    function {
-      equal(E,E):Bool {
+      equal(Equal,Equal):Bool {
          infix =;
       }
 
-      noteq(E,E):Bool {
+      noteq(Equal,Equal):Bool {
          infix !=;
       }
    }
 
    provide {
-      given( a,b:E ) {
+      given( a,b:Equal ) {
          (a=b) = (b=a);
          (a!=b) = !(a=b);
       }

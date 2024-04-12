@@ -2,13 +2,13 @@ interface vy.core.Ordinal @20240117 {
 
    extends Equal;
 
-   type O = Equal.E;
+   type Ordinal = Equal.Equal;
 
    function {
-      first:O;
-      last:O;
-      next(O):O;
-      prev(O):O;
+      first:Ordinal;
+      last:Ordinal;
+      next(Ordinal):Ordinal;
+      prev(Ordinal):Ordinal;
    }
 
    provide {

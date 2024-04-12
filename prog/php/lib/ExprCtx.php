@@ -6,8 +6,9 @@ interface ExprCtx {
 
    const
       FUNC = "func",
-      NAME = "name",
-      INFIX = "infix";
+      INFIX = "infix",
+      INTF = "intf",
+      NAME = "name";
 
    function checkType( $type );
 

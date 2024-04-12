@@ -8,6 +8,7 @@ class Braced
 {
 
    const
+      CURLY = "{}",
       ROUND = "()",
       SQUARE = "[]";
 
@@ -18,6 +19,19 @@ class Braced
    static function closer($kind) {
       return $kind[1];
    }
+
+   static function pair($tok) {
+      switch ( $tok ) {
+         case "(": return ")";
+         case ")": return "(";
+         case "[": return "]";
+         case "]": return "[";
+         case "{": return "}";
+         case "}": return "{";
+         default: return null;
+      }
+   }
+
 
    protected $kind;
    protected $body;

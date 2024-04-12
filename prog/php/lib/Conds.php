@@ -42,12 +42,18 @@ class Conds
       $s->readWS();
       if ( "}" == $s->next() )
          return false;
-      if ( Given::GIVEN == $s->next() ) {
-         $ret = new Given( $this );
-         $ret->read( $s );
-      } else {
-         $ret = $this->stack->readExpr( $s );
-         $s->read(";");
+      switch ( $s->next() ) {
+         case Given::GIVEN:
+            $ret = new Given( $this );
+            $ret->read( $s );
+         break;
+         case IfCond::IF:
+            $ret = new IfCond( $this );
+            $ret->read( $s );
+         break;
+         default:
+            $ret = $this->stack->readExpr( $s );
+            $s->read(";");
       }
       $this->body [] = $ret;
       return true;

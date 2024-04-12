@@ -2,7 +2,7 @@ interface vy.core.Bool @20240117 {
 
    extend Equal;
 
-   type Bool = Equal.E;
+   type Bool = Equal.Equal;
 
    const {
       true: Bool;

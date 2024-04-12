@@ -4,13 +4,18 @@ namespace vy;
 
 class Stack {
 
+   const
+      CLOSERS = [")","]","}"];
+
    protected $owner;
    protected $stream;
    protected $items;
+   protected $braces;
 
    function __construct( ExprCtx $owner ) {
       $this->owner = $owner;
       $this->items = [];
+      $this->braces = [];
    }
 
    /// kifejezés olvasása
@@ -57,7 +62,9 @@ class Stack {
       $s->readWS();
       if ( $s->eos() || ! $this->allowed( $s->next() ))
          return false;
-      array_unshift( $this->items, $s->read() );
+      $tok = $s->read();
+      $this->updateBraces( $tok );
+      array_unshift( $this->items, $tok );
       $s->readWS();
       return true;
    }
@@ -65,8 +72,12 @@ class Stack {
    /// hozzáadható-e ez a token
    protected function allowed( $t ) {
       switch ( $t ) {
-         case "}": case ";": return false;
-         default: return true;
+         case ";": return false;
+         default:
+           if ( in_array( $t, self::CLOSERS )) {
+              return Braced::pair($t) == end( $this->braces );
+           }
+           return true;
       }
    }
 
@@ -215,6 +226,15 @@ class Stack {
          $ret .= $this->items[$i];
       }
       return trim( $ret );
+   }
+
+   /// helyes zárójelezés
+   protected function updateBraces( $tok ) {
+      if ( $p = Braced::pair($tok) ) {
+         if ( in_array( $tok, self::CLOSERS ))
+            array_pop( $this->braces );
+            else array_push( $this->braces, $tok );
+      }
    }
 
 }

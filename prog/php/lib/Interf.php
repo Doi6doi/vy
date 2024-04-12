@@ -85,11 +85,14 @@ class Interf
 
    /// típus kivétele egy névből
    function removeType( $type ) {
-      if ( ! preg_match('#^.*\.([^.]+)$#', $type, $m )) return;
-      $t = $m[1];
+      if ( ! preg_match('#^(.*)\.([^.]+)$#', $type, $m )) return;
+      if ( ! $inf = $this->resolve( $m[1], ExprCtx::INTF ))
+         throw new EVy("Unknown interface: $inf");
+      $t = $m[2];
+      $inf->checkType( $t );
       if ( $ret = Tools::g( $this->types, $t )) {
          if ( $ret->remove($type) && ! $ret->same() )
-            unset( $this->types, $t );
+            unset( $this->types[$t] );
       }
    }
 
@@ -109,6 +112,9 @@ class Interf
          case ExprCtx::FUNC:
          case ExprCtx::NAME:
             $arrs = [$this->consts, $this->funcs];
+         break;
+         case ExprCtx::INTF:
+            $arrs = [$this->xtends, $this->imports];
          break;
          case ExprCtx::INFIX:
             foreach ($this->funcs as $f) {
@@ -130,17 +136,26 @@ class Interf
 
    /// típusok és függvények átvétele
    protected function inherit( $name, $o, $extend ) {
+// Tools::debug("inheriting to ".$this->name()." from ".$o->name() );
       foreach ( $o->types() as $t ) {
-         if ( ! $tt = Tools::g( $this->types, $t->name() ))
-            $tt = new InterfType( $this, $t );
-         $tt->add( $name.".".$t->name() );
+         $tn = $t->name();
+// Tools::debug("inheriting $t" );
+         if ( ! $tt = Tools::g( $this->types, $tn )) {
+            $tt = new InterfType( $this, $tn );
+            $this->add( $this->types, $tn, $tt );
+// Tools::debug("is new" );
+         }
+         $tt->add( $name.".".$tn );
+// Tools::debug("tt".$tt);
       }
+// Tools::debug( "inherit1:".$this->dumpTypes() );
       if ( $extend ) {
          foreach ( $o->consts() as $c )
             $this->add( $this->consts, $c->name(), $c );
          foreach ( $o->funcs() as $f )
             $this->add( $this->funcs, $f->name(), $f );
       }
+// Tools::debug( "inherit2:".$this->dumpTypes() );
    }
 
    /// fejrész beolvasása
@@ -285,6 +300,13 @@ Tools::debug("READING ".$this->name());
    /// kifejezés olvasása
    protected function readExpr( $s ) {
       return $this->stack->readExpr( $s );
+   }
+
+   protected function dumpTypes() {
+      $ret = [];
+      foreach ( $this->types as $t )
+         $ret [] = "".$t;
+      return implode(";",$ret);
    }
 
 }

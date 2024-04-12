@@ -11,8 +11,9 @@ class InterfType {
    /// egyezők
    protected $same;
 
-   function __construct( Interf $owner ) {
+   function __construct( Interf $owner, $name = null ) {
       $this->owner = $owner;
+      $this->name = $name;
       $this->same = [];
    }
 
@@ -25,6 +26,8 @@ class InterfType {
          throw $s->notexp("type");
       $s->readToken(";");
    }
+
+   function same() { return $this->same; }
 
    function add( $s ) {
       if ( ! in_array( $s, $this->same ))
@@ -47,6 +50,10 @@ class InterfType {
          if ( substr( $s, -$lpn ) != $ptn )
             $this->owner->removeType( $s );
       }
+   }
+
+   function __toString() {
+      return $this->name().":".implode("=",$this->same);
    }
 
    protected function readItem( $s ) {

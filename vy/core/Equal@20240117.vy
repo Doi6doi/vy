@@ -13,14 +13,15 @@ interface vy.core.Equal @20240117 {
       }
 
       noteq(E,E):B {
-         infix != 40;
+         infix !=;
       }
    }
 
    provide {
-      given a,b:E;
-      if (a=b) b=a;
-      (a!=b) = !(a=b);
+      given( a,b:E ) {
+         if (a=b) b=a;
+         (a!=b) = !(a=b);
+      }
    }
      
 }

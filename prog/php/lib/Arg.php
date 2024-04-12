@@ -2,15 +2,19 @@
 
 namespace vy;
 
-/// függvény argumentum
-class Arg {
+/// függvény argumentum, vagy változó
+class Arg
+   implements Expr
+{
 
    protected $owner;
    protected $name;
    protected $type;
 
-   function __construct( ExprCtx $owner ) {
+   function __construct( ExprCtx $owner, $name=null, $type=null ) {
       $this->owner = $owner;
+      $this->name = $name;
+      $this->type = $type;
    }
 
    function read( Stream $s ) {
@@ -24,6 +28,10 @@ class Arg {
          $this->owner->checkType( $this->type );
          $this->name = null;
       }
+   }
+
+   function __toString() {
+      return "<".$this->name.">";
    }
 
 }

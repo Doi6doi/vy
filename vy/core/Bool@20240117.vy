@@ -28,17 +28,17 @@ interface vy.core.Bool @20240117 {
    }
 
    provide {
-      ! (true = false);
-      not( true ) = false;
+      true;
+      ! false;
       given ( a: Bool ) {
-         and( true, a ) = a;
-         and( false, a ) = false;
-         or( true, a ) = true;
-         or( false, a ) = a;
-         not( not( a ) ) = a;
+         true && a = a;
+         ! (false && a);
+         true || a;
+         false || a = a;
+         ! ! a = a;
          given ( b: Bool ) {
-            and( a, b ) = and( b, a );
-            or( a, b ) = or( b, a );
+            a && b = b && a;
+            a || b = b || a;
             xor(a,b) = !(a=b);
          }
       }

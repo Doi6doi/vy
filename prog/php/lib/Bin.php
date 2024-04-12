@@ -10,7 +10,7 @@ class VyBin {
    function load( $fname ) {
       $this->filename = $fname;
       if ( ! $fh = fopen( $fname, "r" ) )
-         throw new Exception("Cannot open $fname");
+         throw new EVy("Cannot open $fname");
       $s = new VyBStream( $fname );
       $this->loadStream( $s );
       fclose( $fh );

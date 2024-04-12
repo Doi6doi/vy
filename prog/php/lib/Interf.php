@@ -45,7 +45,7 @@ class Interf
       $this->imports = [];
       $this->types = [];
       $this->funcs = [];
-      $this->provides = [];
+      $this->provides = new Conds( $this );
       $this->stack = new Stack( $this );
    }
 
@@ -65,7 +65,6 @@ class Interf
    /// fájl beolvasása
    function read( Stream $s, Repo $repo ) {
       $this->repo = $repo;
-      $this->stack->setStream( $s );
       $this->readHead( $s );
       while (true) {
          $s->readWS();
@@ -84,6 +83,17 @@ class Interf
       return $ret;
    }
 
+   /// típus kivétele egy névből
+   function removeType( $type ) {
+      if ( ! preg_match('#^.*\.([^.]+)$#', $type, $m )) return;
+      $t = $m[1];
+      if ( $ret = Tools::g( $this->types, $t )) {
+         if ( $ret->remove($type) && ! $ret->same() )
+            unset( $this->types, $t );
+      }
+   }
+
+
    /// típus ellenőrzése
    function checkType( $type ) {
       if ( ! array_key_exists($type, $this->types) )
@@ -94,12 +104,11 @@ class Interf
 
    /// azonosító feloldás
    function resolve( $token, $kind ) {
+      $arrs = [];
       switch ($kind) {
          case ExprCtx::FUNC:
-            foreach ( [$this->consts, $this->funcs] as $a ) {
-               if ( $ret = Tools::g( $a, $token ))
-                  return $ret;
-            }
+         case ExprCtx::NAME:
+            $arrs = [$this->consts, $this->funcs];
          break;
          case ExprCtx::INFIX:
             foreach ($this->funcs as $f) {
@@ -107,8 +116,14 @@ class Interf
                   && $o->oper() == $token )
                   return $f;
             }
+            return null;
          break;
          default: throw new EVy("Unknown resolve kind: $kind");
+      }
+      foreach ( $arrs as $a ) {
+         if ( $ret = Tools::g( $a, $token )) {
+            return $ret;
+         }
       }
       return null;
    }
@@ -118,7 +133,7 @@ class Interf
       foreach ( $o->types() as $t ) {
          if ( ! $tt = Tools::g( $this->types, $t->name() ))
             $tt = new InterfType( $this, $t );
-         $tt->add( $name.".".$t );
+         $tt->add( $name.".".$t->name() );
       }
       if ( $extend ) {
          foreach ( $o->consts() as $c )
@@ -133,7 +148,7 @@ class Interf
       $s->readWS();
       $s->readToken( self::INTERFACE );
       $s->readWS();
-      $path = $s->readPath();
+      $path = $s->readIdents(".");
       $this->name = array_pop( $path );
 Tools::debug("READING ".$this->name());
       $this->pkg = implode(".",$path);
@@ -154,7 +169,7 @@ Tools::debug("READING ".$this->name());
          case self::IMPORT: $meth = "readImport"; break;
          case self::PROVIDE: $meth = "readProvide"; break;
          case self::TYPE: $meth = "readTypePart"; break;
-         default: throw new Exception("Unknown part: $n");
+         default: throw new EVy("Unknown part: $n");
       }
       return $this->readPartBlock( $s, $meth );
    }
@@ -224,7 +239,7 @@ Tools::debug("READING ".$this->name());
       $path = [];
       if ( ($alias = $s->readIf("="))
             || $s->readIf("."))
-         $path = $s->readPath();
+         $path = $s->readIdents(".");
       if ( ! $alias ) {
          array_unshift( $path, $name );
          $name = $path[ count($path)-1 ];
@@ -252,6 +267,7 @@ Tools::debug("READING ".$this->name());
       $ret = new InterfType( $this );
       $ret->read( $s );
       $this->add( $this->types, $ret->name(), $ret );
+      $ret->updateInterf();
    }
 
    /// függvény olvasása
@@ -263,13 +279,12 @@ Tools::debug("READING ".$this->name());
 
    /// provide olvasása
    protected function readProvide( $s ) {
-      $this->provides [] = $this->readExpr( $s );
-      $s->readWS();
+      $this->provides->readItem( $s );
    }
 
    /// kifejezés olvasása
    protected function readExpr( $s ) {
-      return $this->stack->readExpr();
+      return $this->stack->readExpr( $s );
    }
 
 }

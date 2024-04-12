@@ -13,15 +13,12 @@ class Stack {
       $this->items = [];
    }
 
-   function setStream( Stream $s ) {
-      $this->stream = $s;
-   }
-
    /// kifejezés olvasása
-   function readExpr() {
+   function readExpr( Stream $s ) {
       $this->clear();
+      $this->stream = $s;
       while ( $this->append() ) {
-         while ( $this->joinOne())
+         while ( $this->joinOne() )
             ;
       }
       if ( 1 == count( $this->items ) ) {
@@ -76,25 +73,59 @@ class Stack {
    /// egy lehetséges összevonás
    protected function joinOne() {
       return $this->joinNullary()
+         || $this->joinUnary()
          || $this->joinBinary();
    }
 
    /// nulláris összevonás
    protected function joinNullary() {
-      return $this->joinFunc();
+      return $this->joinOper()
+         || $this->joinName();
+   }
+
+   /// unáris összevonás
+   protected function joinUnary() {
+      return $this->joinBraced( Braced::ROUND )
+         || $this->joinBraced( Braced::SQUARE )
+         || $this->joinPrefix();
    }
 
    /// bináris összevonás
    protected function joinBinary() {
-      return $this->joinInfix();
+      return $this->joinTuple()
+         || $this->joinCall()
+         || $this->joinInfix();
+   }
+
+   /// zárójeles összevonás
+   protected function joinBraced( $kind ) {
+      if ( Braced::closer($kind) != $this->items[0] )
+         return false;
+      $op = Braced::opener($kind);
+      if ( 2 <= $this->count() && $op == $this->items[1] )
+         return $this->join( 2, new Braced($kind) );
+      if ( 3 <= $this->count() && $op == $this->items[2] && $this->isExpr(1))
+         return $this->join( 3, new Braced($kind, $this->items[1] ));
+      return false;
+   }
+
+   /// többjegyű operátor
+   protected function joinOper() {
+      if ( ! ( 2 <= $this->count() && $this->isToken(0) && $this->isToken(1) ))
+         return false;
+      $t1 = $this->items[1];
+      $t0 = $this->items[0];
+      if ( ! Oper::cont( $t1, $t0 ))
+         return false;
+      return $this->join( 2, $t1.$t0 );
    }
 
    /// azonosító kiértékelés
-   protected function joinFunc() {
+   protected function joinName() {
       if ( ! $this->isToken(0) ) return false;
       $t = $this->items[0];
       if ( ! $this->stream->isIdent( $t[0], true )) return false;
-      if ( ! $ret = $this->owner->resolve( $t, ExprCtx::FUNC ))
+      if ( ! $ret = $this->owner->resolve( $t, ExprCtx::NAME ))
          return false;
       return $this->join( 1, $ret );
    }
@@ -104,16 +135,59 @@ class Stack {
       return $this->stream->next();
    }
 
+   /// prefix összevonás
+   protected function joinPrefix() {
+      if ( $this->count() < 2 )
+         return false;
+      if ( ! ( $this->isExpr(0) && $this->isToken(1)))
+         return false;
+      $t = $this->items[1];
+      if ( ! Oper::isOper($t, Oper::PREFIX ))
+         return false;
+      return $this->join(2, new Prefix($t,$this->items[0]));
+   }
+
+   /// lista összefűzés
+   protected function joinTuple() {
+      if ( $this->count() < 3 ) return false;
+      if ( ! ( $this->isExpr(2) && "," == $this->items[1] && $this->isExpr(0)))
+         return false;
+      if ( $this->precedence(",") < $this->precedence($this->next()))
+         return false;
+      $e2 = $this->items[2];
+      $e0 = $this->items[0];
+      if ( $e2 instanceof Tuple ) {
+         $ret = $e2;
+      } else {
+         $ret = new Tuple();
+         $ret->add( $e2 );
+      }
+      $ret->add( $e0 );
+      return $this->join(3,$ret);
+   }
+
    /// bináris művelet összevonás
    protected function joinInfix() {
-      if ( $this->count() < 3 )
-         return;
+      if ( $this->count() < 3 ) return false;
       if ( ! ($this->isExpr(2) && $this->isToken(1) && $this->isExpr(0)))
          return false;
       $t = $this->items[1];
-      if ( $this->precedence( $t ) < $this->precedence( $this->next() ))
+      if ( ! Oper::isOper($t, Oper::INFIX)
+         || $this->precedence( $t ) < $this->precedence( $this->next() )
+      )
          return false;
       return $this->join( 3, new Infix( $t, $this->items[2], $this->items[0] ));
+   }
+
+   /// hívás összevonás
+   protected function joinCall() {
+      if ( $this->count() < 2 )  return false;
+      if ( ! ($this->isExpr(1) && $this->isExpr(0))) return false;
+      $e1 = $this->items[1];
+      if ( ! $e1 instanceof Func ) return false;
+      $e0 = $this->items[0];
+      if ( ! $e0 instanceof Braced ) return false;
+      return $this->join( 2, new Call( $e1, $e0->body()) );
    }
 
    /// összevonás

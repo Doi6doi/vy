@@ -1,4 +1,6 @@
 <?php
 
-class EParam extends Exception {
+namespace vy;
+
+class EParam extends \Exception {
 }

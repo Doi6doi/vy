@@ -41,7 +41,7 @@ class Func
       return null;
    }
 
-   function __toString() { return $this->name()."()"; }
+   function __toString() { return "<".$this->name().">"; }
 
    function read( Stream $s ) {
       $this->name = $s->readIdent();

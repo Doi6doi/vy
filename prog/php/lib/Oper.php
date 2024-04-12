@@ -10,6 +10,33 @@ class Oper {
       POSTFIX = "postfix",
       PREFIX = "prefix";
 
+   /// többjegyű operátor folytatása
+   static function cont( $pre, $ch ) {
+      switch ($pre) {
+         case "":
+            switch ( $ch ) {
+               case "&": case "|": case "!": case "=":
+               case "<": case ">":
+                  return true;
+            }
+         break;
+         case "&": case "|": return $pre == $ch;
+         case "!": case "<": case ">": return "=" == $ch;
+      }
+      return false;
+   }
+
+   /// többjegyű operátor
+   static function isOper( $token, $kind ) {
+      if ( self::PREFIX == $kind ) {
+         return in_array( $token, ["!","++","-","--"] );
+      } else if ( self::INFIX == $kind ) {
+         return in_array( $token, ["=","<",">","<=",">=","!=",
+            "+","-","*","/","||","&&"] );
+      } else
+         return false;
+   }
+
    protected $owner;
    protected $kind;
    protected $oper;
@@ -41,10 +68,12 @@ Tools::debug("READ OPER", $this->oper);
    protected function readOper( $s ) {
       $s->readWS();
       $this->oper = "";
-      while ( Tools::operCont( $this->oper, $s->next() ) )
+      while ( self::cont( $this->oper, $s->next() ) )
          $this->oper .= $s->read();
       if ( ! $this->oper )
          throw $s->notexp("operator");
    }
+
+
 
 }

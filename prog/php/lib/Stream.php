@@ -154,10 +154,13 @@ class Stream {
    }
 
    /// azonosító sorozat olvasása
-   function readPath( $sep="." ) {
+   function readIdents( $sep ) {
       $ret = [ $this->readIdent() ];
-      while ( $this->readIf( $sep ))
+      $this->readWS();
+      while ( $this->readIf( $sep ) ) {
          $ret [] = $this->readIdent();
+         $this->readWS();
+      }
       return $ret;
    }
 
@@ -196,7 +199,7 @@ class Stream {
 
    /// útvonal és feltétel olvasása
    function readPathVerCond() {
-      $ret = $this->readPath();
+      $ret = $this->readIdents(".");
       if ( "@" == $this->next() )
          $ret .= $this->readVerCond();
       return $ret;

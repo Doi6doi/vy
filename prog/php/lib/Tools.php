@@ -70,16 +70,4 @@ class Tools {
       }
    }
 
-   /// többjegyű operátor folytatása
-   static function operCont( $oper, $cont ) {
-      switch ($oper) {
-         case "":
-            switch ( $cont ) {
-               case "&": case "|": case "!": return true;
-            }
-         break;
-         case "&": case "|": return $oper == $cont;
-      }
-      return false;
-   }
 }

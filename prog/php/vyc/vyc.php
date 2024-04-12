@@ -9,7 +9,7 @@ class VyC {
    protected $comp;
 
    function __construct() {
-      $this->comp = new VyCompiler();
+      $this->comp = new vy\Compiler();
    }
 
    function run( $argv ) {

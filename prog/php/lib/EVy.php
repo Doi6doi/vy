@@ -1,4 +1,6 @@
 <?php
 
-class EVy extends Exception {
+namespace vy;
+
+class EVy extends \Exception {
 }

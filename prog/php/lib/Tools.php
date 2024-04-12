@@ -1,5 +1,7 @@
 <?php
 
+namespace vy;
+
 class Tools {
 
    static function g($arr,$fld) {
@@ -38,7 +40,7 @@ class Tools {
 
    static function checkJson() {
       if ( JSON_ERROR_NONE != json_last_error() )
-         throw new Exception( "JSON error: ".json_last_error_msg() );
+         throw new EVy( "JSON error: ".json_last_error_msg() );
    }
 
    /// csomagnév útvonallá

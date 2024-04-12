@@ -1,9 +1,8 @@
 <?php
 
 require_once( "../../lib/autoload.php");
-VyAutoload::addPath(["..","../../lib"]);
 
-class TestVyc extends VyTest {
+class TestVyc extends vy\Test {
 
    const
       ROOT = "../../..",

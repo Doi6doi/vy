@@ -1,6 +1,8 @@
 <?php
 
-class VyAutoload {
+namespace vy;
+
+class Autoload {
 
    protected static $path = [".","../lib"];
 
@@ -15,6 +17,8 @@ class VyAutoload {
    }
 
    static function autoload( $cls ) {
+      if ( preg_match('#^vy\\\\(.*)$#', $cls, $m ))
+         $cls = $m[1];
       foreach ( self::$path as $dir ) {
          $fname = $dir."/$cls.php";
          if ( file_exists( $fname ))
@@ -25,4 +29,4 @@ class VyAutoload {
 
 }
 
-spl_autoload_register( ["VyAutoload","autoload"]);
+spl_autoload_register( ["vy\Autoload","autoload"]);

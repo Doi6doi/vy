@@ -15,19 +15,24 @@ class Func
    protected $cons;
    /// argumentumok
    protected $sign;
-   /// visszatérési érték
-   protected $result;
    /// művelet
    protected $oper;
 
-   function __construct( ExprCtx $owner ) {
+   function __construct( ExprCtx $owner, $name = null ) {
       $this->owner = $owner;
+      $this->name = $name;
       $this->sign = new Sign( $this );
    }
 
    function name() { return $this->name; }
 
    function oper() { return $this->oper; }
+
+   function owner() { return $this->owner; }
+
+   function cons() { return $this->cons; }
+
+   function sign() { return $this->sign; }
 
    function checkType( $type ) {
       $this->owner->checkType( $type );
@@ -60,6 +65,33 @@ class Func
       $this->sign->readResult( $s );
       $s->readWS();
       $s->readToken(";");
+   }
+
+   /// jellemzők öröklése
+   function inherit( $other, $map ) {
+      $this->name = $other->name();
+      $this->cons = $other->cons();
+      if ( $o = $other->oper() ) {
+         $this->oper = new Oper($this);
+         $this->oper->inherit( $o );
+      }
+      $this->sign->inherit( $other->sign(), $map );
+   }
+
+   /// kompatibilitás ellenőrzése
+   function checkCompatible( $other, $map ) {
+      if ( $this->cons() != $other->cons() )
+         throw $this->notComp( $other, "const");
+      if ( ! Oper::same( $this->oper(), $other->oper() ))
+         throw $this->notComp( $other, "oper");
+      $this->sign()->checkCompatible( $other->sign(), $map );
+   }
+
+   /// kompatibilitási hiba
+   function notComp( $other, $reason ) {
+      throw new EVy(sprintf( "function %s (%s->%s) not compatible: %s",
+         $this->name(), $other->owner()->name(), $this->owner()->name(),
+         $reason ));
    }
 
    /// további részletek olvasása

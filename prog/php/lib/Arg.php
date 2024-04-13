@@ -17,6 +17,10 @@ class Arg
       $this->type = $type;
    }
 
+   function name() { return $this->name; }
+
+   function type() { return $this->type; }
+
    function read( Stream $s ) {
       $s->readWS();
       $this->name = $s->readIdent();
@@ -30,8 +34,17 @@ class Arg
       }
    }
 
+   function checkCompatible( Arg $other, $map ) {
+      if ( $this->type() != Tools::gc( $map, $other->type() ))
+         throw $this->notComp( $other, "type");
+   }
+
    function __toString() {
       return "<".$this->name.">";
+   }
+
+   protected function notComp( Arg $other, $reason ) {
+      return new EVy("Not comaptible arg: ".$this->name().": ".$reason );
    }
 
 }

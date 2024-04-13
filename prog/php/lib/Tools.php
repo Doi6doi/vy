@@ -10,6 +10,14 @@ class Tools {
       return null;
    }
 
+   static function gc($arr,$fld) {
+      if ( ! is_array($arr) )
+         throw new EVy("Not an array");
+      if ( ! array_key_exists( $fld, $arr ))
+         throw new EVy("Missing key: $fld");
+      return $arr[$fld];
+   }
+
    static function debug() {
       $ret = [];
       foreach (func_get_args() as $x) {

@@ -10,6 +10,14 @@ class Oper {
       POSTFIX = "postfix",
       PREFIX = "prefix";
 
+   /// egyezés
+   static function same( Oper $a, Oper $b ) {
+      if (!$a) return !$b;
+      if (!$b) return false;
+      return $a->kind() == $b->kind()
+         && $a->oper() == $b->oper();
+   }
+
    /// többjegyű operátor folytatása
    static function cont( $pre, $ch ) {
       switch ($pre) {
@@ -54,6 +62,11 @@ class Oper {
 
    function oper() { return $this->oper; }
 
+   function inherit( Oper $other ) {
+      $this->kind = $other->kind();
+      $this->oper = $other->oper();
+   }
+
    function read( Stream $s ) {
       $s->readWS();
       switch ( $s->next() ) {
@@ -67,6 +80,10 @@ class Oper {
 // Tools::debug("READ OPER", $this->oper);
       $s->readWS();
       $s->readToken(";");
+   }
+
+   function __toString() {
+      return $this->kind.$this->oper;
    }
 
    /// operátor olvasása

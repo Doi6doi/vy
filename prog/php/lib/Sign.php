@@ -19,6 +19,10 @@ class Sign
       $this->args = [];
    }
 
+   function args() { return $this->args; }
+
+   function result() { return $this->result; }
+
    /// olvasás
    function read( Stream $s ) {
       $s->readWS();
@@ -36,6 +40,26 @@ class Sign
       $s->readWS();
       if ( $s->readIf(":") )
          $this->result = $this->readType( $s );
+   }
+
+   /// kompatibilitás ellenőrzése
+   function checkCompatible( Sign $other, array $map ) {
+      if ( $n = count( $this->args() ) != count( $other->args() ) )
+         throw $this->notComp( $other, "arg count");
+      if ( $this->result() != Tools::gc( $map, $other->result()))
+         throw $this->notComp( $other, "result");
+      for( $i=0; $i<$n; ++$i)
+         $this->args()[$i]->checkCompatible( $other->args()[$i], $map );
+   }
+
+   /// paraméterlista megfeleltetése
+   function inherit( Sign $other, array $map ) {
+      $this->args = [];
+      foreach ( $other->args() as $oa ) {
+         $a = new Arg($this, $oa->name(), Tools::gc( $map, $oa->type() ));
+         $this->args [] = $a;
+      }
+      $this->result = Tools::gc( $map, $other->result() );
    }
 
    function checkType( $type ) {
@@ -66,6 +90,11 @@ class Sign
       $ret->read( $s );
       $this->args [] = $ret;
       return true;
+   }
+
+   protected function notComp( Sign $other, $reason ) {
+      return new EVy("Not compatible sign: ".
+         $this->owner()->name().": ".$result );
    }
 
 }

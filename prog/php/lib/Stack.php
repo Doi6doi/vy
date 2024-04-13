@@ -47,6 +47,7 @@ class Stack {
             return 25;
          case "+": case "-": return 30;
          case "*": case "/": case "%": return 40;
+         case "(": return 90;
          default: return null;
       }
    }
@@ -91,7 +92,8 @@ class Stack {
    /// nulláris összevonás
    protected function joinNullary() {
       return $this->joinOper()
-         || $this->joinName();
+         || $this->joinName()
+         || $this->joinLiteral();
    }
 
    /// unáris összevonás
@@ -141,6 +143,15 @@ class Stack {
       return $this->join( 1, $ret );
    }
 
+   /// literál készítés
+   protected function joinLiteral() {
+      if ( ! $this->isToken(0)) return false;
+      $t = $this->items[0];
+      if ( preg_match('#^\d+$#', $t ))
+         return $this->join( 1, new Literal($t));
+      return false;
+   }
+
    /// következő stream elem
    protected function next() {
       return $this->stream->next();
@@ -148,10 +159,10 @@ class Stack {
 
    /// prefix összevonás
    protected function joinPrefix() {
-      if ( $this->count() < 2 )
-         return false;
-      if ( ! ( $this->isExpr(0) && $this->isToken(1)))
-         return false;
+      $n = $this->count();
+      if ( $n < 2 ) return false;
+      if ( ! ( $this->isExpr(0) && $this->isToken(1))) return false;
+      if ( 3 <= $n && $this->isExpr(2)) return false;
       $t = $this->items[1];
       if ( ! Oper::isOper($t, Oper::PREFIX ))
          return false;

@@ -38,6 +38,8 @@ class Interf
    protected $provides;
    /// kifejezés olvasó verem
    protected $stack;
+   /// az örökölt függvények már átvéve
+   protected $funcsTaken;
 
    function __construct() {
       $this->consts = [];
@@ -73,6 +75,7 @@ class Interf
          else
             $this->readPart( $s );
       }
+      $this->inheritFuncs();
    }
 
    /// típus olvasása
@@ -135,27 +138,28 @@ class Interf
    }
 
    /// típusok és függvények átvétele
-   protected function inherit( $name, $o, $extend ) {
-// Tools::debug("inheriting to ".$this->name()." from ".$o->name() );
+   protected function inheritTypes( $name, $o ) {
       foreach ( $o->types() as $t ) {
          $tn = $t->name();
-// Tools::debug("inheriting $t" );
          if ( ! $tt = Tools::g( $this->types, $tn )) {
             $tt = new InterfType( $this, $tn );
             $this->add( $this->types, $tn, $tt );
-// Tools::debug("is new" );
          }
          $tt->add( $name.".".$tn );
-// Tools::debug("tt".$tt);
       }
-// Tools::debug( "inherit1:".$this->dumpTypes() );
-      if ( $extend ) {
-         foreach ( $o->consts() as $c )
-            $this->add( $this->consts, $c->name(), $c );
-         foreach ( $o->funcs() as $f )
-            $this->add( $this->funcs, $f->name(), $f );
+   }
+
+   /// függvények átvétele
+   protected function inheritFuncs() {
+      if ( $this->funcsTaken ) return;
+      $map = $this->typeMap();
+      foreach ( $this->xtends as $x ) {
+         foreach ( $x->consts() as $c )
+            $this->inheritFunc( $c, $map );
+         foreach ( $x->funcs() as $f )
+            $this->inheritFunc( $f, $map );
       }
-// Tools::debug( "inherit2:".$this->dumpTypes() );
+      $this->funcsTaken = true;
    }
 
    /// fejrész beolvasása
@@ -182,7 +186,10 @@ Tools::debug("READING ".$this->name());
          case self::EXTEND: $meth = "readExtend"; break;
          case self::FUNCTION: $meth = "readFunction"; break;
          case self::IMPORT: $meth = "readImport"; break;
-         case self::PROVIDE: $meth = "readProvide"; break;
+         case self::PROVIDE:
+            $meth = "readProvide";
+            $this->inheritFuncs();
+         break;
          case self::TYPE: $meth = "readTypePart"; break;
          default: throw new EVy("Unknown part: $n");
       }
@@ -244,7 +251,8 @@ Tools::debug("READING ".$this->name());
       $this->add( $this->xtends, $name, $ret );
       $s->readWS();
       $s->readToken(";");
-      $this->inherit( $name, $ret, true );
+      $this->inheritTypes( $name, $ret );
+      $this->funcsTaken = false;
    }
 
    /// alias olvasása
@@ -274,7 +282,7 @@ Tools::debug("READING ".$this->name());
       $this->add( $this->imports, $name, $ret );
       $s->readWS();
       $s->readToken(";");
-      $this->inherit( $name, $ret, false );
+      $this->inheritTypes( $name, $ret );
    }
 
    /// type elem olvasása
@@ -302,11 +310,47 @@ Tools::debug("READING ".$this->name());
       return $this->stack->readExpr( $s );
    }
 
+   /// típusok kiírása
    protected function dumpTypes() {
       $ret = [];
       foreach ( $this->types as $t )
          $ret [] = "".$t;
       return implode(";",$ret);
+   }
+
+   /// függvény öröklése
+   protected function inheritFunc( Func $f, $map ) {
+      $name = $f->name();
+      $fmap = $this->mapSlice( $map, $f->owner()->name() );
+      if ( $g = Tools::g( $this->funcs, $name ) ) {
+         $g->checkCompatible( $f, $fmap );
+      } else {
+         $g = new Func( $this );
+         $g->inherit( $f, $fmap );
+         $this->funcs[ $name ] = $g;
+      }
+   }
+
+   /// típusmegfeleltetési térkép
+   protected function typeMap() {
+      $ret = [];
+      foreach ( $this->types as $t ) {
+         foreach ( $t->same() as $s )
+            $ret[$s] = $t->name();
+      }
+      return $ret;
+   }
+
+   /// térkép egy része
+   protected function mapSlice( $map, $intf ) {
+      $ret = [];
+      $intf = $intf.".";
+      $li = strlen( $intf );
+      foreach ( $map as $k=>$v) {
+         if ( $intf == substr( $k, 0, $li ))
+            $ret[ substr($k,$li) ] = $v;
+      }
+      return $ret;
    }
 
 }

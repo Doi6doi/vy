@@ -7,7 +7,7 @@ interface vy.char.String @20240410 {
 
    type {
       Char = Array.Base;
-      String = Compare.C;
+      String = Compare.Compare;
    }
 
    const {

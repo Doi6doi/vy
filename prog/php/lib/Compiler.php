@@ -13,6 +13,8 @@ class Compiler {
    protected $objs;
    /// kimenetek
    protected $outputs;
+   /// c író
+   protected $cWriter;
 
    function __construct() {
       $this->inputs = [];
@@ -36,7 +38,6 @@ class Compiler {
    /// futtatás
    function run() {
       $this->forceInputs();
-      $this->transform();
       $this->writeAll();
    }
 
@@ -48,14 +49,24 @@ class Compiler {
       }
    }
 
-   /// átalakítás, ha szükséges
-   function transform() {
+   /// egy kimenet kiírása
+   function write( $obj, $out ) {
+      switch ($ext = Tools::extension($out)) {
+         case ".h": $this->cWriter()->writeHeader($obj,$out); break;
+         case ".c": $this->cWriter()->writeBody($obj,$out); break;
+         case ".vy": $this->vyWriter()->write( $obj, $out ); break;
+         default: throw new EVy("Unknown output extension: $ext");
+      }
    }
 
    /// szükséges kimenetek kiírása
    function writeAll() {
-      foreach ( $this->outputs as $o )
-         $this->write( $o );
+      for ( $i=0; $i<count($this->outputs); ++$i) {
+         $ii = Tools::g( $this->inputs, $i );
+         $bi = Tools::g( $this->objs, $ii );
+         $oi = $this->outputs[$i];
+         $this->write( $bi, $oi );
+      }
    }
 
    /// egy bemenet olvasása
@@ -64,6 +75,13 @@ class Compiler {
          $o = $this->repo->force( $m[1], $m[2] );
          else $o = $this->repo->force( $i, null );
       $this->objs[ $i ] = $o;
+   }
+
+   /// c író
+   function cWriter() {
+      if ( ! $this->cWriter )
+         $this->cWriter = new CWriter();
+      return $this->cWriter;
    }
 
 }

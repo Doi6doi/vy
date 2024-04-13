@@ -8,7 +8,7 @@ class TestVyc extends vy\Test {
       ROOT = "../../..",
       VYC = "vyc.php",
       STRING = "vy.char.String",
-      STRINGH = "vy_string.h";
+      STRINGH = "test/vy_string.h";
 
    function run() {
       $this->chdir( ".." );

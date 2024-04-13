@@ -78,4 +78,11 @@ class Tools {
       }
    }
 
+   /// fájl kiterjesztése
+   static function extension($path) {
+      if ( preg_match('#(\.[^./]*)$#', $path, $m ))
+         return $m[1];
+      return null;
+   }
+
 }

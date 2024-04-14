@@ -35,6 +35,7 @@ class VyC {
       switch ($argv[$i]) {
          case "-r": return $this->getParRepo( $argv, $i );
          case "-i": return $this->getParInput( $argv, $i );
+         case "-t": return $this->getParType( $argv, $i );
          case "-o": return $this->getParOutput( $argv, $i );
          default: throw new Exception("Unknown parameter: $argv[$i]");
       }
@@ -65,6 +66,11 @@ class VyC {
       return true;
    }
 
+   function getParType( $argv, & $i ) {
+      $this->comp->setTypeMap( $this->nextPar( $argv, $i, "typemap" ));
+      return true;
+   }
+
    /// használat
    function usage( $msg ) {
       $ret = [
@@ -74,6 +80,7 @@ class VyC {
          "Options:",
          "   -r <path>: add <path> as repository",
          "   -i <item>: add <item> as input",
+         "   -t <typemap>: set <typemap> as type mapping",
          "   -o <filename>: add <filename> as output",
          "",
          ""

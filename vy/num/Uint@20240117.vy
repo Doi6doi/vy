@@ -6,7 +6,7 @@ interface vy.num.Uint @20240117 {
       vy.core.Ordinal;
    }
 
-   type Uint = Compare.Compare = Number.Number;
+   type Uint = Compare.Compare = Number.Number = Ordinal.Ordinal;
 
    const &dec;
 

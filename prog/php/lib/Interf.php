@@ -53,11 +53,15 @@ class Interf
 
    function name() { return $this->name; }
 
+   function pkg() { return $this->pkg; }
+
    function types() { return $this->types; }
 
    function consts() { return $this->consts; }
 
    function funcs() { return $this->funcs; }
+
+   function ver() { return $this->ver; }
 
    /// teljes név útvonallal és verzióval
    function fullName() {
@@ -71,7 +75,7 @@ class Interf
       while (true) {
          $s->readWS();
          if ( $s->readIf("}"))
-            return;
+            break;
          else
             $this->readPart( $s );
       }
@@ -242,7 +246,6 @@ Tools::debug("READING ".$this->name());
       $ret->readConst( $s );
       $this->add( $this->consts, $ret->name(), $ret );
    }
-
 
    /// extend elem olvasása
    protected function readExtend( $s ) {

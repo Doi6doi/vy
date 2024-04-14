@@ -26,6 +26,11 @@ class CWriter {
       }
    }
 
+   /// típusmegfeleltetésbeállítása
+   function setTypeMap( array $map ) {
+      $this->map = $map;
+   }
+
    /// a modul neve
    protected function module() {
       return pathinfo( $this->filename(), PATHINFO_FILENAME );
@@ -41,8 +46,8 @@ class CWriter {
       $this->writeHeaderHead();
       $this->writeInterfTypes($intf);
       $this->writeInterfStruct($intf);
-      $this->writeInterfArgs($intf,false);
-      $this->writeInterfProvide($intf,false);
+      $this->writeInterfArgs($intf);
+//      $this->writeInterfProvide($intf,false);
       $this->writeHeaderTail();
    }
 
@@ -65,17 +70,23 @@ class CWriter {
    }
 
    /// típus leképezés egy interfésznél
-   protected function getType( $intf, $type ) {
+   protected function getType( $intf, $type, $trim ) {
       $key = $intf->name().".".$type;
       if ( $val = Tools::g( $this->map, $key ))
-         return $val;
-         else return $type;
+         $ret = $val;
+      else if ( $val = Tools::g( $this->map, $type ))
+         $ret = $val;
+      else
+         $ret = $type;
+      if ( $trim && "&" == substr( $ret, 0, 1 ))
+         $ret = substr( $ret, 1 );
+      return $ret;
    }
 
    /// interfész típusok kiírása
    protected function writeInterfTypes( $intf ) {
       foreach ( $intf->types() as $t ) {
-         $tn = $this->getType( $intf, $t->name() );
+         $tn = $this->getType( $intf, $t->name(), false );
          if ( "&" != substr($tn,0,1))
             $this->stream->writel( "typedef struct %s * %s;\n", $tn, $tn );
       }
@@ -102,15 +113,14 @@ class CWriter {
       $name = $f->name();
       $s->writeIndent();
       $t = $f->sign()->result();
-      $s->write( $this->getType( $in, $t )." " );
+      $s->write( $this->getType( $in, $t, true )." " );
       if ( "&" == substr($name,0,1) ) {
-         $name = substr($name,1);
-         $s->writef("(* %s)(", $name );
+         $s->writef("(* %s)(", $this->funcName( $f ) );
          switch ( $name ) {
-            case "ascii": case "utf":
-               $s->write("VyCStr, VySize");
+            case "&ascii": case "&utf":
+               $s->write("VySize, VyCStr");
             break;
-            case "dec":
+            case "&dec":
                $s->write("VyDec");
             break;
             default: throw new EVy("Unknown special constant: $name");
@@ -127,7 +137,7 @@ class CWriter {
       $in = $f->owner();
       $s->writeIndent();
       if ( $t = $f->sign()->result() )
-         $s->write( $this->getType( $in, $t )." " );
+         $s->write( $this->getType( $in, $t, true )." " );
          else $s->write( "void " );
       $s->writef("(* %s)(", $f->name() );
       $first = true;
@@ -135,7 +145,7 @@ class CWriter {
          if ( $first )
             $first = false;
             else $s->write(", ");
-         $s->writef( $this->getType($in, $a->type()) );
+         $s->writef( $this->getType($in, $a->type(), true ) );
          if ( $n = $a->name() )
             $s->write(" $n");
       }
@@ -143,12 +153,31 @@ class CWriter {
    }
 
    /// interfész lekérő függvény
-   protected function writeInterfArgs( $intf, $body ) {
+   protected function writeInterfArgs( $intf ) {
       $s = $this->stream;
       $s->writel();
-      $s->writel( "VyImplemArgs %sArgs();", $intf->name() );
-      if ( $body )
-         throw new EVy("nyf");
+      $s->writel( "#define VY%sARGS( name ) \\", strtoupper( $intf->name() ));
+      $s->indent(true);
+      $s->writel( "VyImplemArgs name = vyImplemArgs( \"%s.%s\", vyVer(%s)); \\",
+         $intf->pkg(), $intf->name(), substr($intf->ver(),1) );
+      foreach ( $intf->types() as $t ) {
+         $tn = $this->getType( $intf, $t->name(), false );
+         if ( "&" == substr($tn,0,1))
+            $re = sprintf("vyNative(\"%s\")", substr($tn,1));
+            else $re = "NULL";
+         $s->writel( "vyImplemArgsType( name, \"%s\", %s ); \\",
+            $t->name(), $re );
+      }
+      foreach ( $intf->consts() as $c ) {
+         $s->writel( "vyImplemArgsFunc( name, \"%s\"); \\",
+            $this->funcName( $c ));
+      }
+      foreach ( $intf->funcs() as $f ) {
+         $s->writel( "vyImplemArgsFunc( name, \"%s\"); \\",
+            $f->name() );
+      }
+      $s->indent(false);
+      $s->writel();
    }
 
    /// provide tesztelő függvény
@@ -158,6 +187,14 @@ class CWriter {
       $s->writel( "void %sProvide();", $intf->name() );
       if ( $body )
          throw new EVy("nyf");
+   }
+
+   /// konstans esetén const kerül elé
+   protected function funcName( $f ) {
+      $name = $f->name();
+      if ( $f->cons() )
+         $name = "const".strtoupper( $name[1] ).substr( $name,2 );
+      return $name;
    }
 
 }

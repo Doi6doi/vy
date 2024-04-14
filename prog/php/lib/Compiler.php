@@ -13,6 +13,8 @@ class Compiler {
    protected $objs;
    /// kimenetek
    protected $outputs;
+   /// típus megfeleltetés
+   protected $typemap;
    /// c író
    protected $cWriter;
 
@@ -20,6 +22,7 @@ class Compiler {
       $this->inputs = [];
       $this->outputs = [];
       $this->objs = [];
+      $this->typemap = [];
       $this->repo = new RepoMulti();
    }
 
@@ -69,6 +72,18 @@ class Compiler {
       }
    }
 
+   /// típusmegfeleltetés beállítása
+   function setTypeMap( $mapstr ) {
+      $this->typemap = [];
+      $maps = explode(";",$mapstr);
+      foreach ( $maps as $map ) {
+         if ( preg_match('#^(.*)=(.*)$#', $map, $m ))
+            $this->typemap[ $m[1] ] = $m[2];
+         else
+            throw new EVy("Unknown mapping: $map" );
+      }
+   }
+
    /// egy bemenet olvasása
    function forceInput( $i ) {
       if ( preg_match('#^(.+)(@.+)$#',$i,$m))
@@ -79,8 +94,10 @@ class Compiler {
 
    /// c író
    function cWriter() {
-      if ( ! $this->cWriter )
+      if ( ! $this->cWriter ) {
          $this->cWriter = new CWriter();
+         $this->cWriter->setTypeMap( $this->typemap );
+      }
       return $this->cWriter;
    }
 

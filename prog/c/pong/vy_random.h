@@ -4,16 +4,14 @@
 
 typedef struct Bool * Bool;
 
-typedef struct Number * Number;
-
 typedef struct RandomFun {
-   Number (* random)(Number);
+   float (* random)(float);
 } * RandomFun;
 
 #define VYRANDOMARGS( name ) \
    VyImplemArgs name = vyImplemArgs( ".Random", vyVer(20240301)); \
    vyImplemArgsType( name, "Bool", NULL ); \
-   vyImplemArgsType( name, "Number", NULL ); \
+   vyImplemArgsType( name, "Number", vyNative("float") ); \
    vyImplemArgsFunc( name, "random"); \
 
 

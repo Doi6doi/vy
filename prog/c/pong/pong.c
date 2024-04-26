@@ -1,4 +1,5 @@
 #include <vy.h>
+#include <vy_geom.h>
 
 #include <stdbool.h>
 
@@ -8,7 +9,8 @@
 #include "vy_random.h"
 #include "vy_rect.h"
 #include "vy_font.h"
-#include "vy_surface.h"
+#include "vy_window.h"
+#include "vy_sprite.h"
 
 #include <math.h>
 
@@ -16,6 +18,8 @@
 #define TICK 0.05
 
 typedef enum Side { LEFT=0, RIGHT=1 } Side;
+
+typedef VyPoint2f Point;
 
 /// pontszám szöveg
 typedef struct Score {
@@ -27,7 +31,7 @@ typedef struct Score {
 typedef struct Ball {
    float speed;
    Sprite sprite;
-   Point delta;
+   VyPoint2f delta;
 } Ball;
 
 /// egy ütő adatai
@@ -42,21 +46,20 @@ typedef struct Pad {
 typedef struct Pong {
    Vy vy;
    // implementációk
-   Strings strings;
-   Keys keys;
-   Time time;
-   Random random;
-   Surfaces surfaces;
-   Rects rects;
-   Fonts fonts;
+   StringFun strings;
+   KeyFun keys;
+   TimeFun times;
+   RandomFun randoms;
+   WindowFun windows;
+   RectFun rects;
+   SpriteFun sprites;
    // adatok
    float padSpeed;
    int maxScore;
    bool over;
    Stamp last;
    /// elemek
-   Scene scene;
-   Surface surface;
+   Window window;
    Score score;
    Ball ball;
    Pad pads[2];
@@ -69,57 +72,13 @@ float speedComp( float c ) {
    return sqrt( pong.ball.speed * pong.ball.speed - c*c );
 }
 
-/// pontszám kiterjedés
-Rect scoreBounds() {
-   Rect ret = pong.fonts.textBounds( pong.score.font, pong.score.text );
-   Rects * r = & pong.rects;
-   r->move( ret, 0.5 - r->width( ret ) / 2, - 0.1 );
-   return ret;
-}
-
-/// labda kiterjedés
-Rect ballBounds() {
-   Points * p = & pong.points;
-   float r = pong.ball.rad;
-   return pong.rects.create( -r, -r, 2*r, 2*r );
-}
-
-/// ütő kiterjedés
-Rect padBounds( Sprite ) {
-   Pad * p = pong.pads;
-   return pong.rects.create( -p->width/2, -p->size/2, p->width, p->size );
-}
-
-/// pontszám kirajzolás
-void scoreDraw( Sprite ) {
-   pong.fonts.draw( pong.score.font, pong.surface,
-      0, -0.8, pong.score.text );
-}
-
-/// labda kirajzolás
-void ballDraw( Sprite ) {
-   Ball * ball = & pong.ball;
-   pong.displays.circle( pong.display, ball->x, ball->y, ball->rad,
-      ball->pen, ball->brush );
-}
-
-/// ütő kirajzolás
-void padDraw( Sprite s ) {
-   bool left = (s == pong.pads[0].sprite);
-   Pad * p = pong.pads + (left ? 0 : 1);
-   float x = (left ? -1 : 1 )*( 1 - p->width/2);
-   Rect r = padBounds( s );
-   pong.rects.move( r, x, p->y );
-   pong.displays.rect( pong.display, r, p->pen, p->brush );
-   vyFree( r );
-}
-
 /// új játék
 void newRound( Side side ) {
-   float r = pong.random.random(1)-0.5;
-   pong.ball.x = pong.ball.y = 0;
-   pong.ball.dy = pong.ball.speed * MAXCOORD * r;
-   pong.ball.dx = speedComp( pong.ball.dy ) * (RIGHT == side ? -1 : 1);
+   float r = pong.randoms->random(1)-0.5;
+   Point p = {.x=0, .y=0};
+   pong.sprites->place( pong.ball.sprite, p );
+   float dy pong.ball.delta.y = pong.ball.speed * MAXCOORD * r;
+   pong.ball.delta.x = speedComp( dy ) * (RIGHT == side ? -1 : 1);
 }
 
 /// vy inicializálás

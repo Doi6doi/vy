@@ -1,19 +1,16 @@
 #ifndef VY_RECTH
 #define VY_RECTH
+#include <vy.h>
 
-typedef struct Rect * Rect;
+typedef struct Bool * Bool;
 
-typedef struct Rects {
-   Rect (* create)( float left, float top, float width, float height );
-   void (*move)( Rect r, float dx, float dy );
-   float (* width)( Rect r );
-   float (* height)( Rect r );
-} Rects;
+typedef struct RectFun {
+} * RectFun;
 
-VyImplemArgs rectsArgs() {
-   VyImplemArgs ret = vyImplemArgs( "vy.graphic.Rect", vyVer( 20240301 ));
-   vyImplemArgsType(ret,"Coord",vyNative("float"));
-   return ret;
-}
+#define VYRECTARGS( name ) \
+   VyImplemArgs name = vyImplemArgs( ".Rect", vyVer(20240301)); \
+   vyImplemArgsType( name, "Bool", NULL ); \
+   vyImplemArgsType( name, "Coord", vyNative("float") ); \
+
 
 #endif // VY_RECTH

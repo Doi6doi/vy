@@ -3,13 +3,12 @@
 #include <stdbool.h>
 
 #include "vy_string.h"
-#include "vy_keys.h"
+#include "vy_key.h"
 #include "vy_time.h"
 #include "vy_random.h"
-#include "vy_sprite.h"
 #include "vy_rect.h"
 #include "vy_font.h"
-#include "vy_display.h"
+#include "vy_surface.h"
 
 #include <math.h>
 
@@ -22,31 +21,21 @@ typedef enum Side { LEFT=0, RIGHT=1 } Side;
 typedef struct Score {
    String text;
    Sprite sprite;
-   Font font;
 } Score;
 
 /// a golyó adatai
 typedef struct Ball {
    float speed;
-   float x, y;
-   float dx, dy;
-   float rad;
-   Pen pen;
-   Brush brush;
    Sprite sprite;
+   Point delta;
 } Ball;
 
 /// egy ütő adatai
 typedef struct Pad {
-   float y;
-   float size;
-   float width;
+   Sprite sprite;
    int score;
    Key up;
    Key down;
-   Pen pen;
-   Brush brush;
-   Sprite sprite;
 } Pad;
 
 /// minden pong adat
@@ -57,8 +46,7 @@ typedef struct Pong {
    Keys keys;
    Time time;
    Random random;
-   Sprites sprites;
-   Displays displays;
+   Surfaces surfaces;
    Rects rects;
    Fonts fonts;
    // adatok
@@ -68,7 +56,7 @@ typedef struct Pong {
    Stamp last;
    /// elemek
    Scene scene;
-   Display display;
+   Surface surface;
    Score score;
    Ball ball;
    Pad pads[2];
@@ -82,15 +70,16 @@ float speedComp( float c ) {
 }
 
 /// pontszám kiterjedés
-Rect scoreBounds( Sprite ) {
+Rect scoreBounds() {
    Rect ret = pong.fonts.textBounds( pong.score.font, pong.score.text );
    Rects * r = & pong.rects;
-   r->move( ret, - r->width( ret ) / 2, - r->height( ret ) / 2 );
+   r->move( ret, 0.5 - r->width( ret ) / 2, - 0.1 );
    return ret;
 }
 
 /// labda kiterjedés
-Rect ballBounds( Sprite ) {
+Rect ballBounds() {
+   Points * p = & pong.points;
    float r = pong.ball.rad;
    return pong.rects.create( -r, -r, 2*r, 2*r );
 }
@@ -103,7 +92,7 @@ Rect padBounds( Sprite ) {
 
 /// pontszám kirajzolás
 void scoreDraw( Sprite ) {
-   pong.fonts.draw( pong.score.font, pong.display,
+   pong.fonts.draw( pong.score.font, pong.surface,
       0, -0.8, pong.score.text );
 }
 

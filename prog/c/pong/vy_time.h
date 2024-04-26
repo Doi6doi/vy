@@ -1,24 +1,25 @@
 #ifndef VY_TIMEH
 #define VY_TIMEH
+#include <vy.h>
+
+typedef struct Number * Number;
 
 typedef struct Stamp * Stamp;
 
-typedef struct Time {
+typedef struct TimeFun {
    Stamp (* stamp)();
-   Stamp (* addSecond)( Stamp, float );
-   bool (*waitUntil)( Stamp );
-} Time;
+   Stamp (* addSecond)(Stamp, Number);
+   bool (* waitUntil)(Stamp);
+} * TimeFun;
 
-VyImplemArgs timeArgs() {
-   VyImplemArgs ret = vyImplemArgs( "vy.time.Time", vyVer( 20240301 ));
-   vyImplemArgsType( ret, "Stamp", NULL );
-   vyImplemArgsType( ret, "Num", vyNative("float"));
-   vyImplemArgsType( ret, "Bool", vyNative("bool"));
-   vyImplemArgsFunc( ret, "stamp" );
-   vyImplemArgsFunc( ret, "addSecond" );
-   vyImplemArgsFunc( ret, "waitUntil" );
-   return ret;
-}
+#define VYTIMEARGS( name ) \
+   VyImplemArgs name = vyImplemArgs( "vy.time.Time", vyVer(20240301)); \
+   vyImplemArgsType( name, "Bool", vyNative("bool") ); \
+   vyImplemArgsType( name, "Number", NULL ); \
+   vyImplemArgsType( name, "Stamp", NULL ); \
+   vyImplemArgsFunc( name, "stamp"); \
+   vyImplemArgsFunc( name, "addSecond"); \
+   vyImplemArgsFunc( name, "waitUntil"); \
 
 
 #endif // VY_TIMEH

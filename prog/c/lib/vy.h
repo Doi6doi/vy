@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+/// méret
+typedef size_t VySize;
+
 /// konstans szöveg
 typedef char * VyCStr;
 

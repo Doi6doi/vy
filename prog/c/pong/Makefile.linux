@@ -1,6 +1,9 @@
 PONG=pong
 IDIR=../lib
 LDIR=../lib
+VDIR=../../..
+VYS=string key time random rect font
+VYC=php ../../php/vyc/vyc.php
 LIBS=m vy
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
 RM=rm -f
@@ -11,7 +14,7 @@ run: build
 build: $(PONG)
 
 clean:
-	$(RM) $(PONG)
+	$(RM) $(PONG) $(VYS:%=vy_%.h)
 
 head:
 	$(MAKE) build 2>&1 | head -n 20
@@ -19,7 +22,29 @@ head:
 debug: build
 	LD_LIBRARY_PATH=$(LDIR) gdb -ex run $(PONG)
 
-pong: pong.c
+pong: pong.c $(VYS:%=vy_%.h)
 	$(CC) -o $@ $< $(LIBS:%=-l%)
 
+vy_string.h: $(VDIR)/vy/char/String@20240410.vy
+	$(VYC) -i vy.char.String@=20240410 -r $(VDIR) \
+	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
+
+vy_key.h: $(VDIR)/vy/ui/Key@20240301.vy
+	$(VYC) -i vy.ui.Key@=20240301 -r $(VDIR) -o $@
+
+vy_time.h: $(VDIR)/vy/util/Time@20240301.vy
+	$(VYC) -i vy.util.Time@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Num=&float' -o $@
+
+vy_random.h: $(VDIR)/vy/util/Random@20240301.vy
+	$(VYC) -i vy.util.Random@=20240301 -r $(VDIR) \
+	-t 'Num=&float' -o $@
+
+vy_rect.h: $(VDIR)/vy/geom/Rect@20240301.vy
+	$(VYC) -i vy.geom.Rect@=20240301 -r $(VDIR) \
+	-t 'Coord=&float' -o $@
+
+vy_font.h: $(VDIR)/vy/geom/Font@20240301.vy
+	$(VYC) -i vy.geom.Font@=20240301 -r $(VDIR) \
+	-o $@
 

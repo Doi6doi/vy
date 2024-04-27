@@ -5,14 +5,14 @@
 typedef struct String * String;
 
 typedef struct StringFun {
-   String (* constAscii)(VySize, VyCStr);
-   String (* constUtf)(VySize, VyCStr);
-   bool (* less)(String, String);
-   bool (* greater)(String, String);
-   bool (* lesseq)(String, String);
-   bool (* greatereq)(String, String);
-   bool (* equal)(String, String);
-   bool (* noteq)(String, String);
+   String (* constAscii)(VySize, VyCStr   );
+   String (* constUtf)(VySize, VyCStr   );
+   bool (* less)(String, String   );
+   bool (* greater)(String, String   );
+   bool (* lesseq)(String, String   );
+   bool (* greatereq)(String, String   );
+   bool (* equal)(String, String   );
+   bool (* noteq)(String, String   );
 } StringFun;
 
 #define VYSTRINGARGS( name ) \

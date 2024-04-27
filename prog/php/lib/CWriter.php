@@ -67,6 +67,7 @@ class CWriter {
    protected function writeInterfBody( Interf $intf ) {
 	  $this->writeBodyHead();
 	  $this->writeInterfStubs( $intf );
+	  $this->writeBodyInit( $intf );
    }
 
    /// .c fájl fejléce
@@ -79,9 +80,9 @@ class CWriter {
    /// c fájl csonkok
    protected function writeInterfStubs( $intf ) {
       foreach ( $intf->consts() as $c )
-         $this->writeInterfStub( $c );
+         $this->writeInterfConst( $c, true );
       foreach ( $intf->funcs() as $f )
-         $this->writeInterfStub( $f );
+         $this->writeInterfFunc( $f, true );
    }
 
    /// .h fájl fejléce
@@ -132,23 +133,26 @@ class CWriter {
       $s->writel( "typedef struct %sFun {", $in );
       $s->indent(true);
       foreach ( $intf->consts() as $c )
-         $this->writeInterfStructConst( $c );
+         $this->writeInterfConst( $c, false );
       foreach ( $intf->funcs() as $f )
-         $this->writeInterfStructFunc( $f );
+         $this->writeInterfFunc( $f, false );
       $s->indent(false);
       $s->writel( "} %sFun;", $in);
    }
 
    /// interfész struktúra konstans kiírása
-   protected function writeInterfStructConst( $f ) {
+   protected function writeInterfConst( $f, $stub ) {
       $s = $this->stream;
       $in = $f->owner();
       $name = $f->name();
       $s->writeIndent();
       $t = $f->sign()->result();
       $s->write( $this->getType( $in, $t, true )." " );
+      $fn = $this->funcName( $f );
+      if ( $stub )
+	     $s->writef( "vy%s%s(", $in->name(), Tools::firstUpper($fn) );
+	     else $s->writef("(* %s)(", $fn );
       if ( "&" == substr($name,0,1) ) {
-         $s->writef("(* %s)(", $this->funcName( $f ) );
          switch ( $name ) {
             case "&ascii": case "&utf":
                $s->write("VySize, VyCStr");
@@ -158,21 +162,38 @@ class CWriter {
             break;
             default: throw new EVy("Unknown special constant: $name");
          }
-      } else {
-         $s->writef("(* %s)(", $name );
       }
-      $s->write(");\n");
+      if ( $stub ) {
+		 $this->writeThrowStub( $in->name().Tools::firstUpper($fn) );
+      } else {
+		$s->writel(");");
+      }
    }
 
+   /// stub kivétel
+   protected function writeThrowStub( $name ) {
+	  $s = $this->stream;
+	  $s->writel(" ) {");
+	  $s->indent(true);
+      $s->writel("vyThrow(\"stub %s\");", $name );
+	  $s->indent(false);
+	  $s->writel("}\n");
+   }
+	   
    /// interfész struktúra függvény kiírása
-   protected function writeInterfStructFunc( $f ) {
+   protected function writeInterfFunc( $f, $stub ) {
       $s = $this->stream;
       $in = $f->owner();
+      if ( $stub )
+         $fn = sprintf("%s%s", $in->name(), Tools::firstUpper($f->name()));
+         else $fn = $f->name();
       $s->writeIndent();
       if ( $t = $f->sign()->result() )
          $s->write( $this->getType( $in, $t, true )." " );
          else $s->write( "void " );
-      $s->writef("(* %s)(", $f->name() );
+      if ( $stub )
+         $s->writef( "vy%s(", $fn );
+         else $s->writef("(* %s)(", $f->name() );
       $first = true;
       foreach ( $f->sign()->args() as $a ) {
          if ( $first )
@@ -182,7 +203,9 @@ class CWriter {
          if ( $n = $a->name() )
             $s->write(" $n");
       }
-      $s->write(");\n");
+      if ( $stub )
+		 $this->writeThrowStub( $in->name().$f->name() );
+         else $s->writel(");");
    }
 
    /// interfész lekérő függvény
@@ -213,21 +236,18 @@ class CWriter {
       $s->writel();
    }
 
-   /// provide tesztelő függvény
-   protected function writeInterfProvide( $intf, $body ) {
-      $s = $this->stream;
-      $s->writel();
-      $s->writel( "void %sProvide();", $intf->name() );
-      if ( $body )
-         throw new EVy("nyf");
-   }
-
    /// konstans esetén const kerül elé
    protected function funcName( $f ) {
       $name = $f->name();
       if ( $f->cons() && '&' == $name[0] )
          $name = "const".strtoupper( $name[1] ).substr( $name,2 );
       return $name;
+   }
+
+   /// inicializáló kód
+   protected function writeBodyInit( $intf ) {
+	  $s = $this->stream;
+	  throw new EVy("nyf");
    }
 
 }

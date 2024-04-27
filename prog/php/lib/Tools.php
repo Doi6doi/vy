@@ -85,4 +85,11 @@ class Tools {
       return null;
    }
 
+   /// első betű nagybetű
+   static function firstUpper($s) {
+	  if ( 0 == strlen($s))
+	     return $s;
+	  return strtoupper( $s[0] ).substr($s,1);
+   }
+
 }

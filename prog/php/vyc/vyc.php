@@ -82,6 +82,7 @@ class VyC {
          "   -i <item>: add <item> as input",
          "   -t <typemap>: set <typemap> as type mapping",
          "   -o <filename>: add <filename> as output",
+         "   -c <super>: generate code for casts",
          "",
          ""
       ];

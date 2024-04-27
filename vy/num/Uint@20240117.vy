@@ -8,7 +8,7 @@ interface vy.num.Uint @20240117 {
 
    type Uint = Compare.Compare = Number.Number = Ordinal.Ordinal;
 
-   const &dec;
+   const &dec: Uint;
 
    provide {
       given( a:Uint ) {

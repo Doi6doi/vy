@@ -2,6 +2,7 @@
 #include <vy_geom.h>
 
 #include <stdbool.h>
+#include <string.h>
 
 #include "vy_string.h"
 #include "vy_key.h"
@@ -11,11 +12,23 @@
 #include "vy_font.h"
 #include "vy_window.h"
 #include "vy_sprite.h"
+#include "vy_color.h"
+#include "vy_circle.h"
 
 #include <math.h>
 
 #define MAXCOORD 0.7
 #define TICK 0.05
+#define BALLSPEED 0.05
+#define BALLSIZE 0.02
+#define PADWIDTH 0.08
+#define PADHEIGHT 0.2
+#define LEFTUP "W"
+#define LEFTDOWN "S"
+#define RIGHTUP "Up"
+#define RIGHTDOWN "Down"
+
+#define PONGKEY( x ) pong.keys.constUtf( strlen(x), x )
 
 typedef enum Side { LEFT=0, RIGHT=1 } Side;
 
@@ -29,9 +42,10 @@ typedef struct Score {
 
 /// a golyó adatai
 typedef struct Ball {
-   float speed;
    Sprite sprite;
-   VyPoint2f delta;
+   float speed;
+   float dx;
+   float dy;
 } Ball;
 
 /// egy ütő adatai
@@ -53,6 +67,8 @@ typedef struct Pong {
    WindowFun windows;
    RectFun rects;
    SpriteFun sprites;
+   ColorFun colors;
+   CircleFun circles;
    // adatok
    float padSpeed;
    int maxScore;
@@ -74,40 +90,39 @@ float speedComp( float c ) {
 
 /// új játék
 void newRound( Side side ) {
-   float r = pong.randoms->random(1)-0.5;
-   Point p = {.x=0, .y=0};
-   pong.sprites->place( pong.ball.sprite, p );
-   float dy pong.ball.delta.y = pong.ball.speed * MAXCOORD * r;
-   pong.ball.delta.x = speedComp( dy ) * (RIGHT == side ? -1 : 1);
+   pong.sprites.moveTo( pong.ball.sprite, 0, 0 );
+   float r = pong.randoms.random(1)-0.5;
+   pong.ball.dy = pong.ball.speed * MAXCOORD * r;
+   pong.ball.dx = speedComp( pong.ball.dy ) * (RIGHT == side ? -1 : 1);
 }
 
 /// vy inicializálás
 void initVy() {
    pong.vy = vyInit();
    VyContext ctx = vyContext( pong.vy );
-
-   VyImplemArgs sa = vyGetImplem( ctx, stringsArgs(), & pong.strings );
+   VYSTRINGARGS( sa );
+   vyGetImplem( ctx, sa, & pong.keys );
    VyRepr s = vyGetImplemRepr( sa, "String" );
-
-   vyFree( vyGetImplem( ctx, keysArgs(), & pong.keys ));
-
-   vyFree( vyGetImplem( ctx, timeArgs(), & pong.time ));
-
-   VyImplemArgs ra = vyGetImplem( ctx, rectsArgs(), & pong.rects );
+   VYKEYARGS( ka );
+   vyFree( vyGetImplem( ctx, ka, & pong.keys ));
+   VYTIMEARGS( ta );
+   vyFree( vyGetImplem( ctx, ta, & pong.times ));
+   VYRECTARGS( ra );
+   vyGetImplem( ctx, ra, & pong.rects );
    VyRepr r = vyGetImplemRepr( ra, "Rect" );
-
-   VyImplemArgs da = vyGetImplem( ctx, displaysArgs(), & pong.displays );
-   VyRepr d = vyGetImplemRepr( da, "Display" );
-
+   VYWINDOWARGS( wa );
+   vyGetImplem( ctx, wa, & pong.windows );
+   VyRepr w = vyGetImplemRepr( wa, "Window" );
+/*
    vyFree( vyGetImplem( ctx, fontsArgs( d, r, s ), & pong.fonts ));
 
    vyFree( vyGetImplem( ctx, randomArgs(), & pong.random ));
 
    vyFree( vyGetImplem( ctx, spritesArgs(d), & pong.sprites ));
-
+*/
    vyFree( sa );
    vyFree( ra );
-   vyFree( da );
+   vyFree( wa );
 }
 
 /// pong inicializálás
@@ -115,27 +130,34 @@ void initPong() {
    pong.padSpeed = 0.01;
    pong.maxScore = 5;
    pong.over = false;
-   pong.last = pong.time.stamp();
-   pong.display = pong.displays.create();
-   Sprites * ss = &pong.sprites;
-   pong.scene = ss->createScene();
+   pong.last = pong.times.stamp();
+   pong.window = pong.windows.create();
+   SpriteFun * sf = &pong.sprites;
+   ColorFun * cf = &pong.colors;
+   // score
    pong.score.text = pong.strings.constAscii(0,"");
-   pong.score.sprite = ss->createSprite( pong.scene );
-   ss->callbacks( pong.score.sprite, scoreBounds, scoreDraw );
+   pong.score.sprite = sf->create();
+   // ball
    Ball * b = &pong.ball;
-   b->speed = 0.02;
-   b->x = b->y = b->dx = b->dy = 0;
-   b->sprite = ss->createSprite( pong.scene );
-   ss->callbacks( b->sprite, ballBounds, ballDraw );
+   Circle c = pong.circles.createCircle( BALLSIZE );
+   pong.circles.setColor( c, cf->white() );
+   b->sprite = sf->createSprite( (Shape)c );
+   b->speed = BALLSPEED;
+   b->dx = b->dy = 0;
+   // pads
    for (int i=LEFT; i<=RIGHT; ++i) {
       Pad * p = pong.pads+i;
-      p->y = 0;
-      p->size = 0.1;
+      Rect r = pong.rects.createRect( 0, 0, PADWIDTH, PADHEIGHT );
+      pong.rects.setColor( r, LEFT == i ? cf->blue() : cf->green() );
+      p->sprite = sf->createSprite( (Shape)r );
       p->score = 0;
-      p->up = pong.keys.byConst( LEFT ? "W" : "Up" );
-      p->down = pong.keys.byConst( RIGHT ? "S" : "Down" );
-      p->sprite = ss->createSprite( pong.scene );
-      ss->callbacks( p->sprite, padBounds, padDraw );
+      if ( LEFT == i ) {
+		 p->up = PONGKEY( LEFTUP );
+		 p->up = PONGKEY( LEFTDOWN );
+      } else {
+		 p->up = PONGKEY( RIGHTUP );
+		 p->down = PONGKEY( RIGHTDOWN );
+      }
    }
 }
 
@@ -161,8 +183,11 @@ Side other( Side s ) {
 /// visszapattanás
 void bounce( Side side, float d ) {
    Ball * b = &pong.ball;
-   b->x -= b->dx;
-   b->dy += d;
+   Sprite bs = b->sprite;
+   SpriteFun * sf = &pong.sprites;
+   float x = sf->coord( bs, VC_CENTERX );
+   sf->setCoord( bs, VC_CENTERX, x - b->dx );
+   b->dy = d;
    float s = fabs(b->dy) / b->speed;
    if ( MAXCOORD < s )
       b->dy *= (MAXCOORD/s);
@@ -174,13 +199,18 @@ void bounce( Side side, float d ) {
 /// visszapattanás vagy új kör
 void checkHit( Side side ) {
    Ball * b = &pong.ball;
-   if ( side && b->x <= 1 )
+   Sprite bs = b->sprite;
+   SpriteFun * sf = &pong.sprites;
+   float bx = sf->coord( bs, VC_CENTERX );
+   if ( side && bx <= 1 )
       return;
-   if ( side && -1 <= b->x )
+   if ( ! side && -1 <= bx )
       return;
    Pad * p = &pong.pads[side];
-   float d = p->y - b->y;
-   if ( p->size < fabs( d ) )
+   float by = sf->coord( bs, VC_CENTERY );
+   float py = sf->coord( p->sprite, VC_CENTERY );
+   float d = py - by;
+   if ( PADHEIGHT/2 < fabs( d ) )
       score( other( side ) );
       else bounce( side, d );
 }
@@ -189,12 +219,16 @@ void checkHit( Side side ) {
 /// golyó mozgása
 void moveBall( ) {
    Ball * b = &pong.ball;
-   b->x += b->dx;
-   b->y += b->dy;
-   if ( b->y < -1 || 1 < b->y ) {
+   Sprite bs = b->sprite;
+   SpriteFun * sf = &pong.sprites;
+   float bx = sf->coord( bs, VC_CENTERX ) + b->dx;
+   float by = sf->coord( bs, VC_CENTERY ) + b->dy;
+   if ( by < -1 || 1 < by ) {
       b->dy = -b->dy;
-      b->y += b->dy;
+      by += b->dy;
    }
+   sf->setCoord( bs, VC_CENTERX, bx );
+   sf->setCoord( bs, VC_CENTERY, by );
    checkHit( LEFT );
    checkHit( RIGHT );
 }
@@ -202,35 +236,24 @@ void moveBall( ) {
 /// egy ütő mozgatása
 void movePad( Side side ) {
    Pad * p = pong.pads+side;
+   SpriteFun * sf = &pong.sprites;
+   float py = sf->coord( p->sprite, VC_CENTERY );
    if ( pong.keys.pressed( p->up ) ) {
-      p->y -= pong.padSpeed;
-      if ( p->y < -1 ) p->y = -1;
+      py -= pong.padSpeed;
+      if ( py < -1 ) py = -1;
    }
    if ( pong.keys.pressed( p->down ) ) {
-      p->y += pong.padSpeed;
-      if ( 1 < p->y ) p->y = 1;
+      py += pong.padSpeed;
+      if ( 1 < py ) py = 1;
    }
+   sf->setCoord( p->sprite, VC_CENTERY, py );
 }
-
-/// újrarajzolás
-void redraw() {
-   Sprites * s = &pong.sprites;
-   Ball * b = &pong.ball;
-   s->move( b->sprite, b->x, b->y );
-   Pad * p = pong.pads+LEFT;
-   s->move( p->sprite, -1, p->y );
-   Pad * q = pong.pads+RIGHT;
-   s->move( q->sprite, 1, q->y );
-   pong.sprites.draw( pong.scene, pong.display );
-}
-
 
 /// kép frissítése
 void tick() {
-   Time * t = &pong.time;
+   TimeFun * t = &pong.times;
    Stamp next = t->addSecond( pong.last, TICK );
-   if ( t->waitUntil( next ) )
-      redraw();
+   t->waitUntil( next );
    pong.last = next;
 }
 

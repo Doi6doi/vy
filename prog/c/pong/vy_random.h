@@ -6,7 +6,7 @@ typedef struct Bool * Bool;
 
 typedef struct RandomFun {
    float (* random)(float);
-} * RandomFun;
+} RandomFun;
 
 #define VYRANDOMARGS( name ) \
    VyImplemArgs name = vyImplemArgs( ".Random", vyVer(20240301)); \

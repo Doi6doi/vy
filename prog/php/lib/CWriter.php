@@ -26,7 +26,7 @@ class CWriter {
       }
    }
 
-   /// típusmegfeleltetésbeállítása
+   /// típusmegfeleltetés beállítása
    function setTypeMap( array $map ) {
       $this->map = $map;
    }
@@ -103,7 +103,7 @@ class CWriter {
       foreach ( $intf->funcs() as $f )
          $this->writeInterfStructFunc( $f );
       $s->indent(false);
-      $s->writel( "} * %sFun;", $in);
+      $s->writel( "} %sFun;", $in);
    }
 
    /// interfész struktúra konstans kiírása
@@ -192,7 +192,7 @@ class CWriter {
    /// konstans esetén const kerül elé
    protected function funcName( $f ) {
       $name = $f->name();
-      if ( $f->cons() )
+      if ( $f->cons() && '&' == $name[0] )
          $name = "const".strtoupper( $name[1] ).substr( $name,2 );
       return $name;
    }

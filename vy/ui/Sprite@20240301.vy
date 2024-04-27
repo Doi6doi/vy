@@ -1,5 +1,15 @@
 interface vy.ui.Sprite @20240301 {
 
-   type Sprite;
+   import vy.geom.Shape;
+
+   extend vy.ui.View;
+
+   type Sprite=View.View;
+
+   function {
+      createSprite( Shape ): Sprite;
+      moveTo( Sprite, x:Coord, y:Coord );
+      setShape( Sprite, Shape );
+   }   
 
 }

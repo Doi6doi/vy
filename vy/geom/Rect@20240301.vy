@@ -1,12 +1,13 @@
-interface Rect @20240301 {
+interface vy.geom.Rect @20240301 {
 
-   import {
-      vy.num.Number;
-   }
+   extend Shape;
 
    type {
-      Coord=Number.Number;
+      Rect=Shape.Shape;
    }
-
+   
+   function {
+      createRect( left:Coord, top: Coord, width:Coord, height:Coord ): Rect;
+   }
 
 }

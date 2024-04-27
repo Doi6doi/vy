@@ -13,7 +13,7 @@ typedef struct StringFun {
    bool (* greatereq)(String, String);
    bool (* equal)(String, String);
    bool (* noteq)(String, String);
-} * StringFun;
+} StringFun;
 
 #define VYSTRINGARGS( name ) \
    VyImplemArgs name = vyImplemArgs( "vy.char.String", vyVer(20240410)); \

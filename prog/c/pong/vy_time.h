@@ -2,20 +2,18 @@
 #define VY_TIMEH
 #include <vy.h>
 
-typedef struct Number * Number;
-
 typedef struct Stamp * Stamp;
 
 typedef struct TimeFun {
    Stamp (* stamp)();
-   Stamp (* addSecond)(Stamp, Number);
+   Stamp (* addSecond)(Stamp, float);
    bool (* waitUntil)(Stamp);
-} * TimeFun;
+} TimeFun;
 
 #define VYTIMEARGS( name ) \
    VyImplemArgs name = vyImplemArgs( "vy.time.Time", vyVer(20240301)); \
    vyImplemArgsType( name, "Bool", vyNative("bool") ); \
-   vyImplemArgsType( name, "Number", NULL ); \
+   vyImplemArgsType( name, "Number", vyNative("float") ); \
    vyImplemArgsType( name, "Stamp", NULL ); \
    vyImplemArgsFunc( name, "stamp"); \
    vyImplemArgsFunc( name, "addSecond"); \

@@ -62,7 +62,8 @@ class Func
       $this->cons = true;
       $pre = $s->readIf("&") ? "&" : "";
       $this->name = $pre.$s->readIdent();
-      $this->sign->readResult( $s );
+      if ( ! $this->sign->readResult( $s ) )
+         throw $s->notexp("result");
       $s->readWS();
       $s->readToken(";");
    }

@@ -1,8 +1,6 @@
 interface vy.core.Bool @20240117 {
 
-   extend Equal;
-
-   type Bool = Equal.Equal;
+   type Bool;
 
    const {
       true: Bool;
@@ -24,6 +22,8 @@ interface vy.core.Bool @20240117 {
       }
 
       xor(Bool,Bool):Bool;
+
+      equal(Bool,Bool): Bool;
 
    }
 

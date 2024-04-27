@@ -38,8 +38,10 @@ class Sign
    /// visszatérési típus olvasása
    function readResult( Stream $s ) {
       $s->readWS();
-      if ( $s->readIf(":") )
-         $this->result = $this->readType( $s );
+      if ( ! $s->readIf(":") ) 
+         return false;
+      $this->result = $this->readType( $s );
+      return true;   
    }
 
    /// kompatibilitás ellenőrzése
@@ -59,7 +61,8 @@ class Sign
          $a = new Arg($this, $oa->name(), Tools::gc( $map, $oa->type() ));
          $this->args [] = $a;
       }
-      $this->result = Tools::gc( $map, $other->result() );
+      if ( $r = $other->result() )
+         $this->result = Tools::gc( $map, $r );
    }
 
    function checkType( $type ) {

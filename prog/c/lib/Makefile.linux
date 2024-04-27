@@ -1,10 +1,15 @@
 RM=rm -f
-CC=gcc -g
+LDIR=.
+IDIR=.
+VDIR=../../..
+CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
+VYC=php ../../php/vyc/vyc.php
+
 
 build: libvy.so
 
 clean:
-	$(RM) *.o *.so
+	$(RM) *.o *.so vy_string.*
 
 head:
 	$(MAKE) build 2>&1 | head -n 20
@@ -15,7 +20,19 @@ pong:
 libvy.so: vy.o vy_string.o
 	$(CC) -shared -o $@ $^
 
+vy.o: vy.c vy_string.h
+
 %.o: %.c
 	$(CC) -fPIC -c -o $@ $<
 
 vy.o: vy.c vy.h
+
+vy_string.h: $(VDIR)/vy/char/String@20240410.vy
+	$(VYC) -i vy.char.String@=20240410 -r $(VDIR) \
+	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
+
+vy_string.c: $(VDIR)/vy/char/String@20240410.vy
+	$(VYC) -i vy.char.String@=20240410 -r $(VDIR) \
+	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
+
+

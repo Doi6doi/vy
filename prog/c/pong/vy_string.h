@@ -19,7 +19,7 @@ typedef struct StringFun {
    VyImplemArgs name = vyImplemArgs( "vy.char.String", vyVer(20240410)); \
    vyImplemArgsType( name, "Bool", vyNative("bool") ); \
    vyImplemArgsType( name, "Index", vyNative("unsigned") ); \
-   vyImplemArgsType( name, "Char", vyNative("wchar_t") ); \
+   vyImplemArgsType( name, "Char", vyNative("wchar") ); \
    vyImplemArgsType( name, "String", NULL ); \
    vyImplemArgsFunc( name, "constAscii"); \
    vyImplemArgsFunc( name, "constUtf"); \

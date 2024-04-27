@@ -176,7 +176,7 @@ VyRepr vyNative( VyCStr name ) {
             return & vyrUnsigned;
       break;
       case 'w':
-         if (vySameStr( "wchar", name ))
+         if (vySameStr("wchar_t", name))
             return & vyrWchar;
       break;
    }

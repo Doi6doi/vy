@@ -25,6 +25,19 @@ class CWriter {
          $this->stream->close();
       }
    }
+   
+   /// objektum alapján c fájl kiírása
+   function writeBody( $obj, $fname ) {
+	  $this->stream = new OStream( $fname );
+	  try {
+		 if ( $obj instanceof Interf )
+            $this->writeInterfBody( $obj );
+		 else
+		    throw new EVy("Unknown object: ".get_class($obj));
+      } finally {
+		  $this->stream->close();
+	  }
+   }
 
    /// típusmegfeleltetés beállítása
    function setTypeMap( array $map ) {
@@ -47,8 +60,28 @@ class CWriter {
       $this->writeInterfTypes($intf);
       $this->writeInterfStruct($intf);
       $this->writeInterfArgs($intf);
-//      $this->writeInterfProvide($intf,false);
       $this->writeHeaderTail();
+   }
+
+   /// interfész C törzse
+   protected function writeInterfBody( Interf $intf ) {
+	  $this->writeBodyHead();
+	  $this->writeInterfStubs( $intf );
+   }
+
+   /// .c fájl fejléce
+   protected function writeBodyHead() {
+	  $s = $this->stream;
+	  $s->writel( '#include "%s.h"', $this->module() );
+	  $s->writel();
+   }
+
+   /// c fájl csonkok
+   protected function writeInterfStubs( $intf ) {
+      foreach ( $intf->consts() as $c )
+         $this->writeInterfStub( $c );
+      foreach ( $intf->funcs() as $f )
+         $this->writeInterfStub( $f );
    }
 
    /// .h fájl fejléce

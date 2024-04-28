@@ -1,9 +1,9 @@
 interface vy.ui.Window @20240301 {
 
-   extend View;
+   extend Group;
 
    type {
-      Window=View.View;
+      Window=Group.Group;
    }
 
 }

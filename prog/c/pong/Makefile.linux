@@ -2,7 +2,8 @@ PONG=pong
 IDIR=../lib
 LDIR=../lib
 VDIR=../../..
-VYS=string key time random sprite rect text circle window color viewcoord
+VYS=string key time random sprite rect text circle window color viewcoord \
+   caption filled
 VYC=php ../../php/vyc/vyc.php
 LIBS=m vy
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
@@ -25,8 +26,8 @@ debug: build
 pong: pong.c $(VYS:%=vy_%.h)
 	$(CC) -o $@ $< $(LIBS:%=-l%)
 
-vy_string.h: $(VDIR)/vy/char/String@20240410.vy
-	$(VYC) -i vy.char.String@=20240410 -r $(VDIR) \
+vy_string.h: $(VDIR)/vy/char/String@20240301.vy
+	$(VYC) -i vy.char.String@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
 
 vy_key.h: $(VDIR)/vy/ui/Key@20240301.vy
@@ -54,7 +55,7 @@ vy_circle.h: $(VDIR)/vy/geom/Circle@20240301.vy
 
 vy_window.h: $(VDIR)/vy/ui/Window@20240301.vy
 	$(VYC) -i vy.ui.Window@=20240301 -r $(VDIR) \
-	-o $@
+	-t 'Sub=Sprite' -o $@
 
 vy_sprite.h: $(VDIR)/vy/ui/Sprite@20240301.vy
 	$(VYC) -i vy.ui.Sprite@=20240301 -r $(VDIR) \
@@ -67,3 +68,12 @@ vy_color.h: $(VDIR)/vy/geom/Color@20240301.vy
 vy_viewcoord.h: $(VDIR)/vy/ui/ViewCoord@20240301.vy
 	$(VYC) -i vy.ui.ViewCoord@=20240301 -r $(VDIR) \
 	-t 'ViewCoord=&VyViewCoord' -o $@
+
+vy_caption.h: $(VDIR)/vy/geom/Caption@20240301.vy
+	$(VYC) -i vy.geom.Caption@=20240301 -r $(VDIR) \
+	-t 'ViewCoord=&VyViewCoord' -o $@
+
+vy_filled.h: $(VDIR)/vy/geom/Filled@20240301.vy
+	$(VYC) -i vy.geom.Filled@=20240301 -r $(VDIR) \
+	-t 'ViewCoord=&VyViewCoord;Brush=&VyColor;Sub=Shape' -o $@
+

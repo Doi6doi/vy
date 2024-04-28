@@ -73,6 +73,7 @@ class CWriter {
    /// .c fájl fejléce
    protected function writeBodyHead() {
 	  $s = $this->stream;
+	  $s->writel( '#include <vy_implem.h>');
 	  $s->writel( '#include "%s.h"', $this->module() );
 	  $s->writel();
    }
@@ -145,17 +146,19 @@ class CWriter {
       $s = $this->stream;
       $in = $f->owner();
       $name = $f->name();
-      $s->writeIndent();
+      if ( $stub )
+         $s->write( "static " );
+         else $s->writeIndent();
       $t = $f->sign()->result();
       $s->write( $this->getType( $in, $t, true )." " );
-      $fn = $this->funcName( $f );
+      $fn = $this->funcName( $f, $stub ? $in : null  );
       if ( $stub )
-	     $s->writef( "vy%s%s(", $in->name(), Tools::firstUpper($fn) );
+	     $s->writef( "vy%s(", $fn );
 	     else $s->writef("(* %s)(", $fn );
       if ( "&" == substr($name,0,1) ) {
          switch ( $name ) {
-            case "&ascii": case "&utf":
-               $s->write("VySize, VyCStr");
+            case "&ascii": case "&utf": case "&hex":
+               $s->write("VyCStr, VySize");
             break;
             case "&dec":
                $s->write("VyDec");
@@ -164,7 +167,7 @@ class CWriter {
          }
       }
       if ( $stub ) {
-		 $this->writeThrowStub( $in->name().Tools::firstUpper($fn) );
+		 $this->writeThrowStub( $fn );
       } else {
 		$s->writel(");");
       }
@@ -184,16 +187,16 @@ class CWriter {
    protected function writeInterfFunc( $f, $stub ) {
       $s = $this->stream;
       $in = $f->owner();
+      $fn = $this->funcName( $f, $stub ? $in : null );
       if ( $stub )
-         $fn = sprintf("%s%s", $in->name(), Tools::firstUpper($f->name()));
-         else $fn = $f->name();
-      $s->writeIndent();
+         $s->write( "static " );
+         else $s->writeIndent();
       if ( $t = $f->sign()->result() )
          $s->write( $this->getType( $in, $t, true )." " );
          else $s->write( "void " );
       if ( $stub )
          $s->writef( "vy%s(", $fn );
-         else $s->writef("(* %s)(", $f->name() );
+         else $s->writef("(* %s)(", $fn );
       $first = true;
       foreach ( $f->sign()->args() as $a ) {
          if ( $first )
@@ -204,7 +207,7 @@ class CWriter {
             $s->write(" $n");
       }
       if ( $stub )
-		 $this->writeThrowStub( $in->name().$f->name() );
+		 $this->writeThrowStub( $fn );
          else $s->writel(");");
    }
 
@@ -237,17 +240,35 @@ class CWriter {
    }
 
    /// konstans esetén const kerül elé
-   protected function funcName( $f ) {
+   protected function funcName( $f, $intf = null ) {
       $name = $f->name();
       if ( $f->cons() && '&' == $name[0] )
          $name = "const".strtoupper( $name[1] ).substr( $name,2 );
+      if ( $intf )
+         $name = $intf->name().Tools::firstUpper($name);      
       return $name;
    }
 
    /// inicializáló kód
    protected function writeBodyInit( $intf ) {
 	  $s = $this->stream;
-	  throw new EVy("nyf");
+	  $name = $intf->name();
+	  $s->writel( "void vyInit%s( VyContext ctx ) {", $name );
+	  $s->indent(true);
+	  $s->writel( "VY%sARGS( args );", strtoupper($name) );
+	  foreach ($intf->consts() as $c)
+	     $this->writeBodyInitFunc( $c );
+	  foreach ($intf->funcs() as $f)
+	     $this->writeBodyInitFunc( $f );
+	  $s->writel( "vyAddImplem( ctx, args );" );
+	  $s->indent(false);
+	  $s->writel("}\n");
+   }	     
+   
+   protected function writeBodyInitFunc( $func ) {
+      $fn = $this->funcName( $func );
+	  $ffn = $this->funcName( $func, $func->owner() );
+	  $this->stream->writel( 'vyImplemArgsImpl( args, "%s", &vy%s );', $fn, $ffn );
    }
 
 }

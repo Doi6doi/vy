@@ -1,6 +1,8 @@
 #ifndef VYIMPLEMH
 #define VYIMPLEMH
 
+#include <vy.h>
+
 /// mutató
 typedef void * VyPtr;
 

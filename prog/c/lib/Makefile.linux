@@ -9,7 +9,10 @@ VYC=php ../../php/vyc/vyc.php
 build: libvy.so
 
 clean:
-	$(RM) *.o *.so vy_string.*
+	$(RM) *.o *.so vy_string.h
+
+cleanc: clean
+	$(RM) vy_string.c
 
 head:
 	$(MAKE) build 2>&1 | head -n 20

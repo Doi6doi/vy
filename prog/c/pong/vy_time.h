@@ -5,9 +5,9 @@
 typedef struct Stamp * Stamp;
 
 typedef struct TimeFun {
-   Stamp (* stamp)();
-   Stamp (* addSecond)(Stamp, float);
-   bool (* waitUntil)(Stamp);
+   Stamp (* stamp)(   );
+   Stamp (* addSecond)(Stamp, float   );
+   bool (* waitUntil)(Stamp   );
 } TimeFun;
 
 #define VYTIMEARGS( name ) \

@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+/// konstansoknál strlen
+#define VY_COUNT -1
+
 /// méret
 typedef size_t VySize;
 

@@ -5,7 +5,7 @@
 typedef struct Bool * Bool;
 
 typedef struct RandomFun {
-   float (* random)(float);
+   float (* random)(float   );
 } RandomFun;
 
 #define VYRANDOMARGS( name ) \

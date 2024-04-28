@@ -1,34 +1,48 @@
+#include <vy_implem.h>
 #include "vy_string.h"
 
-String vyStringConstAscii(VySize, VyCStr ) {
+static String vyStringConstAscii(VySize, VyCStr ) {
    vyThrow("stub StringConstAscii");
 }
 
-String vyStringConstUtf(VySize, VyCStr ) {
+static String vyStringConstUtf(VySize, VyCStr ) {
    vyThrow("stub StringConstUtf");
 }
 
-bool vyStringLess(String, String ) {
-   vyThrow("stub Stringless");
+static bool vyStringLess(String, String ) {
+   vyThrow("stub StringLess");
 }
 
-bool vyStringGreater(String, String ) {
-   vyThrow("stub Stringgreater");
+static bool vyStringGreater(String, String ) {
+   vyThrow("stub StringGreater");
 }
 
-bool vyStringLesseq(String, String ) {
-   vyThrow("stub Stringlesseq");
+static bool vyStringLesseq(String, String ) {
+   vyThrow("stub StringLesseq");
 }
 
-bool vyStringGreatereq(String, String ) {
-   vyThrow("stub Stringgreatereq");
+static bool vyStringGreatereq(String, String ) {
+   vyThrow("stub StringGreatereq");
 }
 
-bool vyStringEqual(String, String ) {
-   vyThrow("stub Stringequal");
+static bool vyStringEqual(String, String ) {
+   vyThrow("stub StringEqual");
 }
 
-bool vyStringNoteq(String, String ) {
-   vyThrow("stub Stringnoteq");
+static bool vyStringNoteq(String, String ) {
+   vyThrow("stub StringNoteq");
+}
+
+void vyInitString( VyContext ctx ) {
+   VYSTRINGARGS( args );
+   vyImplemArgsImpl( args, "constAscii", &vyStringConstAscii );
+   vyImplemArgsImpl( args, "constUtf", &vyStringConstUtf );
+   vyImplemArgsImpl( args, "less", &vyStringLess );
+   vyImplemArgsImpl( args, "greater", &vyStringGreater );
+   vyImplemArgsImpl( args, "lesseq", &vyStringLesseq );
+   vyImplemArgsImpl( args, "greatereq", &vyStringGreatereq );
+   vyImplemArgsImpl( args, "equal", &vyStringEqual );
+   vyImplemArgsImpl( args, "noteq", &vyStringNoteq );
+   vyAddImplem( ctx, args );
 }
 

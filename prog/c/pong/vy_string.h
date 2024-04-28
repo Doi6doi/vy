@@ -5,21 +5,20 @@
 typedef struct String * String;
 
 typedef struct StringFun {
-   String (* constAscii)(VySize, VyCStr);
-   String (* constUtf)(VySize, VyCStr);
-   bool (* less)(String, String);
-   bool (* greater)(String, String);
-   bool (* lesseq)(String, String);
-   bool (* greatereq)(String, String);
-   bool (* equal)(String, String);
-   bool (* noteq)(String, String);
+   String (* constAscii)(VyCStr, VySize   );
+   String (* constUtf)(VyCStr, VySize   );
+   bool (* less)(String, String   );
+   bool (* greater)(String, String   );
+   bool (* lesseq)(String, String   );
+   bool (* greatereq)(String, String   );
+   bool (* equal)(String, String   );
+   bool (* noteq)(String, String   );
 } StringFun;
 
 #define VYSTRINGARGS( name ) \
-   VyImplemArgs name = vyImplemArgs( "vy.char.String", vyVer(20240410)); \
+   VyImplemArgs name = vyImplemArgs( "vy.char.String", vyVer(20240301)); \
    vyImplemArgsType( name, "Bool", vyNative("bool") ); \
-   vyImplemArgsType( name, "Index", vyNative("unsigned") ); \
-   vyImplemArgsType( name, "Char", vyNative("wchar") ); \
+   vyImplemArgsType( name, "Char", vyNative("wchar_t") ); \
    vyImplemArgsType( name, "String", NULL ); \
    vyImplemArgsFunc( name, "constAscii"); \
    vyImplemArgsFunc( name, "constUtf"); \

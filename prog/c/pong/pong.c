@@ -9,7 +9,6 @@
 #include "vy_time.h"
 #include "vy_random.h"
 #include "vy_rect.h"
-#include "vy_font.h"
 #include "vy_window.h"
 #include "vy_sprite.h"
 #include "vy_color.h"
@@ -50,8 +49,6 @@ CaptionFun captions;
 FilledFun filleds;
 
 typedef enum Side { LEFT=0, RIGHT=1 } Side;
-
-typedef VyPoint2f Point;
 
 /// pontszám szöveg
 typedef struct Score {
@@ -122,8 +119,6 @@ void initVy() {
    vyGetImplem( ctx, wa, & windows );
    VyRepr w = vyGetImplemRepr( wa, "Window" );
 /*
-   vyFree( vyGetImplem( ctx, fontsArgs( d, r, s ), & pong.fonts ));
-
    vyFree( vyGetImplem( ctx, randomArgs(), & pong.random ));
 
    vyFree( vyGetImplem( ctx, spritesArgs(d), & pong.sprites ));

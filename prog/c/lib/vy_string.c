@@ -1,11 +1,11 @@
 #include <vy_implem.h>
 #include "vy_string.h"
 
-static String vyStringConstAscii(VySize, VyCStr ) {
+static String vyStringConstAscii(VyCStr, VySize ) {
    vyThrow("stub StringConstAscii");
 }
 
-static String vyStringConstUtf(VySize, VyCStr ) {
+static String vyStringConstUtf(VyCStr, VySize ) {
    vyThrow("stub StringConstUtf");
 }
 

@@ -60,6 +60,7 @@ class CWriter {
       $this->writeInterfTypes($intf);
       $this->writeInterfStruct($intf);
       $this->writeInterfArgs($intf);
+      $this->writeInterfUtil($intf);
       $this->writeHeaderTail();
    }
 
@@ -169,7 +170,7 @@ class CWriter {
       if ( $stub ) {
 		 $this->writeThrowStub( $fn );
       } else {
-		$s->writel(");");
+		$s->write(");\n");
       }
    }
 
@@ -208,7 +209,7 @@ class CWriter {
       }
       if ( $stub )
 		 $this->writeThrowStub( $fn );
-         else $s->writel(");");
+         else $s->write(");\n");
    }
 
    /// interfész lekérő függvény
@@ -270,5 +271,12 @@ class CWriter {
 	  $ffn = $this->funcName( $func, $func->owner() );
 	  $this->stream->writel( 'vyImplemArgsImpl( args, "%s", &vy%s );', $fn, $ffn );
    }
+
+   /// interfész hasznos függvények
+   protected function writeInterfUtil( $intf ) {
+	  $s = $this->stream;
+	  $name = $intf->name();
+	  $s->writel( "void vyInit%s( VyContext );\n", $name );
+   }	   
 
 }

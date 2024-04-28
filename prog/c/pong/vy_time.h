@@ -5,9 +5,9 @@
 typedef struct Stamp * Stamp;
 
 typedef struct TimeFun {
-   Stamp (* stamp)(   );
-   Stamp (* addSecond)(Stamp, float   );
-   bool (* waitUntil)(Stamp   );
+   Stamp (* stamp)();
+   Stamp (* addSecond)(Stamp, float);
+   bool (* waitUntil)(Stamp);
 } TimeFun;
 
 #define VYTIMEARGS( name ) \
@@ -18,6 +18,8 @@ typedef struct TimeFun {
    vyImplemArgsFunc( name, "stamp"); \
    vyImplemArgsFunc( name, "addSecond"); \
    vyImplemArgsFunc( name, "waitUntil"); \
+
+void vyInitTime( VyContext );
 
 
 #endif // VY_TIMEH

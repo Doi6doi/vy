@@ -5,7 +5,7 @@
 typedef struct Bool * Bool;
 
 typedef struct RandomFun {
-   float (* random)(float   );
+   float (* random)(float);
 } RandomFun;
 
 #define VYRANDOMARGS( name ) \
@@ -13,6 +13,8 @@ typedef struct RandomFun {
    vyImplemArgsType( name, "Bool", NULL ); \
    vyImplemArgsType( name, "Number", vyNative("float") ); \
    vyImplemArgsFunc( name, "random"); \
+
+void vyInitRandom( VyContext );
 
 
 #endif // VY_RANDOMH

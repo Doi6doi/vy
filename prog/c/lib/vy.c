@@ -151,7 +151,7 @@ Vy vyInit() {
    Vy ret = VYALLOC( struct Vy, & vyrVy );
    if ( ! ret ) vyThrow( VYNOMEM );
    ret->context = vyContextCreate( ret );
-   vyStringInit( ret->context );
+   vyInitString( ret->context );
    return ret;
 }
 

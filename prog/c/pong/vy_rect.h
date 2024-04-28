@@ -7,7 +7,7 @@ typedef struct Bool * Bool;
 typedef struct Rect * Rect;
 
 typedef struct RectFun {
-   Rect (* createRect)(float left, float top, float width, float height   );
+   Rect (* createRect)(float left, float top, float width, float height);
 } RectFun;
 
 #define VYRECTARGS( name ) \
@@ -16,6 +16,8 @@ typedef struct RectFun {
    vyImplemArgsType( name, "Coord", vyNative("float") ); \
    vyImplemArgsType( name, "Rect", NULL ); \
    vyImplemArgsFunc( name, "createRect"); \
+
+void vyInitRect( VyContext );
 
 
 #endif // VY_RECTH

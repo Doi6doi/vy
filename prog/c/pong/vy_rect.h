@@ -11,11 +11,11 @@ typedef struct RectFun {
 } RectFun;
 
 #define VYRECTARGS( name ) \
-   VyImplemArgs name = vyImplemArgs( "vy.geom.Rect", vyVer(20240301)); \
-   vyImplemArgsType( name, "Bool", NULL ); \
-   vyImplemArgsType( name, "Coord", vyNative("float") ); \
-   vyImplemArgsType( name, "Rect", NULL ); \
-   vyImplemArgsFunc( name, "createRect"); \
+   VyArgs name = vyArgs( "vy.geom.Rect", vyVer(20240301)); \
+   vyArgsType( name, "Bool", NULL ); \
+   vyArgsType( name, "Coord", vyNative("float") ); \
+   vyArgsType( name, "Rect", NULL ); \
+   vyArgsFunc( name, "createRect"); \
 
 void vyInitRect( VyContext );
 

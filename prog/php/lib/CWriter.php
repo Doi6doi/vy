@@ -67,6 +67,7 @@ class CWriter {
    /// interfész C törzse
    protected function writeInterfBody( Interf $intf ) {
 	  $this->writeBodyHead();
+	  $this->writeBodyReprs( $intf );
 	  $this->writeInterfStubs( $intf );
 	  $this->writeBodyInit( $intf );
    }
@@ -85,6 +86,24 @@ class CWriter {
          $this->writeInterfConst( $c, true );
       foreach ( $intf->funcs() as $f )
          $this->writeInterfFunc( $f, true );
+   }
+
+   /// reprezentíációk
+   protected function writeBodyReprs( $intf ) {
+	  $s = $this->stream;
+	  foreach ( $intf->types() as $t ) {
+         $tn = $this->getType( $intf, $t->name(), false );
+         if ( "&" != substr( $tn, 0, 1 )) {
+			$s->writel("struct %s {", $tn );
+			$s->indent(true);
+			$s->writel("VyRepr repr;");
+			$s->indent(false);
+			$s->writel("};\n");
+            $s->writel( "VyRepr vyr%s;\n", $tn );
+            $s->writef( "void destroy%s( VyPtr", $tn );
+            $this->writeThrowStub( "destroy$tn" );
+         }
+      }
    }
 
    /// .h fájl fejléce
@@ -218,22 +237,22 @@ class CWriter {
       $s->writel();
       $s->writel( "#define VY%sARGS( name ) \\", strtoupper( $intf->name() ));
       $s->indent(true);
-      $s->writel( "VyImplemArgs name = vyImplemArgs( \"%s.%s\", vyVer(%s)); \\",
+      $s->writel( "VyArgs name = vyArgs( \"%s.%s\", vyVer(%s)); \\",
          $intf->pkg(), $intf->name(), substr($intf->ver(),1) );
       foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
          if ( "&" == substr($tn,0,1))
             $re = sprintf("vyNative(\"%s\")", substr($tn,1));
             else $re = "NULL";
-         $s->writel( "vyImplemArgsType( name, \"%s\", %s ); \\",
+         $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
             $t->name(), $re );
       }
       foreach ( $intf->consts() as $c ) {
-         $s->writel( "vyImplemArgsFunc( name, \"%s\"); \\",
+         $s->writel( "vyArgsFunc( name, \"%s\"); \\",
             $this->funcName( $c ));
       }
       foreach ( $intf->funcs() as $f ) {
-         $s->writel( "vyImplemArgsFunc( name, \"%s\"); \\",
+         $s->writel( "vyArgsFunc( name, \"%s\"); \\",
             $f->name() );
       }
       $s->indent(false);
@@ -257,6 +276,14 @@ class CWriter {
 	  $s->writel( "void vyInit%s( VyContext ctx ) {", $name );
 	  $s->indent(true);
 	  $s->writel( "VY%sARGS( args );", strtoupper($name) );
+	  foreach ($intf->types() as $t) {
+         $tn = $this->getType( $intf, $t->name(), false );
+         if ( "&" != substr( $tn, 0, 1 )) {
+            $s->writel( "vyr%s = vyRepr( sizeof(struct %s), false, destroy%s);",
+               $tn, $tn, $tn );		  
+            $s->writel( 'vyArgsType( args, "%s", vyr%s );', $tn, $tn );
+         }
+      }
 	  foreach ($intf->consts() as $c)
 	     $this->writeBodyInitFunc( $c );
 	  foreach ($intf->funcs() as $f)
@@ -269,7 +296,7 @@ class CWriter {
    protected function writeBodyInitFunc( $func ) {
       $fn = $this->funcName( $func );
 	  $ffn = $this->funcName( $func, $func->owner() );
-	  $this->stream->writel( 'vyImplemArgsImpl( args, "%s", &vy%s );', $fn, $ffn );
+	  $this->stream->writel( 'vyArgsImpl( args, "%s", vy%s );', $fn, $ffn );
    }
 
    /// interfész hasznos függvények

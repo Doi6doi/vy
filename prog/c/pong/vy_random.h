@@ -9,10 +9,10 @@ typedef struct RandomFun {
 } RandomFun;
 
 #define VYRANDOMARGS( name ) \
-   VyImplemArgs name = vyImplemArgs( ".Random", vyVer(20240301)); \
-   vyImplemArgsType( name, "Bool", NULL ); \
-   vyImplemArgsType( name, "Number", vyNative("float") ); \
-   vyImplemArgsFunc( name, "random"); \
+   VyArgs name = vyArgs( ".Random", vyVer(20240301)); \
+   vyArgsType( name, "Bool", NULL ); \
+   vyArgsType( name, "Number", vyNative("float") ); \
+   vyArgsFunc( name, "random"); \
 
 void vyInitRandom( VyContext );
 

@@ -16,10 +16,10 @@ VyRepr vyRepr( size_t, bool, VyDestr );
 VyPtr vyAlloc( VyRepr r );
 
 /// egy implementáció megadása
-void vyImplemArgsImpl( VyImplemArgs, VyCStr, VyPtr );
+void vyArgsImpl( VyArgs, VyCStr, VyPtr );
 
 /// implementáció hozzáadása
-void vyAddImplem( VyContext, VyImplemArgs );
+void vyAddImplem( VyContext, VyArgs );
 
 extern char *VYNOMEM;
 

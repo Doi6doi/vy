@@ -17,6 +17,8 @@ class Compiler {
    protected $typemap;
    /// c író
    protected $cWriter;
+   /// létező fájl felüírása
+   protected $force;
 
    function __construct() {
       $this->inputs = [];
@@ -68,6 +70,8 @@ class Compiler {
          $ii = Tools::g( $this->inputs, $i );
          $bi = Tools::g( $this->objs, $ii );
          $oi = $this->outputs[$i];
+         if ( ! $this->force && file_exists($oi))
+            throw new EVy("File already exists: $oi");
          $this->write( $bi, $oi );
       }
    }

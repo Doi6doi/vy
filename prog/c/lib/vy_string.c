@@ -1,6 +1,16 @@
 #include <vy_implem.h>
 #include "vy_string.h"
 
+struct String {
+   VyRepr repr;
+};
+
+VyRepr vyrString;
+
+void destroyString( VyPtr ) {
+   vyThrow("stub destroyString");
+}
+
 static String vyStringConstAscii(VyCStr, VySize ) {
    vyThrow("stub StringConstAscii");
 }
@@ -35,14 +45,16 @@ static bool vyStringNoteq(String, String ) {
 
 void vyInitString( VyContext ctx ) {
    VYSTRINGARGS( args );
-   vyImplemArgsImpl( args, "constAscii", &vyStringConstAscii );
-   vyImplemArgsImpl( args, "constUtf", &vyStringConstUtf );
-   vyImplemArgsImpl( args, "less", &vyStringLess );
-   vyImplemArgsImpl( args, "greater", &vyStringGreater );
-   vyImplemArgsImpl( args, "lesseq", &vyStringLesseq );
-   vyImplemArgsImpl( args, "greatereq", &vyStringGreatereq );
-   vyImplemArgsImpl( args, "equal", &vyStringEqual );
-   vyImplemArgsImpl( args, "noteq", &vyStringNoteq );
+   vyrString = vyRepr( sizeof(struct String), false, destroyString);
+   vyArgsType( args, "String", vyrString );
+   vyArgsImpl( args, "constAscii", vyStringConstAscii );
+   vyArgsImpl( args, "constUtf", vyStringConstUtf );
+   vyArgsImpl( args, "less", vyStringLess );
+   vyArgsImpl( args, "greater", vyStringGreater );
+   vyArgsImpl( args, "lesseq", vyStringLesseq );
+   vyArgsImpl( args, "greatereq", vyStringGreatereq );
+   vyArgsImpl( args, "equal", vyStringEqual );
+   vyArgsImpl( args, "noteq", vyStringNoteq );
    vyAddImplem( ctx, args );
 }
 

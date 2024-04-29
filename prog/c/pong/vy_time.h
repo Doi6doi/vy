@@ -11,13 +11,13 @@ typedef struct TimeFun {
 } TimeFun;
 
 #define VYTIMEARGS( name ) \
-   VyImplemArgs name = vyImplemArgs( "vy.time.Time", vyVer(20240301)); \
-   vyImplemArgsType( name, "Bool", vyNative("bool") ); \
-   vyImplemArgsType( name, "Number", vyNative("float") ); \
-   vyImplemArgsType( name, "Stamp", NULL ); \
-   vyImplemArgsFunc( name, "stamp"); \
-   vyImplemArgsFunc( name, "addSecond"); \
-   vyImplemArgsFunc( name, "waitUntil"); \
+   VyArgs name = vyArgs( "vy.time.Time", vyVer(20240301)); \
+   vyArgsType( name, "Bool", vyNative("bool") ); \
+   vyArgsType( name, "Number", vyNative("float") ); \
+   vyArgsType( name, "Stamp", NULL ); \
+   vyArgsFunc( name, "stamp"); \
+   vyArgsFunc( name, "addSecond"); \
+   vyArgsFunc( name, "waitUntil"); \
 
 void vyInitTime( VyContext );
 

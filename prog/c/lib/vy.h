@@ -26,7 +26,7 @@ typedef struct VyRepr * VyRepr;
 typedef struct VyContext * VyContext;
 
 /// implementáció argumentumok
-typedef struct VyImplemArgs * VyImplemArgs;
+typedef struct VyArgs * VyArgs;
 
 /// új vy rendszer
 Vy vyInit();
@@ -43,15 +43,15 @@ void vyFree( void * );
 void vyThrow( VyCStr );
 
 /// implementációs argumentumok készítése
-VyImplemArgs vyImplemArgs( VyCStr, VyVer );
+VyArgs vyArgs( VyCStr, VyVer );
 /// egy típus megadása
-void vyImplemArgsType( VyImplemArgs, VyCStr, VyRepr );
+void vyArgsType( VyArgs, VyCStr, VyRepr );
 /// egy művelet nevének megadása
-void vyImplemArgsFunc( VyImplemArgs, VyCStr );
+void vyArgsFunc( VyArgs, VyCStr );
 /// reprezentáció lekérése
-VyRepr vyGetImplemRepr( VyImplemArgs, VyCStr );
+VyRepr vyGetRepr( VyArgs, VyCStr );
 /// implementáció kérése
-VyImplemArgs vyGetImplem( VyContext ctx, VyImplemArgs args, void * dest );
+VyArgs vyGetImplem( VyContext ctx, VyArgs args, void * dest );
 
 
 #endif // VYH

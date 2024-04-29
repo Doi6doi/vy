@@ -16,18 +16,18 @@ typedef struct StringFun {
 } StringFun;
 
 #define VYSTRINGARGS( name ) \
-   VyImplemArgs name = vyImplemArgs( "vy.char.String", vyVer(20240301)); \
-   vyImplemArgsType( name, "Bool", vyNative("bool") ); \
-   vyImplemArgsType( name, "Char", vyNative("wchar_t") ); \
-   vyImplemArgsType( name, "String", NULL ); \
-   vyImplemArgsFunc( name, "constAscii"); \
-   vyImplemArgsFunc( name, "constUtf"); \
-   vyImplemArgsFunc( name, "less"); \
-   vyImplemArgsFunc( name, "greater"); \
-   vyImplemArgsFunc( name, "lesseq"); \
-   vyImplemArgsFunc( name, "greatereq"); \
-   vyImplemArgsFunc( name, "equal"); \
-   vyImplemArgsFunc( name, "noteq"); \
+   VyArgs name = vyArgs( "vy.char.String", vyVer(20240301)); \
+   vyArgsType( name, "Bool", vyNative("bool") ); \
+   vyArgsType( name, "Char", vyNative("wchar_t") ); \
+   vyArgsType( name, "String", NULL ); \
+   vyArgsFunc( name, "constAscii"); \
+   vyArgsFunc( name, "constUtf"); \
+   vyArgsFunc( name, "less"); \
+   vyArgsFunc( name, "greater"); \
+   vyArgsFunc( name, "lesseq"); \
+   vyArgsFunc( name, "greatereq"); \
+   vyArgsFunc( name, "equal"); \
+   vyArgsFunc( name, "noteq"); \
 
 void vyInitString( VyContext );
 

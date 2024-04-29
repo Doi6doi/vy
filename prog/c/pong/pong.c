@@ -107,17 +107,17 @@ void initVy() {
    VyContext ctx = vyContext( vy );
    VYSTRINGARGS( sa );
    vyGetImplem( ctx, sa, & strings );
-   VyRepr s = vyGetImplemRepr( sa, "String" );
+   VyRepr s = vyGetRepr( sa, "String" );
    VYKEYARGS( ka );
    vyFree( vyGetImplem( ctx, ka, & keys ));
    VYTIMEARGS( ta );
    vyFree( vyGetImplem( ctx, ta, & times ));
    VYRECTARGS( ra );
    vyGetImplem( ctx, ra, & rects );
-   VyRepr r = vyGetImplemRepr( ra, "Rect" );
+   VyRepr r = vyGetRepr( ra, "Rect" );
    VYWINDOWARGS( wa );
    vyGetImplem( ctx, wa, & windows );
-   VyRepr w = vyGetImplemRepr( wa, "Window" );
+   VyRepr w = vyGetRepr( wa, "Window" );
 /*
    vyFree( vyGetImplem( ctx, randomArgs(), & pong.random ));
 

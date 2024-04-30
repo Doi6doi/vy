@@ -3,3 +3,6 @@ Makefile
 *.o
 libvy.geany
 megsem
+vy_rect.h
+vy_view.h
+vy_window.h

@@ -136,7 +136,7 @@ void initScore( Side side ) {
    s->text = strings.constAscii("", VY_COUNT);
    Caption c = captions.createCaption( s->text );
    s->sprite = sprites.createSprite( (Shape)c);
-   windows.add( pong.window, s->sprite );
+   windows.add( pong.window, (View)s->sprite );
 }
 
 /// labda inicializálás
@@ -148,7 +148,7 @@ void initBall() {
    VyColor o = colors.constHex( BALLCOLOR, VY_COUNT );
    Filled fc = filleds.createFilled( (Shape)c, o );
    b->sprite = sprites.createSprite( (Shape)fc );
-   windows.add( pong.window, b->sprite );
+   windows.add( pong.window, (View)b->sprite );
 }
 
 void initPad( Side side ) {
@@ -165,7 +165,7 @@ void initPad( Side side ) {
       p->up = PONGKEY( RIGHTUP );
       p->down = PONGKEY( RIGHTDOWN );
    }
-   windows.add( pong.window, p->sprite );
+   windows.add( pong.window, (View)p->sprite );
 }
 
 /// pong inicializálás

@@ -29,6 +29,10 @@ typedef struct StringFun {
    vyArgsFunc( name, "equal"); \
    vyArgsFunc( name, "noteq"); \
 
+#define VYIMPORTSTRING( ctx, var ) \
+   VYSTRINGARGS( ctx, var ## Args ); \
+   vyFree( vyGetImplem( ctx, var ## Args, & var )); \
+
 void vyInitString( VyContext );
 
 

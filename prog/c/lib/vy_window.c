@@ -6,6 +6,8 @@ struct Window {
    VyRepr repr;
 };
 
+extern VyRepr vyrView;
+
 VyRepr vyrWindow;
 
 void destroyWindow( VyPtr ) {
@@ -36,6 +38,7 @@ void vyInitWindow( VyContext ctx ) {
    VYWINDOWARGS( ctx, args );
    vyrWindow = vyRepr( sizeof(struct Window), false, destroyWindow);
    vyArgsType( args, "Window", vyrWindow );
+   vyArgsType( args, "Sub", vyrView );
    vyArgsImpl( args, "add", vyWindowAdd );
    vyArgsImpl( args, "remove", vyWindowRemove );
    vyArgsImpl( args, "create", vyWindowCreate );

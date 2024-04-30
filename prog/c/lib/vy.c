@@ -23,8 +23,10 @@ char
    *NOCONTEXT = "Missing context",
    *NOIMPARGS = "Missing implementations arguments",
    *NOIMPDEST = "Missing implementation destination",
+   *NOIMPL = "Missing implementation: %s.%s",
    *NOINTF = "Missing interface name",
    *NONATIVE = "Missing native name",
+   *NOREPR = "Missing representation: %s.%s",
    *NOTYPE = "Missing type",
    *NOVER = "Missing version",
    *UNIMP = "Unknown implementation: %s@%d",
@@ -93,6 +95,10 @@ struct VyRepr vyrContext = {
 };
 
 
+VyCStr vyStr( VyCStr s ) {
+   return s ? s : "";
+}
+
 bool vySameStr( VyCStr a, VyCStr b ) {
    if ( !a || !b ) return false;
    return 0 == strcmp( a, b );
@@ -140,12 +146,8 @@ Vy vyInit() {
    Vy ret = VYALLOC( struct Vy, & vyrVy );
    if ( ! ret ) vyThrow( VYNOMEM );
    VyContext ctx = ret->context = vyContextCreate( ret );
-   vyAddNative( ctx, "wchar_t", sizeof( wchar_t ));
-   vyAddNative( ctx, "unsigned", sizeof( unsigned ));
-   vyAddNative( ctx, "size_t", sizeof( size_t ));
-   vyAddNative( ctx, "bool", sizeof( bool ));
-   vyAddNative( ctx, "float", sizeof(float));
    vyInitCore( ctx );
+   vyInitUtil( ctx );
    vyInitGeom( ctx );
    vyInitUi( ctx );
    return ret;
@@ -270,10 +272,30 @@ void vyArgsImpl( VyArgs ia, VyCStr func, VyPtr impl ) {
       else vySmAdd( & ia->funcs, func, impl );
 }
 
+/// reprezentációk és implementációk ellenőrzése
+void vyCheckImplem( VyArgs ia ) {
+   for (int i = ia->types.count-1; 0 <= i; --i ) {
+	  if ( ! ia->types.ptrs[i] ) {
+         snprintf( vyBuf, BUFSIZE, NOREPR, ia->intf, 
+            vyStr( ia->types.strs[i] ));
+         vyThrow( vyBuf );
+      }
+   }
+   for (int i = ia->funcs.count-1; 0 <= i; --i ) {
+	  if ( ! ia->funcs.ptrs[i] ) {
+		 snprintf( vyBuf, BUFSIZE, NOIMPL, ia->intf,
+		    vyStr( ia->funcs.strs[i] ));
+		 vyThrow( vyBuf );
+      }
+   }
+}
+
+
 void vyAddImplem( VyContext ctx, VyArgs ia ) {
    unsigned n = ctx->nimpls+1;
    VyArgs * impls = REALLOC( ctx->impls, n*sizeof(VyPtr) );
    if ( ! impls ) vyThrow( VYNOMEM );
+   vyCheckImplem( ia );
    impls[n-1] = ia;
    ctx->impls = impls;
    ctx->nimpls = n;

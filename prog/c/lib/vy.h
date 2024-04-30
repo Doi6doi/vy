@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 /// konstansoknál strlen
-#define VY_COUNT -1
+#define VY_LEN -1
 
 /// méret
 typedef size_t VySize;

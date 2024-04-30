@@ -94,15 +94,20 @@ class CWriter {
 	  foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
          $ch = substr( $tn, 0, 1 );
-         if ( ! in_array( $ch, ["&","^"] )) {
-			$s->writel("struct %s {", $tn );
-			$s->indent(true);
-			$s->writel("VyRepr repr;");
-			$s->indent(false);
-			$s->writel("};\n");
-            $s->writel( "VyRepr vyr%s;\n", $tn );
-            $s->writef( "void destroy%s( VyPtr", $tn );
-            $this->writeThrowStub( "destroy$tn" );
+         switch ( $ch ) {
+			case "&": break;
+			case "^":
+			   $s->writel( "extern VyRepr vyr%s;\n", substr( $tn, 1 ));
+			break;
+			default:
+			   $s->writel("struct %s {", $tn );
+			   $s->indent(true);
+			   $s->writel("VyRepr repr;");
+			   $s->indent(false);
+			   $s->writel("};\n");
+               $s->writel( "VyRepr vyr%s;\n", $tn );
+               $s->writef( "void destroy%s( VyPtr", $tn );
+               $this->writeThrowStub( "destroy$tn" );
          }
       }
    }
@@ -240,8 +245,9 @@ class CWriter {
    /// interfész lekérő függvény
    protected function writeInterfArgs( $intf ) {
       $s = $this->stream;
+      $un = strtoupper( $intf->name() );
       $s->writel();
-      $s->writel( "#define VY%sARGS( ctx, name ) \\", strtoupper( $intf->name() ));
+      $s->writel( "#define VY%sARGS( ctx, name ) \\", $un );
       $s->indent(true);
       $s->writel( "VyArgs name = vyArgs( \"%s.%s\", vyVer(%s)); \\",
          $intf->pkg(), $intf->name(), substr($intf->ver(),1) );
@@ -262,6 +268,10 @@ class CWriter {
             $f->name() );
       }
       $s->indent(false);
+      $s->writel();
+      $s->writel( "#define VYIMPORT%s( ctx, var ) \\", $un );
+      $s->writel( "   VY%sARGS( ctx, var ## Args ); \\", $un );
+      $s->writel( "   vyFree( vyGetImplem( ctx, var ## Args, & var )); \\" );
       $s->writel();
    }
 
@@ -285,10 +295,15 @@ class CWriter {
 	  foreach ($intf->types() as $t) {
          $tn = $this->getType( $intf, $t->name(), false );
          $ch = substr( $tn, 0, 1 );
-         if ( ! in_array( $ch, ["&","^"] )) {
-            $s->writel( "vyr%s = vyRepr( sizeof(struct %s), false, destroy%s);",
-               $tn, $tn, $tn );		  
-            $s->writel( 'vyArgsType( args, "%s", vyr%s );', $tn, $tn );
+         if ( "&" != $ch ) {
+			$tnn = $tn;
+			if ( "^" == $ch ) {
+			   $tnn = substr( $tn, 1 );
+			} else {
+               $s->writel( "vyr%s = vyRepr( sizeof(struct %s), false, destroy%s);",
+                  $tn, $tn, $tn );
+            }
+            $s->writel( 'vyArgsType( args, "%s", vyr%s );', $t->name(), $tnn );
          }
       }
 	  foreach ($intf->consts() as $c)

@@ -2,8 +2,6 @@ PONG=pong
 IDIR=../lib
 LDIR=../lib
 VDIR=../../..
-VYS=random sprite text circle color \
-   caption filled
 VYC=php ../../php/vyc/vyc.php
 LIBS=m vy
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
@@ -15,7 +13,7 @@ run: build
 build: $(PONG)
 
 clean:
-	$(RM) $(PONG) $(VYS:%=vy_%.h)
+	$(RM) $(PONG)
 
 head:
 	$(MAKE) build 2>&1 | head -n 20
@@ -29,33 +27,6 @@ pong: pong.c $(VYS:%=vy_%.h)
 libvy:
 	$(MAKE) -C ../lib
 
-vy_random.h: $(VDIR)/vy/util/Random@20240301.vy
-	$(VYC) -i vy.util.Random@=20240301 -r $(VDIR) \
-	-t 'Number=&float' -o $@
-
-vy_rect.h: $(VDIR)/vy/geom/Rect@20240301.vy
-	$(VYC) -i vy.geom.Rect@=20240301 -r $(VDIR) \
-	-t 'Coord=&float;Color=&VyColor' -o $@
-
-vy_text.h: $(VDIR)/vy/geom/Text@20240301.vy
-	$(VYC) -i vy.geom.Text@=20240301 -r $(VDIR) \
-	-o $@
-
-vy_circle.h: $(VDIR)/vy/geom/Circle@20240301.vy
-	$(VYC) -i vy.geom.Circle@=20240301 -r $(VDIR) \
-	-t 'Coord=&float;Bool=&bool;Color=&VyColor' -o $@
-
-vy_sprite.h: $(VDIR)/vy/ui/Sprite@20240301.vy
-	$(VYC) -i vy.ui.Sprite@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
-
-vy_color.h: $(VDIR)/vy/geom/Color@20240301.vy
-	$(VYC) -i vy.geom.Color@=20240301 -r $(VDIR) \
-	-t 'Color=&VyColor' -o $@
-
-vy_caption.h: $(VDIR)/vy/geom/Caption@20240301.vy
-	$(VYC) -i vy.geom.Caption@=20240301 -r $(VDIR) \
-	-t 'ViewCoord=&VyViewCoord' -o $@
 
 vy_filled.h: $(VDIR)/vy/geom/Filled@20240301.vy
 	$(VYC) -i vy.geom.Filled@=20240301 -r $(VDIR) \

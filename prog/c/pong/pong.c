@@ -34,7 +34,7 @@
 #define RIGHTDOWN "Down"
 #define RIGHTCOLOR "00f"
 
-#define PONGKEY( x ) keys.constUtf( x, VY_COUNT )
+#define PONGKEY( x ) keys.constUtf( x, VY_LEN )
 
 Vy vy;
 // implementációk
@@ -98,7 +98,7 @@ float speedComp( float c ) {
 /// új játék
 void newRound( Side side ) {
    sprites.moveTo( pong.ball.sprite, 0, 0 );
-   float r = randoms.random(1)-0.5;
+   float r = (randoms.random(100)-50)/50;
    pong.ball.dy = pong.ball.speed * MAXCOORD * r;
    pong.ball.dx = speedComp( pong.ball.dy ) * (RIGHT == side ? -1 : 1);
 }
@@ -107,33 +107,23 @@ void newRound( Side side ) {
 void initVy() {
    vy = vyInit();
    VyContext ctx = vyContext( vy );
-   VYSTRINGARGS( ctx, sa );
-   vyGetImplem( ctx, sa, & strings );
-   VyRepr s = vyGetRepr( sa, "String" );
-   VYKEYARGS( ctx, ka );
-   vyFree( vyGetImplem( ctx, ka, & keys ));
-   VYTIMEARGS( ctx, ta );
-   vyFree( vyGetImplem( ctx, ta, & times ));
-   VYRECTARGS( ctx, ra );
-   vyGetImplem( ctx, ra, & rects );
-   VyRepr r = vyGetRepr( ra, "Rect" );
-   VYWINDOWARGS( ctx, wa );
-   vyGetImplem( ctx, wa, & windows );
-   VyRepr w = vyGetRepr( wa, "Window" );
-/*
-   vyFree( vyGetImplem( ctx, randomArgs(), & pong.random ));
-
-   vyFree( vyGetImplem( ctx, spritesArgs(d), & pong.sprites ));
-*/
-   vyFree( sa );
-   vyFree( ra );
-   vyFree( wa );
+   VYIMPORTSTRING( ctx, strings );
+   VYIMPORTKEY( ctx, keys );
+   VYIMPORTTIME( ctx, times );
+   VYIMPORTRANDOM( ctx, randoms );
+   VYIMPORTRECT( ctx, rects );
+   VYIMPORTWINDOW( ctx, windows );
+   VYIMPORTSPRITE( ctx, sprites );
+   VYIMPORTCOLOR( ctx, colors );
+   VYIMPORTCIRCLE( ctx, circles );
+   VYIMPORTCAPTION( ctx, captions );
+   VYIMPORTFILLED( ctx, filleds );
 }
 
 /// pontszám kijelzés inicializálás
 void initScore( Side side ) {
    Score * s = pong.scores + side;
-   s->text = strings.constAscii("", VY_COUNT);
+   s->text = strings.constAscii("", VY_LEN);
    Caption c = captions.createCaption( s->text );
    s->sprite = sprites.createSprite( (Shape)c);
    windows.add( pong.window, (View)s->sprite );
@@ -145,7 +135,7 @@ void initBall() {
    b->speed = BALLSPEED;
    b->dx = b->dy = 0;
    Circle c = circles.createCircle( BALLSIZE );
-   VyColor o = colors.constHex( BALLCOLOR, VY_COUNT );
+   VyColor o = colors.constHex( BALLCOLOR, VY_LEN );
    Filled fc = filleds.createFilled( (Shape)c, o );
    b->sprite = sprites.createSprite( (Shape)fc );
    windows.add( pong.window, (View)b->sprite );
@@ -154,7 +144,7 @@ void initBall() {
 void initPad( Side side ) {
    Pad * p = pong.pads + side;
    Rect r = rects.createRect( 0, 0, PADWIDTH, PADHEIGHT );
-   VyColor c = colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_COUNT );
+   VyColor c = colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_LEN );
    Filled fc = filleds.createFilled( (Shape)r, c );
    p->sprite = sprites.createSprite( (Shape)fc );
    p->score = 0;

@@ -173,7 +173,6 @@ class Interf
       $s->readWS();
       $path = $s->readIdents(".");
       $this->name = array_pop( $path );
-Tools::debug("READING ".$this->name());
       $this->pkg = implode(".",$path);
       $s->readWS();
       $this->ver = $s->readVer();

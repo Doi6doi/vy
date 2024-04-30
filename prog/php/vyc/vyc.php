@@ -33,6 +33,7 @@ class VyC {
       if ( $i >= count($argv))
          return false;
       switch ($argv[$i]) {
+		 case "-f": return $this->setForce( $i );
          case "-r": return $this->getParRepo( $argv, $i );
          case "-i": return $this->getParInput( $argv, $i );
          case "-t": return $this->getParType( $argv, $i );
@@ -46,6 +47,13 @@ class VyC {
       if ( count($argv) <= ++$i )
          throw new Exception("Missing $kind");
       return $argv[$i++];
+   }
+
+   /// force paraméter beállítása
+   function setForce( & $i ) {
+	  ++ $i;
+	  $this->comp->setForce(true);
+	  return true;
    }
 
    /// repo paraméter olvasása
@@ -82,7 +90,6 @@ class VyC {
          "   -i <item>: add <item> as input",
          "   -t <typemap>: set <typemap> as type mapping",
          "   -o <filename>: add <filename> as output",
-         "   -c <super>: generate code for casts",
          "",
          ""
       ];

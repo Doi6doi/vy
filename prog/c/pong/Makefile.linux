@@ -2,7 +2,7 @@ PONG=pong
 IDIR=../lib
 LDIR=../lib
 VDIR=../../..
-VYS=string key time random sprite rect text circle window color \
+VYS=random sprite text circle window color \
    caption filled
 VYC=php ../../php/vyc/vyc.php
 LIBS=m vy
@@ -25,17 +25,6 @@ debug: build
 
 pong: pong.c $(VYS:%=vy_%.h)
 	$(CC) -o $@ $< $(LIBS:%=-l%)
-
-vy_string.h: $(VDIR)/vy/char/String@20240301.vy
-	$(VYC) -i vy.char.String@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
-
-vy_key.h: $(VDIR)/vy/ui/Key@20240301.vy
-	$(VYC) -i vy.ui.Key@=20240301 -r $(VDIR) -o $@
-
-vy_time.h: $(VDIR)/vy/util/Time@20240301.vy
-	$(VYC) -i vy.util.Time@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Number=&float' -o $@
 
 vy_random.h: $(VDIR)/vy/util/Random@20240301.vy
 	$(VYC) -i vy.util.Random@=20240301 -r $(VDIR) \

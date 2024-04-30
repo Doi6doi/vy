@@ -8,10 +8,10 @@ typedef struct RandomFun {
    float (* random)(float);
 } RandomFun;
 
-#define VYRANDOMARGS( name ) \
+#define VYRANDOMARGS( ctx, name ) \
    VyArgs name = vyArgs( ".Random", vyVer(20240301)); \
    vyArgsType( name, "Bool", NULL ); \
-   vyArgsType( name, "Number", vyNative("float") ); \
+   vyArgsType( name, "Number", vyNative( ctx, "float" ) ); \
    vyArgsFunc( name, "random"); \
 
 void vyInitRandom( VyContext );

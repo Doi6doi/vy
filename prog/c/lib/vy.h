@@ -33,7 +33,7 @@ Vy vyInit();
 /// aktuális kontextus
 VyContext vyContext( Vy );
 /// natív típus reprezentációja
-VyRepr vyNative( VyCStr );
+VyRepr vyNative( VyContext, VyCStr );
 /// verzió érték
 VyVer vyVer( unsigned );
 /// egy objektum megsemmisítése

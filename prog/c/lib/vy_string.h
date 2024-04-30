@@ -15,10 +15,10 @@ typedef struct StringFun {
    bool (* noteq)(String, String);
 } StringFun;
 
-#define VYSTRINGARGS( name ) \
+#define VYSTRINGARGS( ctx, name ) \
    VyArgs name = vyArgs( "vy.char.String", vyVer(20240301)); \
-   vyArgsType( name, "Bool", vyNative("bool") ); \
-   vyArgsType( name, "Char", vyNative("wchar_t") ); \
+   vyArgsType( name, "Bool", vyNative( ctx, "bool" ) ); \
+   vyArgsType( name, "Char", vyNative( ctx, "wchar_t" ) ); \
    vyArgsType( name, "String", NULL ); \
    vyArgsFunc( name, "constAscii"); \
    vyArgsFunc( name, "constUtf"); \

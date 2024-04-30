@@ -40,6 +40,11 @@ class Compiler {
       $this->outputs [] = $o;
    }
 
+   /// kényszerítés beállítása
+   function setForce( $force ) {
+	  $this->force = $force;
+   }
+
    /// futtatás
    function run() {
       $this->forceInputs();

@@ -44,7 +44,7 @@ static bool vyStringNoteq(String, String ) {
 }
 
 void vyInitString( VyContext ctx ) {
-   VYSTRINGARGS( args );
+   VYSTRINGARGS( ctx, args );
    vyrString = vyRepr( sizeof(struct String), false, destroyString);
    vyArgsType( args, "String", vyrString );
    vyArgsImpl( args, "constAscii", vyStringConstAscii );

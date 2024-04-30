@@ -10,7 +10,7 @@ typedef void * VyPtr;
 typedef void (* VyDestr)( VyPtr );
 
 /// saját reprezentáció
-VyRepr vyRepr( size_t, bool, VyDestr );
+VyRepr vyRepr( size_t size, bool , VyDestr );
 
 /// objektum készítése
 VyPtr vyAlloc( VyRepr r );
@@ -20,6 +20,9 @@ void vyArgsImpl( VyArgs, VyCStr, VyPtr );
 
 /// implementáció hozzáadása
 void vyAddImplem( VyContext, VyArgs );
+
+/// natív reprezentáció hozzáadása
+VyRepr vyAddNative( VyContext, VyCStr name, size_t size );
 
 extern char *VYNOMEM;
 

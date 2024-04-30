@@ -4,38 +4,80 @@ IDIR=.
 VDIR=../../..
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
 VYC=php ../../php/vyc/vyc.php
-
+PKGS=core util geom ui sm
+ITEMS=string key time rect window view
 
 build: libvy.so
 
 clean:
-	$(RM) *.o *.so vy_string.h
+	$(RM) *.o *.so $(ITEMS:%=vy_%.h)
 
 cleanc: clean
-	$(RM) vy_string.c
+	$(RM) $(ITEMS:%=vy_%.c)
 
 head:
 	$(MAKE) build 2>&1 | head -n 20
 
 pong:
-	$(MAKE) -C ../pong clean build run
+	$(MAKE) -C ../pong
 
-libvy.so: vy.o vy_string.o
+libvy.so: vy.o $(PKGS:%=vy_%.o) $(ITEMS:%=vy_%.o)
 	$(CC) -shared -o $@ $^
 
-vy.o: vy.c vy_string.h
+vy.o: vy.c vy.h $(ITEMS:%=vy_%.h)
 
 %.o: %.c
 	$(CC) -fPIC -c -o $@ $<
 
-vy.o: vy.c vy.h
-
 vy_string.h: $(VDIR)/vy/char/String@20240301.vy
-	$(VYC) -i vy.char.String@=20240301 -r $(VDIR) \
+	$(VYC) -f -i vy.char.String@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
 
 vy_string.c: $(VDIR)/vy/char/String@20240301.vy
 	$(VYC) -i vy.char.String@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Index=&unsigned;Char=&wchar_t' -o $@
+
+vy_key.h: $(VDIR)/vy/ui/Key@20240301.vy
+	$(VYC) -f -i vy.ui.Key@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Key=&VyKey' -o $@
+
+vy_key.c: $(VDIR)/vy/ui/Key@20240301.vy
+	$(VYC) -i vy.ui.Key@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Key=&VyKey' -o $@
+
+vy_time.h: $(VDIR)/vy/util/Time@20240301.vy
+	$(VYC) -f -i vy.util.Time@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Number=&float' -o $@
+
+vy_time.c: $(VDIR)/vy/util/Time@20240301.vy
+	$(VYC) -i vy.util.Time@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Number=&float' -o $@
+
+vy_rect.h: $(VDIR)/vy/geom/Rect@20240301.vy
+	$(VYC) -f -i vy.geom.Rect@=20240301 -r $(VDIR) \
+	-t 'Coord=&float;Color=&VyColor' -o $@
+
+vy_rect.c: $(VDIR)/vy/geom/Rect@20240301.vy
+	$(VYC) -i vy.geom.Rect@=20240301 -r $(VDIR) \
+	-t 'Coord=&float;Color=&VyColor' -o $@
+
+vy_view.h: $(VDIR)/vy/ui/View@20240301.vy
+	$(VYC) -f -i vy.ui.View@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
+
+vy_view.c: $(VDIR)/vy/ui/View@20240301.vy
+	$(VYC) -i vy.ui.View@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
+
+vy_window.h: $(VDIR)/vy/ui/Window@20240301.vy
+	$(VYC) -f -i vy.ui.Window@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Sub=^View' -o $@
+
+vy_window.c: $(VDIR)/vy/ui/Window@20240301.vy
+	$(VYC) -i vy.ui.Window@=20240301 -r $(VDIR) \
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Sub=^View' -o $@
+
+
+
 
 

@@ -93,7 +93,8 @@ class CWriter {
 	  $s = $this->stream;
 	  foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
-         if ( "&" != substr( $tn, 0, 1 )) {
+         $ch = substr( $tn, 0, 1 );
+         if ( ! in_array( $ch, ["&","^"] )) {
 			$s->writel("struct %s {", $tn );
 			$s->indent(true);
 			$s->writel("VyRepr repr;");
@@ -133,7 +134,8 @@ class CWriter {
          $ret = $val;
       else
          $ret = $type;
-      if ( $trim && "&" == substr( $ret, 0, 1 ))
+      $ch = substr( $ret, 0, 1 );
+      if ( $trim && in_array( $ch, ["&","^"] ))
          $ret = substr( $ret, 1 );
       return $ret;
    }
@@ -142,8 +144,12 @@ class CWriter {
    protected function writeInterfTypes( $intf ) {
       foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
-         if ( "&" != substr($tn,0,1))
-            $this->stream->writel( "typedef struct %s * %s;\n", $tn, $tn );
+         $ch = substr( $tn, 0, 1 );
+         if ( "&" != $ch ) {
+			 if ( "^" == $ch )
+			    $tn = substr( $tn, 1 );
+             $this->stream->writel( "typedef struct %s * %s;\n", $tn, $tn );
+	     }
       }
    }
 
@@ -235,14 +241,14 @@ class CWriter {
    protected function writeInterfArgs( $intf ) {
       $s = $this->stream;
       $s->writel();
-      $s->writel( "#define VY%sARGS( name ) \\", strtoupper( $intf->name() ));
+      $s->writel( "#define VY%sARGS( ctx, name ) \\", strtoupper( $intf->name() ));
       $s->indent(true);
       $s->writel( "VyArgs name = vyArgs( \"%s.%s\", vyVer(%s)); \\",
          $intf->pkg(), $intf->name(), substr($intf->ver(),1) );
       foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
          if ( "&" == substr($tn,0,1))
-            $re = sprintf("vyNative(\"%s\")", substr($tn,1));
+            $re = sprintf("vyNative( ctx, \"%s\" )", substr($tn,1));
             else $re = "NULL";
          $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
             $t->name(), $re );
@@ -263,7 +269,7 @@ class CWriter {
    protected function funcName( $f, $intf = null ) {
       $name = $f->name();
       if ( $f->cons() && '&' == $name[0] )
-         $name = "const".strtoupper( $name[1] ).substr( $name,2 );
+         $name = "const".Tools::firstUpper( substr( $name, 1 ) );
       if ( $intf )
          $name = $intf->name().Tools::firstUpper($name);      
       return $name;
@@ -275,10 +281,11 @@ class CWriter {
 	  $name = $intf->name();
 	  $s->writel( "void vyInit%s( VyContext ctx ) {", $name );
 	  $s->indent(true);
-	  $s->writel( "VY%sARGS( args );", strtoupper($name) );
+	  $s->writel( "VY%sARGS( ctx, args );", strtoupper($name) );
 	  foreach ($intf->types() as $t) {
          $tn = $this->getType( $intf, $t->name(), false );
-         if ( "&" != substr( $tn, 0, 1 )) {
+         $ch = substr( $tn, 0, 1 );
+         if ( ! in_array( $ch, ["&","^"] )) {
             $s->writel( "vyr%s = vyRepr( sizeof(struct %s), false, destroy%s);",
                $tn, $tn, $tn );		  
             $s->writel( 'vyArgsType( args, "%s", vyr%s );', $tn, $tn );

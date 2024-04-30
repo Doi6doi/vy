@@ -1,6 +1,11 @@
 #include "vy.h"
 #include "vy_implem.h"
-#include "vy_string.h"
+#include "vy_sm.h"
+
+#include "vy_core.h"
+#include "vy_util.h"
+#include "vy_geom.h"
+#include "vy_ui.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,16 +39,20 @@ struct VyRepr {
    VyDestr destr;
 };
 
+
 struct VyArgs {
    VyRepr repr;
    VyCStr intf;
    VyVer ver;
-   unsigned ntype;
+   VySm types;
+   VySm funcs;
+/*   unsigned ntype;
    VyCStr * types;
    VyRepr * reprs;
    unsigned nfunc;
    VyCStr * funcs;
    VyPtr * impls;
+*/
 };
 
 struct VyContext {
@@ -51,6 +60,10 @@ struct VyContext {
    Vy vy;
    int nimpls;
    VyArgs * impls;
+   VySm natvs;
+/*   int nnatvs;
+   VyRepr * natvs;
+*/
 };
 
 struct Vy {
@@ -60,6 +73,7 @@ struct Vy {
 
 void vyDestroyContext( VyContext ctx ) {
    ctx->impls = REALLOC( ctx->impls, 0 );
+   vySmClear( &ctx->natvs );
 }
 
 void vyDestroyVy( Vy vy ) {
@@ -78,29 +92,6 @@ struct VyRepr vyrContext = {
    .destr = (VyDestr)vyDestroyContext
 };
 
-struct VyRepr vyrWchar = {
-   .size = sizeof( wchar_t ),
-   .stat = true,
-   .destr = NULL
-};
-
-struct VyRepr vyrUnsigned = {
-   .size = sizeof( unsigned ),
-   .stat = true,
-   .destr = NULL
-};
-
-struct VyRepr vyrSize = {
-   .size = sizeof( size_t ),
-   .stat = true,
-   .destr = NULL
-};
-
-struct VyRepr vyrBool = {
-   .size = sizeof( bool ),
-   .stat = true,
-   .destr = NULL
-};
 
 bool vySameStr( VyCStr a, VyCStr b ) {
    if ( !a || !b ) return false;
@@ -108,10 +99,8 @@ bool vySameStr( VyCStr a, VyCStr b ) {
 }
 
 void vyDestroyArgs( VyArgs ia ) {
-   ia->types = REALLOC( ia->types, 0 );
-   ia->reprs = REALLOC( ia->reprs, 0 );
-   ia->funcs = REALLOC( ia->funcs, 0 );
-   ia->impls = REALLOC( ia->impls, 0 );
+   vySmClear( &ia->types );
+   vySmClear( &ia->funcs );
 }
 
 struct VyRepr vyrVyArgs = {
@@ -150,8 +139,15 @@ VyContext vyContextCreate( Vy vy ) {
 Vy vyInit() {
    Vy ret = VYALLOC( struct Vy, & vyrVy );
    if ( ! ret ) vyThrow( VYNOMEM );
-   ret->context = vyContextCreate( ret );
-   vyInitString( ret->context );
+   VyContext ctx = ret->context = vyContextCreate( ret );
+   vyAddNative( ctx, "wchar_t", sizeof( wchar_t ));
+   vyAddNative( ctx, "unsigned", sizeof( unsigned ));
+   vyAddNative( ctx, "size_t", sizeof( size_t ));
+   vyAddNative( ctx, "bool", sizeof( bool ));
+   vyAddNative( ctx, "float", sizeof(float));
+   vyInitCore( ctx );
+   vyInitGeom( ctx );
+   vyInitUi( ctx );
    return ret;
 }
 
@@ -159,45 +155,20 @@ VyContext vyContext( Vy vy ) {
    return vy->context;
 }
 
-VyRepr vyNative( VyCStr name ) {
-   if ( ! name )
-      vyThrow( NONATIVE );
-   switch ( *name ) {
-      case 'b':
-         if ( vySameStr("bool",name))
-            return & vyrBool;
-      break;
-      case 's':
-         if (vySameStr("size",name))
-            return & vyrSize;
-      break;
-      case 'u':
-         if (vySameStr("uint", name) || vySameStr("unsigned", name))
-            return & vyrUnsigned;
-      break;
-      case 'w':
-         if (vySameStr("wchar_t", name))
-            return & vyrWchar;
-      break;
-   }
+VyRepr vyNative( VyContext ctx, VyCStr name ) {
+   int i = vySmFind( &ctx->natvs, name );
+   if ( 0 <= i )
+      return (VyRepr)ctx->natvs.ptrs[i];
    snprintf( vyBuf, BUFSIZE, UNNATIVE, name );
    vyThrow( vyBuf );
 }
 
-/// függvény keresés név alapján
-static int vyFindFunc( VyArgs ia, VyCStr func ) {
-   for (int i=0; i < ia->nfunc; ++i) {
-      if ( vySameStr( ia->funcs[i], func ))
-         return i;
-   }
-   return -1;
-}
 
 /// egy függvény implementációja
 VyPtr vyGetFunc( VyArgs args, VyCStr name ) {
-   int i = vyFindFunc( args, name );
+   int i = vySmFind( &args->funcs, name );
    if ( 0 <= i )
-      return args->impls[i];
+      return args->funcs.ptrs[i];
       else return NULL;
 }
 
@@ -205,16 +176,17 @@ VyPtr vyGetFunc( VyArgs args, VyCStr name ) {
 bool vyMatchesImpl( VyArgs args, VyArgs other ) {
    if ( args->ver != other->ver ) return false;
    if ( ! vySameStr( args->intf, other->intf )) return false;
-   if ( args->ntype != other->ntype ) return false;
-   for ( int i=0; i<args->ntype; ++i) {
-      VyRepr r = args->reprs[i];
-      VyRepr ro = vyGetRepr( other, args->types[i] );
+   unsigned nt = args->types.count;
+   if ( nt != other->types.count ) return false;
+   for ( int i=0; i<nt; ++i) {
+      VyRepr r = (VyRepr)args->types.ptrs[i];
+      VyRepr ro = vyGetRepr( other, args->types.strs[i] );
       if ( ! ro ) return false;
       if ( NULL != r && r != ro ) return false;
    }
-   for ( int i=0; i<args->nfunc; ++i) {
-      VyPtr f = vyGetFunc( other, args->funcs[i] );
-      if ( ! f )
+   unsigned nf = args->funcs.count;
+   for ( int i=0; i<nf; ++i) {
+      if ( ! vyGetFunc( other, args->funcs.strs[i] ) )
          return false;
    }
    return true;
@@ -222,12 +194,13 @@ bool vyMatchesImpl( VyArgs args, VyArgs other ) {
 
 /// implementáció hattatása
 void vyApplyImpl( VyArgs args, VyArgs dest, VyPtr * ptrs ) {
-   for (unsigned i=0; i < dest->ntype; ++i) {
-      if ( dest->reprs[i] )
-         dest->reprs[i] = vyGetRepr( args, dest->types[i] );
+   for (unsigned i=0; i < dest->types.count; ++i) {
+      if ( ! dest->types.ptrs[i] )
+         dest->types.ptrs[i] = vyGetRepr( args, dest->types.strs[i] );
    }
-   for (unsigned i=0; i < dest->nfunc; ++i)
-      ptrs[i] = vyGetFunc( args, dest->funcs[i] );
+   unsigned nf = dest->funcs.count;
+   for (unsigned i=0; i < nf; ++i)
+      ptrs[i] = vyGetFunc( args, dest->funcs.strs[i] );
 }
 
 
@@ -255,21 +228,13 @@ VyRepr vyRepr( size_t size, bool stat, VyDestr destr ) {
    return ret;
 }
 
-/// típus keresés név alapján
-static int vyFindType( VyArgs ia, VyCStr type ) {
-   for (int i=0; i < ia->ntype; ++i) {
-      if ( vySameStr( ia->types[i], type ))
-         return i;
-   }
-   return -1;
-}
 
 VyRepr vyGetRepr( VyArgs ia, VyCStr type ) {
    if ( ! ia ) vyThrow( NOIMPARGS );
    if ( ! type ) vyThrow( NOTYPE );
-   int i = vyFindType( ia, type );
+   int i = vySmFind( &ia->types, type );
    if ( 0 <= i )
-      return ia->reprs[i];
+      return (VyRepr)ia->types.ptrs[i];
    snprintf( vyBuf, BUFSIZE, UNREPR, type );
    vyThrow( vyBuf );
 }
@@ -281,32 +246,17 @@ VyArgs vyArgs( VyCStr intf, VyVer ver ) {
    if ( ! ret ) vyThrow( VYNOMEM );
    ret->intf = intf;
    ret->ver = ver;
-   ret->ntype = 0;
-   ret->types = NULL;
-   ret->reprs = NULL;
-   ret->nfunc = 0;
-   ret->funcs = NULL;
-   ret->impls = NULL;
+   vySmInit( & ret->types );
+   vySmInit( & ret->funcs );
    return ret;
 }
 
 
 void vyArgsType( VyArgs ia, VyCStr type, VyRepr repr ) {
-   int i = vyFindType( ia, type );
-   if ( 0 <= i ) {
-	  ia->reprs[i] = repr;
-	  return;
-   }
-   unsigned n = ia->ntype+1;
-   VyCStr * types = REALLOC( ia->types, n*sizeof(VyPtr) );
-   if ( ! types ) vyThrow( VYNOMEM );
-   VyRepr * reprs = REALLOC( ia->reprs, n*sizeof(VyPtr) );
-   if ( ! reprs ) vyThrow( VYNOMEM );
-   types[n-1] = type;
-   reprs[n-1] = repr;
-   ia->types = types;
-   ia->reprs = reprs;
-   ia->ntype = n;
+   int i = vySmFind( &ia->types, type );
+   if ( 0 <= i )
+	  ia->types.ptrs[i] = repr;
+	  else vySmAdd( &ia->types, type, repr );
 }
 
 void vyArgsFunc( VyArgs ia, VyCStr func ) {
@@ -314,21 +264,10 @@ void vyArgsFunc( VyArgs ia, VyCStr func ) {
 }
 
 void vyArgsImpl( VyArgs ia, VyCStr func, VyPtr impl ) {
-   int i = vyFindFunc( ia, func );
-   if ( 0 <= i ) {
-	  ia->impls[i] = impl;
-	  return;
-   } 
-   unsigned n = ia->nfunc+1;
-   VyCStr * funcs = REALLOC( ia->funcs, n*sizeof(VyPtr) );
-   if ( ! funcs ) vyThrow( VYNOMEM );
-   VyPtr * impls = REALLOC( ia->impls, n*sizeof(VyPtr) );
-   if ( ! impls ) vyThrow( VYNOMEM );
-   funcs[n-1] = func;
-   impls[n-1] = impl;
-   ia->funcs = funcs;
-   ia->impls = impls;
-   ia->nfunc = n;
+   int i = vySmFind( & ia->funcs, func );
+   if ( 0 <= i )
+	  ia->funcs.ptrs[i] = impl;
+      else vySmAdd( & ia->funcs, func, impl );
 }
 
 void vyAddImplem( VyContext ctx, VyArgs ia ) {
@@ -339,3 +278,11 @@ void vyAddImplem( VyContext ctx, VyArgs ia ) {
    ctx->impls = impls;
    ctx->nimpls = n;
 }
+
+VyRepr vyAddNative( VyContext ctx, VyCStr name, size_t size ) {
+   VyRepr ret = vyRepr( size, true, NULL );
+   vySmAdd( & ctx->natvs, name, ret );
+   return ret;
+} 
+
+

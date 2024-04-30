@@ -1,8 +1,10 @@
 #include <vy.h>
 #include <vy_geom.h>
+#include <vy_ui.h>
 
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "vy_string.h"
 #include "vy_key.h"
@@ -68,8 +70,8 @@ typedef struct Ball {
 typedef struct Pad {
    Sprite sprite;
    int score;
-   Key up;
-   Key down;
+   VyKey up;
+   VyKey down;
 } Pad;
 
 /// minden pong adat
@@ -105,17 +107,17 @@ void newRound( Side side ) {
 void initVy() {
    vy = vyInit();
    VyContext ctx = vyContext( vy );
-   VYSTRINGARGS( sa );
+   VYSTRINGARGS( ctx, sa );
    vyGetImplem( ctx, sa, & strings );
    VyRepr s = vyGetRepr( sa, "String" );
-   VYKEYARGS( ka );
+   VYKEYARGS( ctx, ka );
    vyFree( vyGetImplem( ctx, ka, & keys ));
-   VYTIMEARGS( ta );
+   VYTIMEARGS( ctx, ta );
    vyFree( vyGetImplem( ctx, ta, & times ));
-   VYRECTARGS( ra );
+   VYRECTARGS( ctx, ra );
    vyGetImplem( ctx, ra, & rects );
    VyRepr r = vyGetRepr( ra, "Rect" );
-   VYWINDOWARGS( wa );
+   VYWINDOWARGS( ctx, wa );
    vyGetImplem( ctx, wa, & windows );
    VyRepr w = vyGetRepr( wa, "Window" );
 /*

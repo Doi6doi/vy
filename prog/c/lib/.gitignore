@@ -10,4 +10,7 @@ vy_key.h
 vy_time.h
 vy_circle.h
 vy_color.h
-vy_color
+vy_filled.h
+vy_random.h
+vy_shape.h
+vy_sprite.h

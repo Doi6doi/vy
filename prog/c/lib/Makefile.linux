@@ -4,7 +4,7 @@ IDIR=.
 VDIR=../../..
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
 VYC=php ../../php/vyc/vyc.php
-PKGS=core util geom ui sm linux
+PKGS=core util geom ui sm mem linux
 ITEMS=string time rect random color circle caption filled shape
 HITEMS=key window view sprite
 

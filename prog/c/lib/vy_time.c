@@ -1,32 +1,23 @@
 #include <vy_implem.h>
+#include "vy_util.h"
 #include "vy_time.h"
+#include "vy_arch.h"
 
-struct Stamp {
-   VyRepr repr;
-};
-
-VyRepr vyrStamp;
-
-void destroyStamp( VyPtr ) {
-   vyThrow("stub destroyStamp");
+static VyStamp vyTimeStamp( ) {
+   return vyaTimeStamp();
 }
 
-static Stamp vyTimeStamp( ) {
-   vyThrow("stub TimeStamp");
+static VyStamp vyTimeAddSecond(VyStamp s, float i) {
+   return vyaTimeAddSecond( s, i );
 }
 
-static Stamp vyTimeAddSecond(Stamp, float ) {
-   vyThrow("stub TimeAddSecond");
-}
-
-static bool vyTimeWaitUntil(Stamp ) {
-   vyThrow("stub TimeWaitUntil");
+static bool vyTimeWaitUntil(VyStamp s) {
+   return vyaTimeWaitUntil( s );
 }
 
 void vyInitTime( VyContext ctx ) {
+   vyAddNative( ctx, "VyStamp", sizeof( VyStamp ));
    VYTIMEARGS( ctx, args );
-   vyrStamp = vyRepr( sizeof(struct Stamp), false, destroyStamp);
-   vyArgsType( args, "Stamp", vyrStamp );
    vyArgsImpl( args, "stamp", vyTimeStamp );
    vyArgsImpl( args, "addSecond", vyTimeAddSecond );
    vyArgsImpl( args, "waitUntil", vyTimeWaitUntil );

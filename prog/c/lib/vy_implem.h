@@ -9,6 +9,12 @@ typedef void * VyPtr;
 /// destruktor
 typedef void (* VyDestr)( VyPtr );
 
+/// modul inicializáló függvény
+typedef void (* VyModuleInit)( VyContext );
+
+/// vy modul betöltése
+void vyLoadModule( VyContext, VyCStr );
+
 /// saját reprezentáció
 VyRepr vyRepr( size_t size, bool , VyDestr );
 

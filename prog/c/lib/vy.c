@@ -6,6 +6,7 @@
 #include "vy_util.h"
 #include "vy_geom.h"
 #include "vy_ui.h"
+#include "vy_arch.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,7 +18,8 @@
 #define BUFSIZE 512
 
 char
-   *VYNOMEM = "Out of memory";
+   *VYNOMEM = "Out of memory",
+   *VYMODULEINIT = "vyModuleInit";
 
 char
    *NOCONTEXT = "Missing context",
@@ -25,6 +27,8 @@ char
    *NOIMPDEST = "Missing implementation destination",
    *NOIMPL = "Missing implementation: %s.%s",
    *NOINTF = "Missing interface name",
+   *NOMODULE = "Unknown module: %s",
+   *NOMODULEINIT = "Missing vyModuleInit function: %s",
    *NONATIVE = "Missing native name",
    *NOREPR = "Missing representation: %s.%s",
    *NOTYPE = "Missing type",
@@ -48,13 +52,6 @@ struct VyArgs {
    VyVer ver;
    VySm types;
    VySm funcs;
-/*   unsigned ntype;
-   VyCStr * types;
-   VyRepr * reprs;
-   unsigned nfunc;
-   VyCStr * funcs;
-   VyPtr * impls;
-*/
 };
 
 struct VyContext {
@@ -63,14 +60,12 @@ struct VyContext {
    int nimpls;
    VyArgs * impls;
    VySm natvs;
-/*   int nnatvs;
-   VyRepr * natvs;
-*/
 };
 
 struct Vy {
    VyRepr repr;
    VyContext context;
+   VySm modules;
 };
 
 void vyDestroyContext( VyContext ctx ) {
@@ -79,6 +74,7 @@ void vyDestroyContext( VyContext ctx ) {
 }
 
 void vyDestroyVy( Vy vy ) {
+   vySmClear( & vy->modules );
    vyFree( vy->context );
 }
 
@@ -145,12 +141,32 @@ VyContext vyContextCreate( Vy vy ) {
 Vy vyInit() {
    Vy ret = VYALLOC( struct Vy, & vyrVy );
    if ( ! ret ) vyThrow( VYNOMEM );
+   vySmInit( & ret->modules );
    VyContext ctx = ret->context = vyContextCreate( ret );
    vyInitCore( ctx );
    vyInitUtil( ctx );
    vyInitGeom( ctx );
    vyInitUi( ctx );
+   vyLoadModule( ctx, "vysdl" );
    return ret;
+}
+
+void vyLoadModule( VyContext ctx, VyCStr name ) {
+   VySm * mods = & ctx->vy->modules;
+   if ( 0 <= vySmFind( mods, name ))
+      return;
+   void * mod = vyaLoadLibrary( name );
+   if ( ! mod ) {
+      snprintf( vyBuf, BUFSIZE, NOMODULE, name );
+      vyThrow( vyBuf );
+   }
+   void * init = vyaLibraryFunc( mod, VYMODULEINIT );
+   if ( ! init ) {
+      snprintf( vyBuf, BUFSIZE, NOMODULEINIT, name );
+      vyThrow( vyBuf );
+   }
+   vySmAdd( mods, name, mod );
+   ((VyModuleInit)init)( ctx );
 }
 
 VyContext vyContext( Vy vy ) {

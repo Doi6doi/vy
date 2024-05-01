@@ -1,5 +1,6 @@
 #include <vy.h>
 #include <vy_geom.h>
+#include <vy_util.h>
 #include <vy_ui.h>
 
 #include <stdbool.h>
@@ -80,7 +81,7 @@ typedef struct Pong {
    float padSpeed;
    int maxScore;
    bool over;
-   Stamp last;
+   VyStamp last;
    /// elemek
    Window window;
    Score scores[2];
@@ -258,7 +259,7 @@ void movePad( Side side ) {
 
 /// kép frissítése
 void tick() {
-   Stamp next = times.addSecond( pong.last, TICK );
+   VyStamp next = times.addSecond( pong.last, TICK );
    times.waitUntil( next );
    pong.last = next;
 }

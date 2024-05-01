@@ -28,7 +28,3 @@ libvy:
 	$(MAKE) -C ../lib
 
 
-vy_filled.h: $(VDIR)/vy/geom/Filled@20240301.vy
-	$(VYC) -i vy.geom.Filled@=20240301 -r $(VDIR) \
-	-t 'ViewCoord=&VyViewCoord;Brush=&VyColor;Sub=Shape' -o $@
-

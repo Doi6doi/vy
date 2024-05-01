@@ -4,14 +4,14 @@ IDIR=.
 VDIR=../../..
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
 VYC=php ../../php/vyc/vyc.php
-PKGS=core util geom ui sm
-ITEMS=string key time rect window view random sprite color circle \
-	caption filled shape
+PKGS=core util geom ui sm linux
+ITEMS=string time rect random color circle caption filled shape
+HITEMS=key window view sprite
 
 build: libvy.so
 
 clean:
-	$(RM) *.o *.so $(ITEMS:%=vy_%.h)
+	$(RM) *.o *.so $(ITEMS:%=vy_%.h) $(HITEMS:%=vy_%.h)
 
 cleanc: clean
 	$(RM) $(ITEMS:%=vy_%.c)
@@ -25,9 +25,12 @@ pong:
 libvy.so: vy.o $(PKGS:%=vy_%.o) $(ITEMS:%=vy_%.o)
 	$(CC) -shared -o $@ $^
 
-vy.o: vy.c vy.h $(ITEMS:%=vy_%.h)
+vy.o: vy.c vy.h $(ITEMS:%=vy_%.h) $(HITEMS:%=vy_%.h)
 
 %.o: %.c %.h
+	$(CC) -fPIC -c -o $@ $<
+
+vy_linux.o: vy_linux.c vy_arch.h
 	$(CC) -fPIC -c -o $@ $<
 
 vy_string.h: $(VDIR)/vy/char/String@20240301.vy
@@ -42,17 +45,13 @@ vy_key.h: $(VDIR)/vy/ui/Key@20240301.vy
 	$(VYC) -f -i vy.ui.Key@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Key=&VyKey' -o $@
 
-vy_key.c: $(VDIR)/vy/ui/Key@20240301.vy
-	$(VYC) -i vy.ui.Key@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Key=&VyKey' -o $@
-
 vy_time.h: $(VDIR)/vy/util/Time@20240301.vy
 	$(VYC) -f -i vy.util.Time@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Number=&float' -o $@
+	-t 'Bool=&bool;Number=&float;Stamp=&VyStamp' -o $@
 
 vy_time.c: $(VDIR)/vy/util/Time@20240301.vy
 	$(VYC) -i vy.util.Time@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Number=&float' -o $@
+	-t 'Bool=&bool;Number=&float;Stamp=&VyStamp' -o $@
 
 vy_rect.h: $(VDIR)/vy/geom/Rect@20240301.vy
 	$(VYC) -f -i vy.geom.Rect@=20240301 -r $(VDIR) \
@@ -72,10 +71,6 @@ vy_view.c: $(VDIR)/vy/ui/View@20240301.vy
 
 vy_window.h: $(VDIR)/vy/ui/Window@20240301.vy
 	$(VYC) -f -i vy.ui.Window@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Sub=^View' -o $@
-
-vy_window.c: $(VDIR)/vy/ui/Window@20240301.vy
-	$(VYC) -i vy.ui.Window@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Sub=^View' -o $@
 
 vy_random.h: $(VDIR)/vy/util/Random@20240301.vy

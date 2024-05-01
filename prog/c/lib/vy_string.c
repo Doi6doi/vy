@@ -3,6 +3,7 @@
 
 struct String {
    VyRepr repr;
+   
 };
 
 VyRepr vyrString;
@@ -12,6 +13,7 @@ void destroyString( VyPtr ) {
 }
 
 static String vyStringConstAscii(VyCStr, VySize ) {
+
    vyThrow("stub StringConstAscii");
 }
 

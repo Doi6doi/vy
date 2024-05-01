@@ -1,11 +1,13 @@
 #include <vy_implem.h>
 #include "vy_ui.h"
 #include "vy_window.h"
+#include "vysdl.h"
 
 extern VyRepr vyrView;
 
 struct Window {
    VyRepr repr;
+   SDL_Window * sdl;
 };
 
 VyRepr vyrWindow;
@@ -23,7 +25,14 @@ static void vyWindowRemove(Window, View ) {
 }
 
 static Window vyWindowCreate( ) {
-   vyThrow("stub WindowCreate");
+   Window ret = vyAlloc( vyrWindow );
+   ret->sdl = SDL_CreateWindow( "",
+      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      vySdl.displayMode.w, vySdl.displayMode.h,
+      SDL_WINDOW_MAXIMIZED );
+   if ( ! ret->sdl )
+      vySdlError( "SDL Window create error" );
+   return ret;
 }
 
 static float vyWindowCoord(Window, VyViewCoord ) {

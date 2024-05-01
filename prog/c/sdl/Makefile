@@ -3,7 +3,7 @@ IDIR=../lib
 LDIR=../lib
 VDIR=../../..
 VYC=php ../../php/vyc/vyc.php
-LIBS=sdl vy
+LIBS=SDL2 vy
 ITEMS=key window view sprite
 CC=gcc -g $(IDIR:%=-I%) $(LDIR:%=-L%)
 RM=rm -f
@@ -17,7 +17,7 @@ head:
 	$(MAKE) build 2>&1 | head -n 20
 
 lib$(VYSDL).so: vysdl.o $(ITEMS:%=%.o)
-	$(CC) -shared -o $@ $^
+	$(CC) -shared -o $@ $^ $(LIBS:%=-l%)
 
 libvy:
 	$(MAKE) -C ../lib

@@ -8,3 +8,6 @@ vy_view.h
 vy_window.h
 vy_key.h
 vy_time.h
+vy_circle.h
+vy_color.h
+vy_color

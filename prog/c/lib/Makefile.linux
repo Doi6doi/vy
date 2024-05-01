@@ -65,10 +65,6 @@ vy_view.h: $(VDIR)/vy/ui/View@20240301.vy
 	$(VYC) -f -i vy.ui.View@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
 
-vy_view.c: $(VDIR)/vy/ui/View@20240301.vy
-	$(VYC) -i vy.ui.View@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
-
 vy_window.h: $(VDIR)/vy/ui/Window@20240301.vy
 	$(VYC) -f -i vy.ui.Window@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Sub=^View' -o $@
@@ -84,10 +80,6 @@ vy_random.c: $(VDIR)/vy/util/Random@20240301.vy
 vy_sprite.h: $(VDIR)/vy/ui/Sprite@20240301.vy
 	$(VYC) -f -i vy.ui.Sprite@=20240301 -r $(VDIR) \
 	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
-
-vy_sprite.c: $(VDIR)/vy/ui/Sprite@20240301.vy
-	$(VYC) -f -i vy.ui.Sprite@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Shape=^Shape' -o $@
 
 vy_color.h: $(VDIR)/vy/geom/Color@20240301.vy
 	$(VYC) -f -i vy.geom.Color@=20240301 -r $(VDIR) \

@@ -38,6 +38,10 @@ static void vySpriteSetCoord(Sprite, VyViewCoord, float ) {
    vyThrow("stub SpriteSetCoord");
 }
 
+static View vySpriteCastView( Sprite ) {
+   vyThrow("stub SpriteCastView");
+}
+
 void vySdlInitSprite( VyContext ctx ) {
    VYSPRITEARGS( ctx, args );
    vyArgsType( args, "Shape", vyrShape );
@@ -49,6 +53,7 @@ void vySdlInitSprite( VyContext ctx ) {
    vyArgsImpl( args, "create", vySpriteCreate );
    vyArgsImpl( args, "coord", vySpriteCoord );
    vyArgsImpl( args, "setCoord", vySpriteSetCoord );
+   vyArgsImpl( args, "castView", vySpriteCastView );
    vyAddImplem( ctx, args );
 }
 

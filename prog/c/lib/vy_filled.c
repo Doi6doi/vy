@@ -8,14 +8,18 @@ struct Filled {
 
 VyRepr vyrFilled;
 
-extern VyRepr vyrShape;
-
 void destroyFilled( VyPtr ) {
    vyThrow("stub destroyFilled");
 }
 
+extern VyRepr vyrShape;
+
 static Filled vyFilledCreateFilled(Shape, VyColor ) {
    vyThrow("stub FilledCreateFilled");
+}
+
+static Shape vyFilledCastShape( Filled ) {
+   vyThrow("stub FilledCastShape");
 }
 
 void vyInitFilled( VyContext ctx ) {
@@ -24,6 +28,7 @@ void vyInitFilled( VyContext ctx ) {
    vyArgsType( args, "Filled", vyrFilled );
    vyArgsType( args, "Sub", vyrShape );
    vyArgsImpl( args, "createFilled", vyFilledCreateFilled );
+   vyArgsImpl( args, "castShape", vyFilledCastShape );
    vyAddImplem( ctx, args );
 }
 

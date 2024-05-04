@@ -10,7 +10,7 @@ typedef struct Shape * Shape;
 
 typedef struct CaptionFun {
    Caption (* createCaption)(String);
-   Shape (* CaptionCastShape)( Caption );
+   Shape (* castShape)( Caption );
 } CaptionFun;
 
 #define VYCAPTIONARGS( ctx, name ) \

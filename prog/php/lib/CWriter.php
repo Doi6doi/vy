@@ -8,9 +8,18 @@ class CWriter {
    protected $stream;
    /// Típus lekérdezés
    protected $map;
+   /// Cast-ok
+   protected $casts;
+
+   const
+      CAST = "cast",
+      CASTL = "castl",
+      FUN = "fun",
+      REPR = "repr";
 
    function __construct() {
       $this->map = [];
+      $this->casts = [];
    }
 
    /// objektum alapján c header kiírása
@@ -43,6 +52,11 @@ class CWriter {
    function setTypeMap( array $map ) {
       $this->map = $map;
    }
+   
+   /// cast-ok beállítása
+   function setCasts( array $casts ) {
+	  $this->casts = $casts;
+   }
 
    /// a modul neve
    protected function module() {
@@ -54,10 +68,28 @@ class CWriter {
       return $this->stream->filename();
    }
 
+   /// egy megnevezés
+   protected function getName( $kind, $obj, $other=null ) {
+	  switch ( $kind ) {
+		 case self::CAST:
+		    $on = $other ? $other->name() : "";
+		    return sprintf( "%sCast%s", $on, $obj );
+		 case self::CASTL:
+		    return Tools::firstLower( $this->getName( self::CAST, $obj, $other ));
+		 case self::FUN:
+		    return $obj->name()."Fun";
+		 case self::REPR:
+		    return "vyr".$this->trim( $obj );
+		 default:
+		    throw new EVy("Unknown kind: $kind");
+      }
+  }
+  
+
    /// interfész c fejléce
    protected function writeInterfHeader( Interf $intf ) {
       $this->writeHeaderHead();
-      $this->writeInterfTypes($intf);
+      $this->writeTypes($intf);
       $this->writeInterfStruct($intf);
       $this->writeInterfArgs($intf);
       $this->writeInterfUtil($intf);
@@ -83,9 +115,11 @@ class CWriter {
    /// c fájl csonkok
    protected function writeInterfStubs( $intf ) {
       foreach ( $intf->consts() as $c )
-         $this->writeInterfConst( $c, true );
+         $this->writeConst( $c, true );
       foreach ( $intf->funcs() as $f )
-         $this->writeInterfFunc( $f, true );
+         $this->writeFunc( $f, true );
+      foreach ( $this->casts as $k => $v )
+         $this->writeCast( $intf, $k, $v, true );
    }
 
    /// reprezentíációk
@@ -97,7 +131,8 @@ class CWriter {
          switch ( $ch ) {
 			case "&": break;
 			case "^":
-			   $s->writel( "extern VyRepr vyr%s;\n", substr( $tn, 1 ));
+			   $s->writel( "extern VyRepr %s;\n", 
+			      $this->getName( self::REPR, $tn ) );
 			break;
 			default:
 			   $s->writel("struct %s {", $tn );
@@ -105,7 +140,8 @@ class CWriter {
 			   $s->writel("VyRepr repr;");
 			   $s->indent(false);
 			   $s->writel("};\n");
-               $s->writel( "VyRepr vyr%s;\n", $tn );
+               $s->writel( "VyRepr %s;\n", 
+                  $this->getName( self::REPR, $tn ) );
                $s->writef( "void destroy%s( VyPtr", $tn );
                $this->writeThrowStub( "destroy$tn" );
          }
@@ -130,6 +166,14 @@ class CWriter {
       $s->writel( "#endif // $hh");
    }
 
+   /// ^ vagy & levágása
+   protected function trim( $s ) {
+	  $ch = substr( $s, 0, 1 );
+	  if ( in_array( $ch, ["^", "&"] ))
+	     return substr( $s, 1 );
+	  return $s;
+   }
+
    /// típus leképezés egy interfésznél
    protected function getType( $intf, $type, $trim ) {
       $key = $intf->name().".".$type;
@@ -139,41 +183,52 @@ class CWriter {
          $ret = $val;
       else
          $ret = $type;
-      $ch = substr( $ret, 0, 1 );
-      if ( $trim && in_array( $ch, ["&","^"] ))
-         $ret = substr( $ret, 1 );
-      return $ret;
+      if ( $trim )
+         return $this->trim( $ret );
+         else return $ret;
    }
 
    /// interfész típusok kiírása
-   protected function writeInterfTypes( $intf ) {
+   protected function writeTypes( $intf ) {
+	  $had = [];
       foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
          $ch = substr( $tn, 0, 1 );
          if ( "&" != $ch ) {
-			 if ( "^" == $ch )
-			    $tn = substr( $tn, 1 );
-             $this->stream->writel( "typedef struct %s * %s;\n", $tn, $tn );
+			 $tn = $this->trim( $tn );
+			 $this->writeType( $tn );
+             $had [] = $tn;
 	     }
       }
+      foreach ( $this->casts as $k=>$v ) {
+		 if ( ! in_array( $v, $had ))
+		    $this->writeType( $v );
+      }
+   }
+
+   /// egy típus kiírása
+   protected function writeType( $t ) {
+      $this->stream->writel( "typedef struct %s * %s;\n", $t, $t );
    }
 
    /// interfész struktúra kiírása
    protected function writeInterfStruct( $intf ) {
       $s = $this->stream;
-      $in = $intf->name();
-      $s->writel( "typedef struct %sFun {", $in );
+      $nf = $this->getName( self::FUN, $intf );
+      $s->writel( "typedef struct %s {", $nf );
       $s->indent(true);
       foreach ( $intf->consts() as $c )
-         $this->writeInterfConst( $c, false );
+         $this->writeConst( $c, false );
       foreach ( $intf->funcs() as $f )
-         $this->writeInterfFunc( $f, false );
+         $this->writeFunc( $f, false );
+      foreach ( $this->casts as $k=>$v )
+         $this->writeCast( $intf, $k, $v, false );
       $s->indent(false);
-      $s->writel( "} %sFun;", $in);
+      $s->writel( "} %s;", $nf );
    }
 
    /// interfész struktúra konstans kiírása
-   protected function writeInterfConst( $f, $stub ) {
+   protected function writeConst( $f, $stub ) {
       $s = $this->stream;
       $in = $f->owner();
       $name = $f->name();
@@ -198,7 +253,7 @@ class CWriter {
          }
       }
       if ( $stub ) {
-		 $this->writeThrowStub( $fn );
+		 $this->writeThrowStub( $in->name().Tools::firstUpper($fn) );
       } else {
 		$s->write(");\n");
       }
@@ -215,7 +270,7 @@ class CWriter {
    }
 	   
    /// interfész struktúra függvény kiírása
-   protected function writeInterfFunc( $f, $stub ) {
+   protected function writeFunc( $f, $stub ) {
       $s = $this->stream;
       $in = $f->owner();
       $fn = $this->funcName( $f, $stub ? $in : null );
@@ -240,6 +295,24 @@ class CWriter {
       if ( $stub )
 		 $this->writeThrowStub( $fn );
          else $s->write(");\n");
+   }
+
+   /// cast kiírása
+   protected function writeCast( $intf, $t, $u, $stub ) {
+      $s = $this->stream;
+      if ( $stub )
+         $s->writef( "static " );
+         else $s->writeIndent();
+      $s->write( "$u " );
+      $cn = $this->getName( self::CAST, $u, $intf );
+      $cl = $this->getName( self::CASTL, $u );
+      if ( $stub )
+         $s->write( "vy$cn" );
+         else $s->writef( "(* $cl)" );
+      $s->write( "( $t" );
+      if ( $stub ) 
+		 $this->writeThrowStub( $cn );
+         else $s->write(" );\n");
    }
 
    /// interfész lekérő függvény
@@ -267,6 +340,10 @@ class CWriter {
          $s->writel( "vyArgsFunc( name, \"%s\"); \\",
             $f->name() );
       }
+      foreach ( $this->casts as $k=>$v ) {
+		 $s->writel( "vyArgsFunc( name, \"%s\"); \\",
+		    $this->getName( self::CASTL, $v ));
+	  }
       $s->indent(false);
       $s->writel();
       $s->writel( "#define VYIMPORT%s( ctx, var ) \\", $un );
@@ -310,15 +387,25 @@ class CWriter {
 	     $this->writeBodyInitFunc( $c );
 	  foreach ($intf->funcs() as $f)
 	     $this->writeBodyInitFunc( $f );
+	  foreach ($this->casts as $k=>$v)
+	     $this->writeBodyInitCast( $intf, $k, $v );
 	  $s->writel( "vyAddImplem( ctx, args );" );
 	  $s->indent(false);
 	  $s->writel("}\n");
    }	     
    
+   /// init rész függvény kiírás
    protected function writeBodyInitFunc( $func ) {
       $fn = $this->funcName( $func );
 	  $ffn = $this->funcName( $func, $func->owner() );
 	  $this->stream->writel( 'vyArgsImpl( args, "%s", vy%s );', $fn, $ffn );
+   }
+
+   /// init rész cast kiírás
+   protected function writeBodyInitCast( $intf, $t, $u ) {
+	  $cn = $this->getName( self::CAST, $u, $intf );
+	  $cl = $this->getName( self::CASTL, $u );
+	  $this->stream->writel( 'vyArgsImpl( args, "%s", vy%s );', $cl, $cn );
    }
 
    /// interfész hasznos függvények

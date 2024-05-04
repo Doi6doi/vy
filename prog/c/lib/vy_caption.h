@@ -6,8 +6,11 @@ typedef struct String * String;
 
 typedef struct Caption * Caption;
 
+typedef struct Shape * Shape;
+
 typedef struct CaptionFun {
    Caption (* createCaption)(String);
+   Shape (* CaptionCastShape)( Caption );
 } CaptionFun;
 
 #define VYCAPTIONARGS( ctx, name ) \
@@ -18,6 +21,7 @@ typedef struct CaptionFun {
    vyArgsType( name, "Coord", vyNative( ctx, "float" ) ); \
    vyArgsType( name, "Caption", NULL ); \
    vyArgsFunc( name, "createCaption"); \
+   vyArgsFunc( name, "castShape"); \
 
 #define VYIMPORTCAPTION( ctx, var ) \
    VYCAPTIONARGS( ctx, var ## Args ); \

@@ -21,8 +21,6 @@ class Tools {
    static function debug() {
       $ret = [];
       foreach (func_get_args() as $x) {
-//         if ( ! is_string( $x ))
-//            $x = json_encode( $x );
          $ret [] = $x;
       }
       fprintf( STDERR, implode(", ",$ret)."\n" );
@@ -90,6 +88,13 @@ class Tools {
 	  if ( 0 == strlen($s))
 	     return $s;
 	  return strtoupper( $s[0] ).substr($s,1);
+   }
+
+   /// első betű kisbetű
+   static function firstLower($s) {
+	  if ( 0 == strlen($s))
+	     return $s;
+	  return strtolower( $s[0] ).substr($s,1);
    }
 
 }

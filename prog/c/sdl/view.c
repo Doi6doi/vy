@@ -12,6 +12,10 @@ void destroyView( VyPtr ) {
    vyThrow("stub destroyView");
 }
 
+static void vyViewSet( View *, View ) {
+   vyThrow("stub ViewSet");
+}
+
 static View vyViewCreate( ) {
    vyThrow("stub ViewCreate");
 }
@@ -28,6 +32,7 @@ void vySdlInitView( VyContext ctx ) {
    VYVIEWARGS( ctx, args );
    vyrView = vyRepr( sizeof(struct View), false, destroyView);
    vyArgsType( args, "View", vyrView );
+   vyArgsImpl( args, "set", vyViewSet );
    vyArgsImpl( args, "create", vyViewCreate );
    vyArgsImpl( args, "coord", vyViewCoord );
    vyArgsImpl( args, "setCoord", vyViewSetCoord );

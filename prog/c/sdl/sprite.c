@@ -14,6 +14,10 @@ void destroySprite( VyPtr ) {
    vyThrow("stub destroySprite");
 }
 
+static void vySpriteSet( Sprite *, Sprite ) {
+   vyThrow("stub SpriteSet");
+}
+
 static Sprite vySpriteCreateSprite(Shape ) {
    vyThrow("stub SpriteCreateSprite");
 }
@@ -47,6 +51,7 @@ void vySdlInitSprite( VyContext ctx ) {
    vyArgsType( args, "Shape", vyrShape );
    vyrSprite = vyRepr( sizeof(struct Sprite), false, destroySprite);
    vyArgsType( args, "Sprite", vyrSprite );
+   vyArgsImpl( args, "set", vySpriteSet );
    vyArgsImpl( args, "createSprite", vySpriteCreateSprite );
    vyArgsImpl( args, "moveTo", vySpriteMoveTo );
    vyArgsImpl( args, "setShape", vySpriteSetShape );

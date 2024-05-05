@@ -1,12 +1,10 @@
 #include <vy_implem.h>
-#include "vy_geom_impl.h"
 #include "vy_caption.h"
 
 extern VyRepr vyrString;
 
 struct Caption {
-   struct Shape shape;
-   String str;
+   VyRepr repr;
 };
 
 VyRepr vyrCaption;
@@ -15,9 +13,11 @@ void destroyCaption( VyPtr ) {
    vyThrow("stub destroyCaption");
 }
 
-static Caption vyCaptionCreateCaption(String str) {
-   Caption ret = vyAlloc( vyrCaption );
-   ret->str = 
+static void vyCaptionSet( Caption *, Caption ) {
+   vyThrow("stub CaptionSet");
+}
+
+static Caption vyCaptionCreateCaption(String ) {
    vyThrow("stub CaptionCreateCaption");
 }
 
@@ -30,6 +30,7 @@ void vyInitCaption( VyContext ctx ) {
    vyArgsType( args, "String", vyrString );
    vyrCaption = vyRepr( sizeof(struct Caption), false, destroyCaption);
    vyArgsType( args, "Caption", vyrCaption );
+   vyArgsImpl( args, "set", vyCaptionSet );
    vyArgsImpl( args, "createCaption", vyCaptionCreateCaption );
    vyArgsImpl( args, "castShape", vyCaptionCastShape );
    vyAddImplem( ctx, args );

@@ -173,6 +173,11 @@ void initPong() {
    initBall();
 }
 
+/// pong felszámolás
+void donePong() {
+   windows.set( & pong.window, NULL );
+}
+
 
 /// inicializálás
 void init() {
@@ -275,6 +280,7 @@ void step() {
 
 /// vége
 void done() {
+   donePong();
    vyFree( vy );
 }
 

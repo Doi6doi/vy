@@ -1,13 +1,8 @@
 #include <vy_implem.h>
 #include "vy_string.h"
-#include "vy_mem.h"
-#include <string.h>
-
-#define CHS sizeof(wchar_t)
 
 struct String {
    VyRepr repr;
-   VyMem mem;
 };
 
 VyRepr vyrString;
@@ -16,21 +11,16 @@ void destroyString( VyPtr ) {
    vyThrow("stub destroyString");
 }
 
+static void vyStringSet( String *, String ) {
+   vyThrow("stub StringSet");
+}
 
-
-static String vyStringConstAscii(VyCStr data, VySize len) {
-   if ( VY_LEN == len )
-      len = strlen( data ) ;
-   String ret = vyAlloc( vyrString );
-   vyMemInit( & ret->mem, len * CHS );
-   wchar_t * dest = (wchar_t *) ret->mem.data;
-   for ( unsigned i=0; i<len; ++i )
-      (*(dest++)) = (wchar_t)data[i];
-   return ret;
+static String vyStringConstAscii(VyCStr, VySize ) {
+   vyThrow("stub StringStringConstAscii");
 }
 
 static String vyStringConstUtf(VyCStr, VySize ) {
-   vyThrow("stub StringConstUtf");
+   vyThrow("stub StringStringConstUtf");
 }
 
 static bool vyStringLess(String, String ) {
@@ -61,6 +51,7 @@ void vyInitString( VyContext ctx ) {
    VYSTRINGARGS( ctx, args );
    vyrString = vyRepr( sizeof(struct String), false, destroyString);
    vyArgsType( args, "String", vyrString );
+   vyArgsImpl( args, "set", vyStringSet );
    vyArgsImpl( args, "constAscii", vyStringConstAscii );
    vyArgsImpl( args, "constUtf", vyStringConstUtf );
    vyArgsImpl( args, "less", vyStringLess );

@@ -11,7 +11,7 @@ HITEMS=key window view sprite
 build: libvy.so
 
 clean:
-	$(RM) *.o *.so $(ITEMS:%=vy_%.h) $(HITEMS:%=vy_%.h)
+	$(RM) *.o libvy.so $(ITEMS:%=vy_%.h) $(HITEMS:%=vy_%.h)
 
 cleanc: clean
 	$(RM) $(ITEMS:%=vy_%.c)
@@ -81,7 +81,7 @@ vy_random.c: $(VDIR)/vy/util/Random@20240301.vy
 
 vy_sprite.h: $(VDIR)/vy/ui/Sprite@20240301.vy
 	$(VYC) -f -i vy.ui.Sprite@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' \
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Shape=^Shape' \
 	-s 'Sprite=View' -o $@
 
 vy_color.h: $(VDIR)/vy/geom/Color@20240301.vy

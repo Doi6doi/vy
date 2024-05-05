@@ -114,6 +114,7 @@ class CWriter {
 
    /// c fájl csonkok
    protected function writeInterfStubs( $intf ) {
+	  $this->writeSetters( $intf, true );
       foreach ( $intf->consts() as $c )
          $this->writeConst( $c, true );
       foreach ( $intf->funcs() as $f )
@@ -217,14 +218,46 @@ class CWriter {
       $nf = $this->getName( self::FUN, $intf );
       $s->writel( "typedef struct %s {", $nf );
       $s->indent(true);
+      $this->writeSetters( $intf, false );
+      foreach ( $this->casts as $k=>$v )
+         $this->writeCast( $intf, $k, $v, false );
       foreach ( $intf->consts() as $c )
          $this->writeConst( $c, false );
       foreach ( $intf->funcs() as $f )
          $this->writeFunc( $f, false );
-      foreach ( $this->casts as $k=>$v )
-         $this->writeCast( $intf, $k, $v, false );
       $s->indent(false);
       $s->writel( "} %s;", $nf );
+   }
+
+   /// itt definiált típusok
+   protected function ownTypes( $intf, $shor = true ) {
+	  $ret = [];
+      foreach ( $intf->types() as $t ) {
+         $tn = $this->getType( $intf, $t->name(), false );
+         $ch = substr( $tn, 0, 1 );
+         if ( ! in_array( $ch, ["&","^"] ) )
+            $ret [] = $tn;
+      }
+      if ( $shor && 1 == count($ret) )
+         return [""];
+      return $ret;
+   }
+
+   /// értékadó függvények
+   protected function writeSetters( $intf, $stub ) {
+	  $s = $this->stream;
+	  $ots = $this->ownTypes( $intf, false );
+	  $one = 1 == count( $ots );
+      foreach ( $ots as $t ) {
+   	     if ( $stub ) {
+	 	    $n = sprintf( "%sSet%s", $intf->name(), $one ? "" : $t );
+		    $s->writef( "static void vy%s( %s *, %s", $n, $t, $t );
+		    $this->writeThrowStub( $n );
+         } else {
+		    $n = sprintf( "set%s", $one ? "" : $t );
+		    $s->writel( "void (* %s)( %s *, %s );", $n, $t, $t );
+         }
+      }
    }
 
    /// interfész struktúra konstans kiírása
@@ -326,12 +359,19 @@ class CWriter {
          $intf->pkg(), $intf->name(), substr($intf->ver(),1) );
       foreach ( $intf->types() as $t ) {
          $tn = $this->getType( $intf, $t->name(), false );
-         if ( "&" == substr($tn,0,1))
+         $ch = substr( $tn, 0, 1 );
+         if ( "&" == $ch )
             $re = sprintf("vyNative( ctx, \"%s\" )", substr($tn,1));
             else $re = "NULL";
          $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
             $t->name(), $re );
       }
+      foreach ( $this->ownTypes($intf) as $tn )
+         $s->writel( "vyArgsFunc( name, \"set%s\"); \\", $tn );
+      foreach ( $this->casts as $k=>$v ) {
+		 $s->writel( "vyArgsFunc( name, \"%s\"); \\",
+		    $this->getName( self::CASTL, $v ));
+	  }
       foreach ( $intf->consts() as $c ) {
          $s->writel( "vyArgsFunc( name, \"%s\"); \\",
             $this->funcName( $c ));
@@ -340,10 +380,6 @@ class CWriter {
          $s->writel( "vyArgsFunc( name, \"%s\"); \\",
             $f->name() );
       }
-      foreach ( $this->casts as $k=>$v ) {
-		 $s->writel( "vyArgsFunc( name, \"%s\"); \\",
-		    $this->getName( self::CASTL, $v ));
-	  }
       $s->indent(false);
       $s->writel();
       $s->writel( "#define VYIMPORT%s( ctx, var ) \\", $un );
@@ -382,6 +418,10 @@ class CWriter {
             }
             $s->writel( 'vyArgsType( args, "%s", vyr%s );', $t->name(), $tnn );
          }
+      }
+      foreach ( $this->ownTypes($intf) as $tn ) {
+         $s->writel( 'vyArgsImpl( args, "set%s", vy%sSet%s );', 
+            $tn, $intf->name(), $tn );
       }
 	  foreach ($intf->consts() as $c)
 	     $this->writeBodyInitFunc( $c );

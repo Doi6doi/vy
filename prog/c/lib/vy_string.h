@@ -5,6 +5,7 @@
 typedef struct String * String;
 
 typedef struct StringFun {
+   void (* set)( String *, String );
    String (* constAscii)(VyCStr, VySize);
    String (* constUtf)(VyCStr, VySize);
    bool (* less)(String, String);
@@ -20,6 +21,7 @@ typedef struct StringFun {
    vyArgsType( name, "Bool", vyNative( ctx, "bool" ) ); \
    vyArgsType( name, "Char", vyNative( ctx, "wchar_t" ) ); \
    vyArgsType( name, "String", NULL ); \
+   vyArgsFunc( name, "set"); \
    vyArgsFunc( name, "constAscii"); \
    vyArgsFunc( name, "constUtf"); \
    vyArgsFunc( name, "less"); \

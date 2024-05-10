@@ -1,8 +1,13 @@
 #include <vy_implem.h>
 #include "vy_string.h"
+#include "vy_mem.h"
+#include <string.h>
+
+#define CHS sizeof(wchar_t)
 
 struct String {
-   VyRepr repr;
+   VyRefCount ref;
+   VyMem mem;
 };
 
 VyRepr vyrString;
@@ -11,12 +16,19 @@ void destroyString( VyPtr ) {
    vyThrow("stub destroyString");
 }
 
-static void vyStringSet( String *, String ) {
-   vyThrow("stub StringSet");
+static void vyStringSet( String * dst, String val ) {
+   vySetRef( dst, val->ref );
 }
 
-static String vyStringConstAscii(VyCStr, VySize ) {
-   vyThrow("stub StringStringConstAscii");
+static String vyStringConstAscii(VyCStr data, VySize len ) {
+  if ( VY_LEN == len )
+      len = strlen( data ) ;
+   String ret = vyAllocRef( vyrString );
+   vyMemInit( & ret->mem, len * CHS );
+   wchar_t * dest = (wchar_t *) ret->mem.data;
+   for ( unsigned i=0; i<len; ++i )
+      (*(dest++)) = (wchar_t)data[i];
+   return ret;	
 }
 
 static String vyStringConstUtf(VyCStr, VySize ) {

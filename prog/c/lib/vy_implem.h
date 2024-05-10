@@ -29,6 +29,9 @@ VyPtr vyAlloc( VyRepr );
 /// refcount objektum készítése
 VyPtr vyAllocRef( VyRepr );
 
+/// refcount objektum set függvény
+void vySetRef( VyRefCount *, VyRefCount );
+
 /// egy implementáció megadása
 void vyArgsImpl( VyArgs, VyCStr, VyPtr );
 

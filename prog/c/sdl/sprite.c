@@ -34,10 +34,6 @@ static void vySpriteSetShape( Sprite, Shape ) {
    vyThrow("stub vySpriteSetShape");
 }
 
-static Sprite vySpriteCreate(  ) {
-   vyThrow("stub vySpriteCreate");
-}
-
 static float vySpriteCoord( Sprite, VyViewCoord ) {
    vyThrow("stub vySpriteCoord");
 }
@@ -56,7 +52,6 @@ void vySdlInitSprite( VyContext ctx ) {
    vyArgsImpl( args, "createSprite", vySpriteCreateSprite );
    vyArgsImpl( args, "moveTo", vySpriteMoveTo );
    vyArgsImpl( args, "setShape", vySpriteSetShape );
-   vyArgsImpl( args, "create", vySpriteCreate );
    vyArgsImpl( args, "coord", vySpriteCoord );
    vyArgsImpl( args, "setCoord", vySpriteSetCoord );
    vyAddImplem( ctx, args );

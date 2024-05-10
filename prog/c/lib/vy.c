@@ -329,4 +329,15 @@ VyRepr vyAddNative( VyContext ctx, VyCStr name, size_t size ) {
    return ret;
 } 
 
+void vySetRef( VyRefCount * dest, VyRefCount val ) {
+   VyRefCount old = *dest;
+   if ( old == val )
+      return;
+   if ( NULL != old ) {
+	  if ( 0 >= -- old->ref )
+		  vyFree( old );
+   }
+   *dest = val;
+   ++ val->ref;
+}
 

@@ -11,7 +11,6 @@ interface vy.ui.View @20240301 {
    }
 
    function {
-      create(): View;
       coord( View, ViewCoord ): Coord;
       setCoord( View, ViewCoord, Coord );
    }

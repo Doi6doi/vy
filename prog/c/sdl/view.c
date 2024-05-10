@@ -8,32 +8,27 @@ struct View {
 
 VyRepr vyrView;
 
-void destroyView( VyPtr ) {
-   vyThrow("stub destroyView");
+void vyDestroyView( VyPtr ) {
+   vyThrow("stub vyDestroyView");
 }
 
 static void vyViewSet( View *, View ) {
-   vyThrow("stub ViewSet");
+   vyThrow("stub vyViewSet");
 }
 
-static View vyViewCreate( ) {
-   vyThrow("stub ViewCreate");
+static float vyViewCoord( View, VyViewCoord ) {
+   vyThrow("stub vyViewCoord");
 }
 
-static float vyViewCoord(View, VyViewCoord ) {
-   vyThrow("stub ViewCoord");
-}
-
-static void vyViewSetCoord(View, VyViewCoord, float ) {
-   vyThrow("stub ViewSetCoord");
+static void vyViewSetCoord( View, VyViewCoord, float ) {
+   vyThrow("stub vyViewSetCoord");
 }
 
 void vySdlInitView( VyContext ctx ) {
    VYVIEWARGS( ctx, args );
-   vyrView = vyRepr( sizeof(struct View), false, destroyView);
+   vyrView = vyRepr( sizeof(struct View), false, vyDestroyView);
    vyArgsType( args, "View", vyrView );
    vyArgsImpl( args, "set", vyViewSet );
-   vyArgsImpl( args, "create", vyViewCreate );
    vyArgsImpl( args, "coord", vyViewCoord );
    vyArgsImpl( args, "setCoord", vyViewSetCoord );
    vyAddImplem( ctx, args );

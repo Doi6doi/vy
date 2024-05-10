@@ -1,8 +1,8 @@
 #include <vy_implem.h>
 #include "vy_random.h"
 
-static unsigned vyRandomRandom(unsigned ) {
-   vyThrow("stub RandomRandom");
+static unsigned vyRandomRandom( unsigned ) {
+   vyThrow("stub vyRandomRandom");
 }
 
 void vyInitRandom( VyContext ctx ) {

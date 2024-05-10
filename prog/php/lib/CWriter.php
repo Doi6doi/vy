@@ -204,6 +204,7 @@ class CWriter {
             $s->writel();
          break;
          case self::INIT:
+		    $s->writel( "vyAddImplem( ctx, args );" );
 		    $s->indent( false );
             $s->writel( "}\n" );
          break;

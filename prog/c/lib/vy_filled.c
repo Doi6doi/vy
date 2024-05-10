@@ -34,5 +34,6 @@ void vyInitFilled( VyContext ctx ) {
    vyArgsType( args, "Sub", vyrShape );
    vyArgsImpl( args, "cast", vyFilledCast );
    vyArgsImpl( args, "createFilled", vyFilledCreateFilled );
+   vyAddImplem( ctx, args );
 }
 

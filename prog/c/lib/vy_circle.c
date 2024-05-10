@@ -30,5 +30,6 @@ void vyInitCircle( VyContext ctx ) {
    vyArgsImpl( args, "set", vyCircleSet );
    vyArgsImpl( args, "cast", vyCircleCast );
    vyArgsImpl( args, "createCircle", vyCircleCreateCircle );
+   vyAddImplem( ctx, args );
 }
 

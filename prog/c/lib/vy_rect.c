@@ -30,5 +30,6 @@ void vyInitRect( VyContext ctx ) {
    vyArgsImpl( args, "set", vyRectSet );
    vyArgsImpl( args, "cast", vyRectCast );
    vyArgsImpl( args, "createRect", vyRectCreateRect );
+   vyAddImplem( ctx, args );
 }
 

@@ -1,4 +1,4 @@
-interface Random @20240301 {
+interface vy.util.Random @20240301 {
 
    import {
       vy.num.Number;

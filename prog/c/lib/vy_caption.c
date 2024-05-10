@@ -33,5 +33,6 @@ void vyInitCaption( VyContext ctx ) {
    vyArgsImpl( args, "set", vyCaptionSet );
    vyArgsImpl( args, "cast", vyCaptionCast );
    vyArgsImpl( args, "createCaption", vyCaptionCreateCaption );
+   vyAddImplem( ctx, args );
 }
 

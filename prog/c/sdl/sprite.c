@@ -59,5 +59,6 @@ void vySdlInitSprite( VyContext ctx ) {
    vyArgsImpl( args, "create", vySpriteCreate );
    vyArgsImpl( args, "coord", vySpriteCoord );
    vyArgsImpl( args, "setCoord", vySpriteSetCoord );
+   vyAddImplem( ctx, args );
 }
 

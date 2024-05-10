@@ -2,7 +2,7 @@
 #include "vy_shape.h"
 
 struct Shape {
-   VyRepr repr;
+   VyRefCount ref;
 };
 
 VyRepr vyrShape;
@@ -11,8 +11,8 @@ void destroyShape( VyPtr ) {
    vyThrow("stub destroyShape");
 }
 
-static void vyShapeSet( Shape *, Shape ) {
-   vyThrow("stub ShapeSet");
+static void vyShapeSet( Shape * dest, Shape val ) {
+   vySetRef( (VyRefCount *)dest, val->ref );
 }
 
 void vyInitShape( VyContext ctx ) {

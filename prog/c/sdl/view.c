@@ -1,10 +1,7 @@
 #include <vy_implem.h>
+#include "vysdl.h"
 #include "vy_ui.h"
 #include "vy_view.h"
-
-struct View {
-   VyRepr repr;
-};
 
 VyRepr vyrView;
 

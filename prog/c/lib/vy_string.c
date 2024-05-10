@@ -17,7 +17,7 @@ void destroyString( VyPtr ) {
 }
 
 static void vyStringSet( String * dst, String val ) {
-   vySetRef( dst, val->ref );
+   vySetRef( (VyRefCount *)dst, val->ref );
 }
 
 static String vyStringConstAscii(VyCStr data, VySize len ) {
@@ -28,7 +28,7 @@ static String vyStringConstAscii(VyCStr data, VySize len ) {
    wchar_t * dest = (wchar_t *) ret->mem.data;
    for ( unsigned i=0; i<len; ++i )
       (*(dest++)) = (wchar_t)data[i];
-   return ret;	
+   return ret;
 }
 
 static String vyStringConstUtf(VyCStr, VySize ) {

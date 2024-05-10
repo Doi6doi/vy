@@ -3,6 +3,11 @@
 
 #include <vy.h>
 
+typedef struct VyRefCount {
+   VyRepr repr;
+   unsigned ref;
+} * VyRefCount;
+
 /// mutató
 typedef void * VyPtr;
 
@@ -19,7 +24,10 @@ void vyLoadModule( VyContext, VyCStr );
 VyRepr vyRepr( size_t size, bool , VyDestr );
 
 /// objektum készítése
-VyPtr vyAlloc( VyRepr r );
+VyPtr vyAlloc( VyRepr );
+
+/// refcount objektum készítése
+VyPtr vyAllocRef( VyRepr );
 
 /// egy implementáció megadása
 void vyArgsImpl( VyArgs, VyCStr, VyPtr );

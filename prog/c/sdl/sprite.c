@@ -10,55 +10,54 @@ struct Sprite {
 
 VyRepr vyrSprite;
 
-void destroySprite( VyPtr ) {
-   vyThrow("stub destroySprite");
+void vyDestroySprite( VyPtr ) {
+   vyThrow("stub vyDestroySprite");
 }
 
 static void vySpriteSet( Sprite *, Sprite ) {
-   vyThrow("stub SpriteSet");
+   vyThrow("stub vySpriteSet");
 }
 
-static Sprite vySpriteCreateSprite(Shape ) {
-   vyThrow("stub SpriteCreateSprite");
+View vySpriteCast( Sprite ) {
+   vyThrow("stub vySpriteCast");
 }
 
-static void vySpriteMoveTo(Sprite, float x, float y ) {
-   vyThrow("stub SpriteMoveTo");
+static Sprite vySpriteCreateSprite( Shape ) {
+   vyThrow("stub vySpriteCreateSprite");
 }
 
-static void vySpriteSetShape(Sprite, Shape ) {
-   vyThrow("stub SpriteSetShape");
+static void vySpriteMoveTo( Sprite, float x, float y ) {
+   vyThrow("stub vySpriteMoveTo");
 }
 
-static Sprite vySpriteCreate( ) {
-   vyThrow("stub SpriteCreate");
+static void vySpriteSetShape( Sprite, Shape ) {
+   vyThrow("stub vySpriteSetShape");
 }
 
-static float vySpriteCoord(Sprite, VyViewCoord ) {
-   vyThrow("stub SpriteCoord");
+static Sprite vySpriteCreate(  ) {
+   vyThrow("stub vySpriteCreate");
 }
 
-static void vySpriteSetCoord(Sprite, VyViewCoord, float ) {
-   vyThrow("stub SpriteSetCoord");
+static float vySpriteCoord( Sprite, VyViewCoord ) {
+   vyThrow("stub vySpriteCoord");
 }
 
-static View vySpriteCastView( Sprite ) {
-   vyThrow("stub SpriteCastView");
+static void vySpriteSetCoord( Sprite, VyViewCoord, float ) {
+   vyThrow("stub vySpriteSetCoord");
 }
 
 void vySdlInitSprite( VyContext ctx ) {
    VYSPRITEARGS( ctx, args );
    vyArgsType( args, "Shape", vyrShape );
-   vyrSprite = vyRepr( sizeof(struct Sprite), false, destroySprite);
+   vyrSprite = vyRepr( sizeof(struct Sprite), false, vyDestroySprite);
    vyArgsType( args, "Sprite", vyrSprite );
    vyArgsImpl( args, "set", vySpriteSet );
+   vyArgsImpl( args, "cast", vySpriteCast );
    vyArgsImpl( args, "createSprite", vySpriteCreateSprite );
    vyArgsImpl( args, "moveTo", vySpriteMoveTo );
    vyArgsImpl( args, "setShape", vySpriteSetShape );
    vyArgsImpl( args, "create", vySpriteCreate );
    vyArgsImpl( args, "coord", vySpriteCoord );
    vyArgsImpl( args, "setCoord", vySpriteSetCoord );
-   vyArgsImpl( args, "castView", vySpriteCastView );
-   vyAddImplem( ctx, args );
 }
 

@@ -8,32 +8,31 @@ struct Filled {
 
 VyRepr vyrFilled;
 
-void destroyFilled( VyPtr ) {
-   vyThrow("stub destroyFilled");
-}
-
 extern VyRepr vyrShape;
 
+void vyDestroyFilled( VyPtr ) {
+   vyThrow("stub vyDestroyFilled");
+}
+
 static void vyFilledSet( Filled *, Filled ) {
-   vyThrow("stub FilledSet");
+   vyThrow("stub vyFilledSet");
 }
 
-static Filled vyFilledCreateFilled(Shape, VyColor ) {
-   vyThrow("stub FilledCreateFilled");
+Shape vyFilledCast( Filled ) {
+   vyThrow("stub vyFilledCast");
 }
 
-static Shape vyFilledCastShape( Filled ) {
-   vyThrow("stub FilledCastShape");
+static Filled vyFilledCreateFilled( Shape, VyColor ) {
+   vyThrow("stub vyFilledCreateFilled");
 }
 
 void vyInitFilled( VyContext ctx ) {
    VYFILLEDARGS( ctx, args );
-   vyrFilled = vyRepr( sizeof(struct Filled), false, destroyFilled);
+   vyrFilled = vyRepr( sizeof(struct Filled), false, vyDestroyFilled);
    vyArgsType( args, "Filled", vyrFilled );
-   vyArgsType( args, "Sub", vyrShape );
    vyArgsImpl( args, "set", vyFilledSet );
+   vyArgsType( args, "Sub", vyrShape );
+   vyArgsImpl( args, "cast", vyFilledCast );
    vyArgsImpl( args, "createFilled", vyFilledCreateFilled );
-   vyArgsImpl( args, "castShape", vyFilledCastShape );
-   vyAddImplem( ctx, args );
 }
 

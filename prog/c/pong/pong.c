@@ -126,8 +126,8 @@ void initScore( Side side ) {
    Score * s = pong.scores + side;
    s->text = strings.constAscii("", VY_LEN);
    Caption c = captions.createCaption( s->text );
-   s->sprite = sprites.createSprite( captions.castShape(c) );
-   windows.add( pong.window, sprites.castView( s->sprite ) );
+   s->sprite = sprites.createSprite( captions.cast(c) );
+   windows.add( pong.window, sprites.cast( s->sprite ) );
 }
 
 /// labda inicializálás
@@ -137,17 +137,17 @@ void initBall() {
    b->dx = b->dy = 0;
    Circle c = circles.createCircle( BALLSIZE );
    VyColor o = colors.constHex( BALLCOLOR, VY_LEN );
-   Filled fc = filleds.createFilled( circles.castShape(c), o );
-   b->sprite = sprites.createSprite( filleds.castShape(fc) );
-   windows.add( pong.window, sprites.castView(b->sprite) );
+   Filled fc = filleds.createFilled( circles.cast(c), o );
+   b->sprite = sprites.createSprite( filleds.cast(fc) );
+   windows.add( pong.window, sprites.cast(b->sprite) );
 }
 
 void initPad( Side side ) {
    Pad * p = pong.pads + side;
    Rect r = rects.createRect( 0, 0, PADWIDTH, PADHEIGHT );
    VyColor c = colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_LEN );
-   Filled fc = filleds.createFilled( rects.castShape(r), c );
-   p->sprite = sprites.createSprite( filleds.castShape(fc) );
+   Filled fc = filleds.createFilled( rects.cast(r), c );
+   p->sprite = sprites.createSprite( filleds.cast(fc) );
    p->score = 0;
    if ( LEFT == side ) {
       p->up = PONGKEY( LEFTUP );
@@ -156,7 +156,7 @@ void initPad( Side side ) {
       p->up = PONGKEY( RIGHTUP );
       p->down = PONGKEY( RIGHTDOWN );
    }
-   windows.add( pong.window, sprites.castView(p->sprite) );
+   windows.add( pong.window, sprites.cast(p->sprite) );
 }
 
 /// pong inicializálás

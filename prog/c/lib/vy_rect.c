@@ -7,29 +7,28 @@ struct Rect {
 
 VyRepr vyrRect;
 
-void destroyRect( VyPtr ) {
-   vyThrow("stub destroyRect");
+void vyDestroyRect( VyPtr ) {
+   vyThrow("stub vyDestroyRect");
 }
 
 static void vyRectSet( Rect *, Rect ) {
-   vyThrow("stub RectSet");
+   vyThrow("stub vyRectSet");
 }
 
-static Rect vyRectCreateRect(float left, float top, float width, float height ) {
-   vyThrow("stub RectCreateRect");
+Shape vyRectCast( Rect ) {
+   vyThrow("stub vyRectCast");
 }
 
-static Shape vyRectCastShape( Rect ) {
-   vyThrow("stub RectCastShape");
+static Rect vyRectCreateRect( float left, float top, float width, float height ) {
+   vyThrow("stub vyRectCreateRect");
 }
 
 void vyInitRect( VyContext ctx ) {
    VYRECTARGS( ctx, args );
-   vyrRect = vyRepr( sizeof(struct Rect), false, destroyRect);
+   vyrRect = vyRepr( sizeof(struct Rect), false, vyDestroyRect);
    vyArgsType( args, "Rect", vyrRect );
    vyArgsImpl( args, "set", vyRectSet );
+   vyArgsImpl( args, "cast", vyRectCast );
    vyArgsImpl( args, "createRect", vyRectCreateRect );
-   vyArgsImpl( args, "castShape", vyRectCastShape );
-   vyAddImplem( ctx, args );
 }
 

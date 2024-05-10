@@ -4,6 +4,10 @@
 #include <SDL2/SDL.h>
 #include "vy.h"
 
+struct View {
+   VyRefCount rc;
+};
+
 typedef struct VySdl {
    SDL_DisplayMode displayMode;
 } VySdl;

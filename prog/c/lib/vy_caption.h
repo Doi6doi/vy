@@ -1,5 +1,6 @@
 #ifndef VY_CAPTIONH
 #define VY_CAPTIONH
+
 #include <vy.h>
 
 typedef struct String * String;
@@ -10,8 +11,8 @@ typedef struct Shape * Shape;
 
 typedef struct CaptionFun {
    void (* set)( Caption *, Caption );
-   Shape (* castShape)( Caption );
-   Caption (* createCaption)(String);
+   Shape (* cast)( Caption );
+   Caption (* createCaption)( String );
 } CaptionFun;
 
 #define VYCAPTIONARGS( ctx, name ) \
@@ -22,14 +23,13 @@ typedef struct CaptionFun {
    vyArgsType( name, "Coord", vyNative( ctx, "float" ) ); \
    vyArgsType( name, "Caption", NULL ); \
    vyArgsFunc( name, "set"); \
-   vyArgsFunc( name, "castShape"); \
+   vyArgsFunc( name, "cast"); \
    vyArgsFunc( name, "createCaption"); \
 
 #define VYIMPORTCAPTION( ctx, var ) \
    VYCAPTIONARGS( ctx, var ## Args ); \
-   vyFree( vyGetImplem( ctx, var ## Args, & var )); \
+   vyFree( vyGetImplem( ctx, var ## Args, & var ));
 
 void vyInitCaption( VyContext );
-
 
 #endif // VY_CAPTIONH

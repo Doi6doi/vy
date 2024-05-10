@@ -9,30 +9,29 @@ struct Caption {
 
 VyRepr vyrCaption;
 
-void destroyCaption( VyPtr ) {
-   vyThrow("stub destroyCaption");
+void vyDestroyCaption( VyPtr ) {
+   vyThrow("stub vyDestroyCaption");
 }
 
 static void vyCaptionSet( Caption *, Caption ) {
-   vyThrow("stub CaptionSet");
+   vyThrow("stub vyCaptionSet");
 }
 
-static Caption vyCaptionCreateCaption(String ) {
-   vyThrow("stub CaptionCreateCaption");
+Shape vyCaptionCast( Caption ) {
+   vyThrow("stub vyCaptionCast");
 }
 
-static Shape vyCaptionCastShape( Caption ) {
-   vyThrow("stub CaptionCastShape");
+static Caption vyCaptionCreateCaption( String ) {
+   vyThrow("stub vyCaptionCreateCaption");
 }
 
 void vyInitCaption( VyContext ctx ) {
    VYCAPTIONARGS( ctx, args );
    vyArgsType( args, "String", vyrString );
-   vyrCaption = vyRepr( sizeof(struct Caption), false, destroyCaption);
+   vyrCaption = vyRepr( sizeof(struct Caption), false, vyDestroyCaption);
    vyArgsType( args, "Caption", vyrCaption );
    vyArgsImpl( args, "set", vyCaptionSet );
+   vyArgsImpl( args, "cast", vyCaptionCast );
    vyArgsImpl( args, "createCaption", vyCaptionCreateCaption );
-   vyArgsImpl( args, "castShape", vyCaptionCastShape );
-   vyAddImplem( ctx, args );
 }
 

@@ -19,6 +19,8 @@ class InterfType {
 
    function name() { return $this->name; }
 
+   function owner() { return $this->owner; }
+
    function read( Stream $s ) {
       while ( $this->readItem( $s ) )
          ;

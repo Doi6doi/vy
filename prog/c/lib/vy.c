@@ -122,6 +122,12 @@ VyPtr vyAlloc( VyRepr r ) {
    return ret;
 }
 
+VyPtr vyAllocRef( VyRepr r ) {
+   VyPtr ret = vyAlloc( r );
+   ((VyRefCount)ret)->ref = 0;
+   return ret;
+}
+
 VyVer vyVer( unsigned u ) {
    return u;
 }

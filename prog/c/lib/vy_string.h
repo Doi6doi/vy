@@ -1,19 +1,20 @@
 #ifndef VY_STRINGH
 #define VY_STRINGH
+
 #include <vy.h>
 
 typedef struct String * String;
 
 typedef struct StringFun {
    void (* set)( String *, String );
-   String (* constAscii)(VyCStr, VySize);
-   String (* constUtf)(VyCStr, VySize);
-   bool (* less)(String, String);
-   bool (* greater)(String, String);
-   bool (* lesseq)(String, String);
-   bool (* greatereq)(String, String);
-   bool (* equal)(String, String);
-   bool (* noteq)(String, String);
+   String (* constAscii)( VyCStr, VySize );
+   String (* constUtf)( VyCStr, VySize );
+   bool (* less)( String, String );
+   bool (* greater)( String, String );
+   bool (* lesseq)( String, String );
+   bool (* greatereq)( String, String );
+   bool (* equal)( String, String );
+   bool (* noteq)( String, String );
 } StringFun;
 
 #define VYSTRINGARGS( ctx, name ) \
@@ -33,9 +34,8 @@ typedef struct StringFun {
 
 #define VYIMPORTSTRING( ctx, var ) \
    VYSTRINGARGS( ctx, var ## Args ); \
-   vyFree( vyGetImplem( ctx, var ## Args, & var )); \
+   vyFree( vyGetImplem( ctx, var ## Args, & var ));
 
 void vyInitString( VyContext );
-
 
 #endif // VY_STRINGH

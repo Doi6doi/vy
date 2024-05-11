@@ -6,4 +6,8 @@ interface vy.ui.Window @20240301 {
       Window=Group.Group;
    }
 
+   function {
+      createWindow(): Window;
+   }
+
 }

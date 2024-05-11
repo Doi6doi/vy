@@ -43,5 +43,9 @@ VyPtr vyaLibraryFunc( VyPtr lib, VyCStr name ) {
    return dlsym( lib, name );
 }
 
+VyCStr vyaLibraryError() {
+   return dlerror();
+}
+
 
 

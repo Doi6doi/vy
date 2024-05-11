@@ -11,16 +11,24 @@ void vyDestroyRect( VyPtr ) {
    vyThrow("stub vyDestroyRect");
 }
 
-static void vyRectSet( Rect *, Rect ) {
-   vyThrow("stub vyRectSet");
+static void vyRectSet( Rect * dest, Rect val) {
+   vySetter( (VyAny *)dest, (VyAny)val );
 }
 
 Shape vyRectCast( Rect ) {
    vyThrow("stub vyRectCast");
 }
 
-static Rect vyRectCreateRect( float left, float top, float width, float height ) {
+static Rect vyRectCreateRect( float width, float height ) {
    vyThrow("stub vyRectCreateRect");
+}
+
+static float vyRectWidth( Rect ) {
+   vyThrow("stub vyRectWidth");
+}
+
+static float vyRectHeight( Rect ) {
+   vyThrow("stub vyRectHeight");
 }
 
 void vyInitRect( VyContext ctx ) {
@@ -30,6 +38,8 @@ void vyInitRect( VyContext ctx ) {
    vyArgsImpl( args, "set", vyRectSet );
    vyArgsImpl( args, "cast", vyRectCast );
    vyArgsImpl( args, "createRect", vyRectCreateRect );
+   vyArgsImpl( args, "width", vyRectWidth );
+   vyArgsImpl( args, "height", vyRectHeight );
    vyAddImplem( ctx, args );
 }
 

@@ -30,8 +30,13 @@ class CItem {
 
    /// saját típus
    function own() { 
-	  return self::TYPE == $this->kind && ! $this->tKind; 
+	  return self::TYPE == $this->kind 
+	     && in_array($this->tKind, [null,":"]); 
    }
+
+   function extra() { return $this->extra; }
+
+   function tKind() { return $this->tKind; }
 	
    /// egyetlen elem beállítás
    function setOnly() {
@@ -67,7 +72,10 @@ class CItem {
 
    /// típus inicializálás
    protected function initType() {
-	  $this->extra = $this->getType( $this->obj->name() );
+	  $n = $this->obj->name();
+	  if ( ! $this->extra = Tools::g( $this->map, $n ))
+	     $this->extra = $n;
+	  $this->getType( $this->obj->name() );
 	  $this->tKind = $this->trim( $this->extra );
    }
 
@@ -79,15 +87,18 @@ class CItem {
 
    /// típus beállítása
    protected function getType( $typ ) {
-	  if ( $ret = Tools::g( $this->map, $typ ) )
+	  if ( $ret = Tools::g( $this->map, $typ ) ) {
+		 if (":" == substr( $ret, 0, 1 ))
+		    return $typ; 
 	     return $ret;
+	  }
 	  return $typ;
    }
 
    /// jel trim-elés
    protected function trim( & $nam ) {
 	  $ch = substr( $nam, 0, 1 );
-	  if ( in_array( $ch, ["&","^"] )) {
+	  if ( in_array( $ch, ["&","^",":","#"] )) {
 	     $nam = substr($nam,1);
 	     return $ch;
 	  } else
@@ -96,11 +107,17 @@ class CItem {
 	  
    /// típusdeklaráció kiírása
    protected function writeTypeDecl( $s ) {
-	  if ( ! in_array( $this->kind, [self::TYPE, self::CAST] )) return;
-	  if ( "&" != $this->tKind ) {
-		 $t = $this->extra;
-         $s->writel( "typedef struct %s * %s;\n", $t, $t );
+	  if ( ! in_array( $this->kind, [self::TYPE] )) return;
+	  switch ( $this->tKind ) {
+		 case "&": return;
+		 case ":": 
+		    $t = $this->obj->name();
+            $s->writel( "typedef struct %s * %s;\n", $t, $t );
+		    $t = $this->extra;
+		 break;
+		 default: 
       }
+      $s->writel( "typedef struct %s * %s;\n", $this->extra, $this->extra );
    }
    
    /// típusdefiníció kiírása
@@ -205,10 +222,16 @@ class CItem {
       if ( $stub )
 	     $s->writef( "%s( ", $this->longName() );
 	     else $s->writef("(* %s)( ", $this->shortName() );
-      $s->writef("%s *, %s", $this->extra, $this->extra );
-      if ( $stub )
-		 $this->writeThrowStub($s);
-         else $s->write(" );\n");
+	  $t = $this->getType( $this->obj->name() );
+      $s->writef("%s * dest, %s val", $t, $t );
+      if ( $stub ) {
+		 $s->write( ") {\n" );
+		 $s->indent(true);
+		 $s->writel("vySetter( (VyAny *)dest, (VyAny)val );" );
+		 $s->indent(false);
+		 $s->writel("}\n");
+      } else 
+         $s->write(" );\n");
    }
 
    /// interfész struktúra függvény kiírása

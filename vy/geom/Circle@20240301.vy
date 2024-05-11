@@ -6,6 +6,7 @@ interface vy.geom.Circle @20240301 {
 
    function {
       createCircle( radius: Coord ): Circle;
+      radius( Circle ): Coord;
    }
 
 }

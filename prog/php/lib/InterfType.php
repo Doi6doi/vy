@@ -36,6 +36,11 @@ class InterfType {
          $this->same [] = $s;
    }
 
+   function append( InterfType $other ) {
+	  foreach ( $other->same() as $s )
+	      $this->add( $s );
+   }
+
    function remove( $s ) {
       if ( false === ($i = array_search( $s, $this->same )))
          return false;

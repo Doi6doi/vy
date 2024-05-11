@@ -8,6 +8,7 @@
 /// dynamic library
 void * vyaLoadLibrary( VyCStr name );
 void * vyaLibraryFunc( void * lib, VyCStr name );
+VyCStr vyaLibraryError();
 
 /// time
 VyStamp vyaTimeStamp();

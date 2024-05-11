@@ -7,17 +7,17 @@ struct Shape {
 
 VyRepr vyrShape;
 
-void destroyShape( VyPtr ) {
-   vyThrow("stub destroyShape");
+void vyDestroyShape( VyPtr ) {
+   vyThrow("stub vyDestroyShape");
 }
 
-static void vyShapeSet( Shape * dest, Shape val ) {
-   vySetRef( (VyRefCount *)dest, val->ref );
+static void vyShapeSet( Shape * dst , Shape val ) {
+   vySetter( (VyAny *)dst, (VyAny)val );
 }
 
 void vyInitShape( VyContext ctx ) {
    VYSHAPEARGS( ctx, args );
-   vyrShape = vyRepr( sizeof(struct Shape), false, destroyShape);
+   vyrShape = vyRepr( sizeof(struct Shape), false, vyDestroyShape);
    vyArgsType( args, "Shape", vyrShape );
    vyArgsImpl( args, "set", vyShapeSet );
    vyAddImplem( ctx, args );

@@ -17,7 +17,7 @@ void destroyString( VyPtr ) {
 }
 
 static void vyStringSet( String * dst, String val ) {
-   vySetRef( (VyRefCount *)dst, val->ref );
+   vySetter( (VyAny *)dst, (VyAny)val );
 }
 
 static String vyStringConstAscii(VyCStr data, VySize len ) {

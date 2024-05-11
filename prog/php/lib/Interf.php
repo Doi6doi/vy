@@ -291,7 +291,10 @@ class Interf
    protected function readTypePart( $s ) {
       $ret = new InterfType( $this );
       $ret->read( $s );
-      $this->add( $this->types, $ret->name(), $ret );
+      $name = $ret->name();
+      if ( $old = Tools::g( $this->types, $name ))
+         $old->append( $ret );
+         else $this->add( $this->types, $name, $ret );
       $ret->updateInterf();
    }
 

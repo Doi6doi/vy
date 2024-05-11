@@ -23,6 +23,10 @@ static Circle vyCircleCreateCircle( float radius ) {
    vyThrow("stub vyCircleCreateCircle");
 }
 
+static float vyCircleRadius( Circle ) {
+   vyThrow("stub vyCircleRadius");
+}
+
 void vyInitCircle( VyContext ctx ) {
    VYCIRCLEARGS( ctx, args );
    vyrCircle = vyRepr( sizeof(struct Circle), false, vyDestroyCircle);
@@ -30,6 +34,7 @@ void vyInitCircle( VyContext ctx ) {
    vyArgsImpl( args, "set", vyCircleSet );
    vyArgsImpl( args, "cast", vyCircleCast );
    vyArgsImpl( args, "createCircle", vyCircleCreateCircle );
+   vyArgsImpl( args, "radius", vyCircleRadius );
    vyAddImplem( ctx, args );
 }
 

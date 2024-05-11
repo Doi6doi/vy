@@ -144,7 +144,7 @@ void initBall() {
 
 void initPad( Side side ) {
    Pad * p = pong.pads + side;
-   Rect r = rects.createRect( 0, 0, PADWIDTH, PADHEIGHT );
+   Rect r = rects.createRect( PADWIDTH, PADHEIGHT );
    VyColor c = colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_LEN );
    Filled fc = filleds.createFilled( rects.cast(r), c );
    p->sprite = sprites.createSprite( filleds.cast(fc) );
@@ -165,7 +165,7 @@ void initPong() {
    pong.maxScore = 5;
    pong.over = false;
    pong.last = times.stamp();
-   pong.window = windows.create();
+   pong.window = windows.createWindow();
    initScore( LEFT );
    initScore( RIGHT );
    initPad( LEFT );

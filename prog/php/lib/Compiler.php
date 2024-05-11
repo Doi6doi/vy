@@ -13,8 +13,6 @@ class Compiler {
    protected $objs;
    /// kimenetek
    protected $outputs;
-   /// cast-ok
-   protected $casts;
    /// típus megfeleltetés
    protected $typemap;
    /// c író
@@ -27,7 +25,6 @@ class Compiler {
       $this->outputs = [];
       $this->objs = [];
       $this->typemap = [];
-      $this->casts = [];
       $this->repo = new RepoMulti();
    }
 
@@ -41,17 +38,6 @@ class Compiler {
    /// új kimenet
    function addOutput( $o ) {
       $this->outputs [] = $o;
-   }
-
-   /// új cast (ok) hozzáadása
-   function addCast( $caststr ) {
-      $casts = explode(";",$caststr);
-      foreach ( $casts as $cast ) {
-         if ( preg_match('#^(.*)=(.*)$#', $cast, $m ))
-            $this->casts[ $m[1] ] = $m[2];
-         else
-            throw new EVy("Unknown cast: $cast" );
-      }
    }
 
    /// kényszerítés beállítása
@@ -119,7 +105,6 @@ class Compiler {
       if ( ! $this->cWriter ) {
          $this->cWriter = new CWriter();
          $this->cWriter->setTypeMap( $this->typemap );
-         $this->cWriter->setCasts( $this->casts );
       }
       return $this->cWriter;
    }

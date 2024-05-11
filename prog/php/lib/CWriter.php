@@ -23,8 +23,6 @@ class CWriter {
    protected $stream;
    /// Típus lekérdezés
    protected $map;
-   /// Cast-ok
-   protected $casts;
    /// kiírandó elemek
    protected $items;
    /// interfész
@@ -36,7 +34,6 @@ class CWriter {
 
    function __construct() {
       $this->map = [];
-      $this->casts = [];
       $this->items = [];
    }
    
@@ -70,11 +67,6 @@ class CWriter {
       $this->map = $map;
    }
    
-   /// cast-ok beállítása
-   function setCasts( array $casts ) {
-	  $this->casts = $casts;
-   }
-
    /// a modul neve
    protected function module() {
       return pathinfo( $this->filename(), PATHINFO_FILENAME );
@@ -100,10 +92,13 @@ class CWriter {
 	  $this->onlyOwn = null;
 	  $this->intf = $intf;
 	  $map = $this->map;
-	  foreach ( $intf->types() as $t )
-		 $this->addItem( CItem::TYPE, $t, $map );
-      foreach ( $this->casts as $k=>$v )
-         $this->addItem( CItem::CAST, $k, $v );
+	  foreach ( $intf->types() as $t ) {
+		 $i = $this->addItem( CItem::TYPE, $t, $map );
+     	printf( "type ".$t->name()." ".$i->extra()."\n" ); 
+		 if ( ":" == $i->tKind() ) {
+		    $this->addItem( CItem::CAST, $t->name(), $i->extra() );
+		 }
+	  }
       foreach ( $intf->consts() as $c )
          $this->addItem( CItem::CONS, $c, $map );
       foreach ( $intf->funcs() as $f )
@@ -119,9 +114,10 @@ class CWriter {
 	  $i = new CItem( $kind, $obj, $extra );
 	  $this->items [] = $i;
 	  if ( CItem::TYPE == $kind && $i->own() )
-	     $this->onlyOwn = (null === $this->onlyOwn) ? $i : false;
-	  else if ( CItem::CAST == $kind ) 
-	     $this->onlyCast = (null === $this->onlyCast) ? $i : false;   
+         $this->onlyOwn = (null === $this->onlyOwn) ? $i : false;
+	  if ( CItem::CAST == $kind )
+	     $this->onlyCast = (null === $this->onlyCast) ? $i : false;
+	  return $i;
    }             
 
    /// fázisok kiírása

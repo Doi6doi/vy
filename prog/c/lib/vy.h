@@ -7,6 +7,8 @@
 /// konstansoknál strlen
 #define VY_LEN -1
 
+extern char *VYNOMEM;
+
 /// méret
 typedef size_t VySize;
 
@@ -21,6 +23,9 @@ typedef unsigned VyVer;
 
 /// reprezentáció
 typedef struct VyRepr * VyRepr;
+
+/// valamilyen objektum
+typedef struct VyAny * VyAny;
 
 /// környezet
 typedef struct VyContext * VyContext;

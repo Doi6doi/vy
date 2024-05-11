@@ -6,7 +6,7 @@
 typedef struct String * String;
 
 typedef struct StringFun {
-   void (* set)( String *, String );
+   void (* set)( String * dest, String val );
    String (* constAscii)( VyCStr, VySize );
    String (* constUtf)( VyCStr, VySize );
    bool (* less)( String, String );

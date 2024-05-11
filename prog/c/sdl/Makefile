@@ -40,10 +40,10 @@ window.c: $(VDIR)/vy/ui/Window@20240301.vy
 
 view.c: $(VDIR)/vy/ui/View@20240301.vy
 	$(VYC) -i vy.ui.View@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord' -o $@
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;' -o $@
 
 sprite.c: $(VDIR)/vy/ui/Sprite@20240301.vy
 	$(VYC) -f -i vy.ui.Sprite@=20240301 -r $(VDIR) \
-	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Shape=^Shape' \
+	-t 'Bool=&bool;Coord=&float;ViewCoord=&VyViewCoord;Shape=^Shape;Bounds=^Bounds' \
 	-s 'Sprite=View' -o $@
 

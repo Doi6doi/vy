@@ -14,6 +14,9 @@ typedef void * VyPtr;
 /// destruktor
 typedef void (* VyDestr)( VyPtr );
 
+/// beállító
+typedef void (* VySetter)( VyAny *, VyAny );
+
 /// modul inicializáló függvény
 typedef void (* VyModuleInit)( VyContext );
 
@@ -21,7 +24,7 @@ typedef void (* VyModuleInit)( VyContext );
 void vyLoadModule( VyContext, VyCStr );
 
 /// saját reprezentáció
-VyRepr vyRepr( size_t size, bool , VyDestr );
+VyRepr vyRepr( size_t, VySetter, VyDestr );
 
 /// objektum készítése
 VyPtr vyAlloc( VyRepr );
@@ -29,8 +32,7 @@ VyPtr vyAlloc( VyRepr );
 /// refcount objektum készítése
 VyPtr vyAllocRef( VyRepr );
 
-/// refcount objektum set függvény
-void vySetRef( VyRefCount *, VyRefCount );
+void vySetter( VyAny *, VyAny );
 
 /// egy implementáció megadása
 void vyArgsImpl( VyArgs, VyCStr, VyPtr );

@@ -18,19 +18,20 @@
 #define BUFSIZE 512
 
 char
-   *VYNOMEM = "Out of memory",
    *VYMODULEINIT = "vyModuleInit";
 
 char
+   *VYNOMEM = "Out of memory",
    *NOCONTEXT = "Missing context",
    *NOIMPARGS = "Missing implementations arguments",
    *NOIMPDEST = "Missing implementation destination",
    *NOIMPL = "Missing implementation: %s.%s",
    *NOINTF = "Missing interface name",
-   *NOMODULE = "Unknown module: %s",
+   *NOMODULE = "Cannot load module: %s: %s",
    *NOMODULEINIT = "Missing vyModuleInit function: %s",
    *NONATIVE = "Missing native name",
    *NOREPR = "Missing representation: %s.%s",
+   *NOSET = "This representation cannot be assigned",
    *NOTYPE = "Missing type",
    *NOVER = "Missing version",
    *UNIMP = "Unknown implementation: %s@%d",
@@ -41,7 +42,7 @@ char vyBuf[BUFSIZE];
 
 struct VyRepr {
    size_t size;
-   bool stat;
+   VySetter set;
    VyDestr destr;
 };
 
@@ -73,6 +74,10 @@ void vyDestroyContext( VyContext ctx ) {
    vySmClear( &ctx->natvs );
 }
 
+void vyNoSet( VyAny * dest, VyAny val ) {
+   vyThrow( NOSET );
+}
+
 void vyDestroyVy( Vy vy ) {
    vySmClear( & vy->modules );
    vyFree( vy->context );
@@ -80,13 +85,13 @@ void vyDestroyVy( Vy vy ) {
 
 struct VyRepr vyrVy = {
    .size = sizeof(struct Vy),
-   .stat = false,
+   .set = vyNoSet,
    .destr = (VyDestr)vyDestroyVy
 };
 
 struct VyRepr vyrContext = {
    .size = sizeof(struct VyContext),
-   .stat = false,
+   .set = vyNoSet,
    .destr = (VyDestr)vyDestroyContext
 };
 
@@ -107,7 +112,7 @@ void vyDestroyArgs( VyArgs ia ) {
 
 struct VyRepr vyrVyArgs = {
    .size = sizeof(struct VyArgs),
-   .stat = false,
+   .set = vyNoSet,
    .destr = (VyDestr)vyDestroyArgs
 };
 
@@ -163,7 +168,7 @@ void vyLoadModule( VyContext ctx, VyCStr name ) {
       return;
    void * mod = vyaLoadLibrary( name );
    if ( ! mod ) {
-      snprintf( vyBuf, BUFSIZE, NOMODULE, name );
+      snprintf( vyBuf, BUFSIZE, NOMODULE, name, vyaLibraryError() );
       vyThrow( vyBuf );
    }
    void * init = vyaLibraryFunc( mod, VYMODULEINIT );
@@ -244,10 +249,10 @@ VyArgs vyGetImplem( VyContext ctx, VyArgs args, void * dest ) {
    vyThrow( vyBuf );
 }
 
-VyRepr vyRepr( size_t size, bool stat, VyDestr destr ) {
+VyRepr vyRepr( size_t size, VySetter set, VyDestr destr ) {
    VyRepr ret = REALLOC( NULL, sizeof( struct VyRepr ) );
    ret->size = size;
-   ret->stat = stat;
+   ret->set = set;
    ret->destr = destr;
    return ret;
 }
@@ -324,10 +329,10 @@ void vyAddImplem( VyContext ctx, VyArgs ia ) {
 }
 
 VyRepr vyAddNative( VyContext ctx, VyCStr name, size_t size ) {
-   VyRepr ret = vyRepr( size, true, NULL );
+   VyRepr ret = vyRepr( size, NULL, NULL );
    vySmAdd( & ctx->natvs, name, ret );
    return ret;
-} 
+}
 
 void vySetRef( VyRefCount * dest, VyRefCount val ) {
    VyRefCount old = *dest;

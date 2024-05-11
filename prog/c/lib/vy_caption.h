@@ -10,7 +10,7 @@ typedef struct Caption * Caption;
 typedef struct Shape * Shape;
 
 typedef struct CaptionFun {
-   void (* set)( Caption *, Caption );
+   void (* set)( Caption * dest, Caption val );
    Shape (* cast)( Caption );
    Caption (* createCaption)( String );
 } CaptionFun;

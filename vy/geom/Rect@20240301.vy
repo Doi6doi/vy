@@ -7,7 +7,9 @@ interface vy.geom.Rect @20240301 {
    }
    
    function {
-      createRect( left:Coord, top: Coord, width:Coord, height:Coord ): Rect;
+      createRect( width:Coord, height:Coord ): Rect;
+      width( Rect ): Coord;
+      height( Rect ): Coord;
    }
 
 }

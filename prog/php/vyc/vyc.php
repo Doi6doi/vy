@@ -38,7 +38,6 @@ class VyC {
          case "-i": return $this->getParInput( $argv, $i );
          case "-t": return $this->getParType( $argv, $i );
          case "-o": return $this->getParOutput( $argv, $i );
-         case "-s": return $this->getParCast( $argv, $i );
          default: throw new Exception("Unknown parameter: $argv[$i]");
       }
    }
@@ -69,12 +68,6 @@ class VyC {
       return true;
    }
 
-   /// cast paraméter olvasása
-   function getParCast( $argv, & $i ) {
-	  $this->comp->addCast( $this->nextPar( $argv, $i, "cast" ));
-	  return true;
-   }
-
    /// output paraméter olvasása
    function getParOutput( $argv, & $i ) {
       $this->comp->addOutput( $this->nextPar( $argv, $i, "output" ));
@@ -98,7 +91,6 @@ class VyC {
          "   -i <item>: add <item> as input",
          "   -t <typemap>: add <typemap> as type mapping",
          "   -o <filename>: add <filename> as output",
-         "   -s <cast>: create cast functions",
          "",
          ""
       ];

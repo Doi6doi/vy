@@ -1,19 +1,17 @@
 #include <vy_implem.h>
-#include "vysdl.h"
 #include "vy_ui.h"
 #include "vy_sprite.h"
 #include "vy_shape.h"
 
 extern VyRepr vyrShape;
+static ShapeFun shapes;
 
 struct Sprite {
-   View view;
+   VyRepr repr;
    Shape shape;
 };
 
 VyRepr vyrSprite;
-
-ShapeFun shapes;
 
 void vyDestroySprite( VyPtr ) {
    vyThrow("stub vyDestroySprite");
@@ -23,12 +21,11 @@ static void vySpriteSet( Sprite *, Sprite ) {
    vyThrow("stub vySpriteSet");
 }
 
-View vySpriteCast( Sprite x ) {
-   return (View)x;
-}
+View vySpriteCast( Sprite s ) { return (View)s; }
 
 static Sprite vySpriteCreateSprite( Shape shape ) {
    Sprite ret = vyAlloc( vyrSprite );
+   ret->shape = NULL;
    shapes.set( &(ret->shape), shape );
    return ret;
 }
@@ -50,6 +47,7 @@ static void vySpriteSetCoord( Sprite, VyViewCoord, float ) {
 }
 
 void vySdlInitSprite( VyContext ctx ) {
+   VYIMPORTSHAPE( ctx, shapes );
    VYSPRITEARGS( ctx, args );
    vyArgsType( args, "Shape", vyrShape );
    vyrSprite = vyRepr( sizeof(struct Sprite), false, vyDestroySprite);
@@ -62,6 +60,5 @@ void vySdlInitSprite( VyContext ctx ) {
    vyArgsImpl( args, "coord", vySpriteCoord );
    vyArgsImpl( args, "setCoord", vySpriteSetCoord );
    vyAddImplem( ctx, args );
-   VYIMPORTSHAPE( ctx, shapes );
 }
 

@@ -31,7 +31,7 @@ class CItem {
    /// saját típus
    function own() { 
 	  return self::TYPE == $this->kind 
-	     && in_array($this->tKind, [null,":"]); 
+         && in_array($this->tKind, [null,"#"]); 
    }
 
    function extra() { return $this->extra; }
@@ -62,6 +62,7 @@ class CItem {
 		 case CWriter::INIT:
 		    return $this->writeInit( $s );
 		 case CWriter::BODYINCLUDE:
+		    return $this->writeBodyInclude( $s );
 		 case CWriter::HEADERTAIL:
 		 case CWriter::IMPORT:
 		 case CWriter::INITDECL;
@@ -75,8 +76,9 @@ class CItem {
 	  $n = $this->obj->name();
 	  if ( ! $this->extra = Tools::g( $this->map, $n ))
 	     $this->extra = $n;
-	  $this->getType( $this->obj->name() );
 	  $this->tKind = $this->trim( $this->extra );
+	  if ("#" == $this->tKind )
+	     $this->extra = $n;
    }
 
    /// konstans inicializálás
@@ -88,7 +90,8 @@ class CItem {
    /// típus beállítása
    protected function getType( $typ ) {
 	  if ( $ret = Tools::g( $this->map, $typ ) ) {
-		 if (":" == substr( $ret, 0, 1 ))
+		 $ch = substr( $ret, 0, 1 );
+		 if (in_array( $ch, [":","#"] ))
 		    return $typ; 
 	     return $ret;
 	  }
@@ -122,16 +125,33 @@ class CItem {
    
    /// típusdefiníció kiírása
    protected function writeTypeDef( $s ) {
-	  if ( $this->own() ) {
-         $s->writel( "struct %s {", $this->extra );
-         $s->indent(true);
-         $s->writel( "VyRepr repr;" );
-         $s->indent(false);
-         $s->writel("};\n");
-         $s->writel( "VyRepr vyr%s;\n", $this->extra );
-      } else if ( "^" == $this->tKind ) {
-         $s->writel( "extern VyRepr vyr%s;\n", $this->extra );
+	  if ( self::TYPE != $this->kind ) return; 
+	  $tk = $this->tKind;
+	  $e = $this->extra;
+	  switch ( $tk ) {
+		 case null: case "#": case ":":
+		    $tt = $this->extra;
+		    if ( ":" == $tk )
+		       $tt = $this->obj->name();
+            $s->writel( "struct %s {", $tt );
+            $s->indent(true);
+            switch ( $tk ) {
+			   case "#": $l = "VyRefCount ref"; break;
+			   case ":": $l = sprintf( "struct %s %s", $this->extra,
+			      Tools::firstLower( $this->extra )); break;
+			   default: $l = "VyRepr repr";
+			}
+			$s->writel( "$l;" );
+            $s->indent(false);
+            $s->writel("};\n");
+         break;
       }
+      switch ( $tk ) {
+		 case ":": $s->writel("extern VyRepr vyr%s;\n", $this->extra ); break;
+		 case "^": $s->write("extern "); break;
+      }
+      if ( "&" != $tk )
+         $s->writel( "VyRepr vyr%s;\n", $tt );
    }
    
    /// kiírás struktúrában
@@ -307,6 +327,16 @@ class CItem {
             throw $this->unKind();
       }
    }
+
+   /// body include rész kiírása
+   protected function writeBodyInclude( $s ) {
+	  if ( self::TYPE == $this->kind
+	     && in_array( $this->tKind, [":","^"] ))
+	  {
+	     $s->writel("#include \"vy_%s.h\"\n", 
+	        Tools::firstLower( $this->extra ));
+	  }
+   } 
 
    /// init rész kiírása
    protected function writeInit( $s ) {

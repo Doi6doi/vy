@@ -3,5 +3,7 @@
 namespace vy;
 
 /// kifejezés
-interface Expr {
+interface Expr 
+   extends Stm
+{
 }

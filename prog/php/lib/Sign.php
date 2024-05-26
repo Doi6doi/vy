@@ -35,6 +35,12 @@ class Sign
       $this->readResult( $s );
    }
 
+   /// argumentumok értékének beáálítása
+   function setArgs( RunCtx $ctx, array $args ) {
+	  for ( $i=0; $i < count($this->args); ++$i )
+		 $ctx->setVar( $this->args[$i], Tools::g( $args, $i ));
+   }
+
    /// visszatérési típus olvasása
    function readResult( Stream $s ) {
       $s->readWS();
@@ -67,6 +73,10 @@ class Sign
 
    function checkType( $type ) {
       $this->owner->checkType( $type );
+   }
+
+   function canCall( $x ) {
+	   return $this->owner->canCall( $x );
    }
 
    function readType( Stream $s ) {

@@ -24,6 +24,13 @@ class Call
       }
    }
 
+   function run( RunCtx $ctx ) {
+	  $vals = [];
+	  foreach( $this->args as $a )
+	     $vals [] = $a->run( $ctx );
+	  return $this->target->call( $ctx, $vals );
+   }
+
    function add( Expr $e ) {
       $this->args [] = $e;
    }

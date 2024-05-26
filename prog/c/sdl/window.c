@@ -10,13 +10,13 @@ extern VyRepr vyrView;
 extern VyRepr Views;
 
 struct Window {
-   VyRepr repr;
-   View view;
    SDL_Window * sdl;
-   Views views;
+   Vector views;
 };
 
 VyRepr vyrWindow;
+
+VectorFun vectors;
 
 void vyDestroyWindow( VyPtr ) {
    vyThrow("stub vyDestroyWindow");
@@ -34,19 +34,28 @@ static Window vyWindowCreateWindow(  ) {
       SDL_WINDOW_MAXIMIZED );
    if ( ! ret->sdl )
       vySdlError( "SDL Window create error" );
-   vyMemInit( & ret->views, 0 );
-   ret->nviews = 0;
+   ret->views = vectors.createVector( 0 );
    return ret;
 }
 
-static void vyWindowAdd( Window, View ) {
-   if ( ret->nviews * sizeof(View) >= ret->views->size )
-
-   vyThrow("stub vyWindowAdd");
+static void vyWindowAdd( Window w , View v ) {
+   unsigned l = vectors.length( w->views );
+   vectors.insert( w->views, l, (VyAny)v );
+   vySdlDirty( v );
 }
 
-static void vyWindowRemove( Window, View ) {
-   vyThrow("stub vyWindowRemove");
+static void vyWindowRemove( Window w, View v) {
+   if ( v->wnd != w )
+      return;
+   Vector views = w->views;
+   for ( unsigned i=0; i < vectors.length( views ); ++i ) {
+      if ( (VyAny)v == vectors.value( views, i ) ) {
+         vySdlDirty( v );
+         v->wnd = NULL;
+         vectors.remove( views, i );
+         return;
+      }
+   }
 }
 
 static float vyWindowCoord( Window, VyViewCoord ) {

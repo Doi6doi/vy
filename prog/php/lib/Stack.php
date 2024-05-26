@@ -100,6 +100,7 @@ class Stack {
    protected function joinUnary() {
       return $this->joinBraced( Braced::ROUND )
          || $this->joinBraced( Braced::SQUARE )
+         || $this->joinMember()
          || $this->joinPrefix();
    }
 
@@ -122,6 +123,17 @@ class Stack {
       return false;
    }
 
+   /// tag összefűzés
+   protected function joinMember() {
+	  if ( $this->count() < 3 ) return false;
+	  $i0 = $this->items[0];
+	  if ( ! ($this->isExpr(2) && "." == $this->items[1] 
+	     && $this->isToken(0) && $this->stream->isIdent( $i0, true )))
+	     return false;
+	  return $this->join( 3, new Member($this->items[2], $i0 ));
+   }
+
+
    /// többjegyű operátor
    protected function joinOper() {
       if ( ! ( 2 <= $this->count() && $this->isToken(0) && $this->isToken(1) ))
@@ -136,6 +148,7 @@ class Stack {
    /// azonosító kiértékelés
    protected function joinName() {
       if ( ! $this->isToken(0) ) return false;
+      if ( 1 < $this->count() && "." == $this->items[1] ) return false;
       $t = $this->items[0];
       if ( ! $this->stream->isIdent( $t[0], true )) return false;
       if ( ! $ret = $this->owner->resolve( $t, ExprCtx::NAME ))
@@ -149,6 +162,8 @@ class Stack {
       $t = $this->items[0];
       if ( preg_match('#^\d+$#', $t ))
          return $this->join( 1, new Literal($t));
+      else if ( preg_match('#^".*"$#', $t ))
+         return $this->join( 1, new Literal( Stream::unescape( $t )));
       return false;
    }
 
@@ -188,6 +203,7 @@ class Stack {
       return $this->join(3,$ret);
    }
 
+
    /// bináris művelet összevonás
    protected function joinInfix() {
       if ( $this->count() < 3 ) return false;
@@ -205,10 +221,10 @@ class Stack {
    protected function joinCall() {
       if ( $this->count() < 2 )  return false;
       if ( ! ($this->isExpr(1) && $this->isExpr(0))) return false;
-      $e1 = $this->items[1];
-      if ( ! $e1 instanceof Func ) return false;
       $e0 = $this->items[0];
       if ( ! $e0 instanceof Braced ) return false;
+      $e1 = $this->items[1];
+      if ( ! $this->owner->canCall( $e1 ) ) return false;
       return $this->join( 2, new Call( $e1, $e0->body()) );
    }
 

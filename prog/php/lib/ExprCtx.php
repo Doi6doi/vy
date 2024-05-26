@@ -14,6 +14,10 @@ interface ExprCtx {
 
    function readType( Stream $s );
 
+   /// token feloldása
    function resolve( $token, $kind );
+
+   /// hívható-e az elem
+   function canCall( $x );
 
 }

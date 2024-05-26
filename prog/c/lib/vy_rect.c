@@ -1,19 +1,15 @@
 #include <vy_implem.h>
 #include "vy_rect.h"
 
+#include "vy_shape.h"
+
 struct Rect {
-   VyRepr repr;
+   struct Shape shape;
 };
 
+extern VyRepr vyrShape;
+
 VyRepr vyrRect;
-
-void vyDestroyRect( VyPtr ) {
-   vyThrow("stub vyDestroyRect");
-}
-
-static void vyRectSet( Rect * dest, Rect val) {
-   vySetter( (VyAny *)dest, (VyAny)val );
-}
 
 Shape vyRectCast( Rect ) {
    vyThrow("stub vyRectCast");
@@ -33,9 +29,7 @@ static float vyRectHeight( Rect ) {
 
 void vyInitRect( VyContext ctx ) {
    VYRECTARGS( ctx, args );
-   vyrRect = vyRepr( sizeof(struct Rect), false, vyDestroyRect);
-   vyArgsType( args, "Rect", vyrRect );
-   vyArgsImpl( args, "set", vyRectSet );
+   vyArgsType( args, "Rect", vyrShape );
    vyArgsImpl( args, "cast", vyRectCast );
    vyArgsImpl( args, "createRect", vyRectCreateRect );
    vyArgsImpl( args, "width", vyRectWidth );

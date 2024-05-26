@@ -10,7 +10,48 @@ class Stream {
       IDENT = "ident",
       NUM = "num",
       SYMBOL = "symbol",
+      STR = "str",
       WS = "ws";
+
+   /// string escape
+   static function escape( string $s ) {
+	  $ret = "";
+	  $n = strlen($s);
+	  for ($i=0; $i<$n; ++$i) {
+		 switch ( $ch = $s[$i] ) {
+		    case "\r": $ch = "\\r"; break;
+		    case "\n": $ch = "\\n"; break;
+		    case "\b": $ch = "\\b"; break;
+		    case "\t": $ch = "\\t"; break;
+		    case "\"": $ch = "\\\""; break;
+		    case "\\": $ch = "\\\\"; break;
+		 }
+		 $ret .= $ch;
+      }
+      return "\"$ret\"";
+   }
+
+   /// string unescape
+   static function unescape( string $s ) {
+	  $n = strlen( $s );
+	  if ( 2 > $n || '"' != $s[0] || '"' != $s[$n-1] ) 
+	     throw new EVy("Cannot unescape $s");
+	  $ret = "";
+	  for ($i=1; $i<$n-1; ++$i) {
+		 $ch = $s[$i];
+		 if ( "\\" == $ch ) {
+		    $ch = $s[++$i];
+		    switch ( $ch ) {
+		       case "r": $ch = "\r"; break;
+		       case "n": $ch = "\n"; break;
+		       case "b": $ch = "\b"; break;
+		       case "t": $ch = "\t"; break;
+		    }
+		 }
+		 $ret .= $ch;
+      }
+      return $ret;
+   }
 
    protected $filename;
    protected $data;
@@ -41,6 +82,12 @@ class Stream {
 
    function eos() { return $this->at >= strlen( $this->data ); }
 
+   function close() { 
+	  $this->at = 0; 
+	  $this->data = "";
+   }
+   
+
    function nextKind() {
       if ( $this->eos() )
          return self::EOS;
@@ -53,6 +100,8 @@ class Stream {
          return self::NUM;
       else if ( $this->isSymbol($ch))
          return self::SYMBOL;
+      else if ( $this->isString($ch))
+         return self::STR;
       else
          throw new EVy("Unknown char: '$ch' (".ord($ch).")");
    }
@@ -93,10 +142,14 @@ class Stream {
          case "=": case ",": case ":": case "(": case ")":
          case "&": case "|": case "!": case "<": case ">":
          case "[": case "]": case "+": case "-": case "*":
-         case "/": case "$":
+         case "/": case "$": 
             return true;
          default: return false;
       }
+   }
+   
+   function isString( $ch ) {
+	  return "\"" == $ch;
    }
 
    function isIdent( $ch, $first ) {
@@ -136,6 +189,15 @@ class Stream {
                   ++$i;
                   else return $i;
             }
+            return $i;
+         case self::STR:
+            for ( $i = 1; $this->at+$i < $l; ++$i ) {
+			   if ( "\"" == $this->nextChar($i)
+			      && "\\" != $this->nextChar($i-1)
+			   )
+			      return $i+1;
+			}
+			return $i;
          default: throw new EVy("Unknown kind: $k" );
       }
    }

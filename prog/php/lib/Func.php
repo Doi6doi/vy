@@ -4,11 +4,10 @@ namespace vy;
 
 /// interfész függvény
 class Func
-   implements Expr, ExprCtx
+   extends ExprCtxForward
+   implements Expr
 {
 
-   /// tulajdonos
-   protected $owner;
    /// név
    protected $name;
    /// konstans
@@ -19,7 +18,7 @@ class Func
    protected $oper;
 
    function __construct( ExprCtx $owner, $name = null ) {
-      $this->owner = $owner;
+	  parent::__construct( $owner );
       $this->name = $name;
       $this->sign = new Sign( $this );
    }
@@ -28,19 +27,9 @@ class Func
 
    function oper() { return $this->oper; }
 
-   function owner() { return $this->owner; }
-
    function cons() { return $this->cons; }
 
    function sign() { return $this->sign; }
-
-   function checkType( $type ) {
-      $this->owner->checkType( $type );
-   }
-
-   function readType( Stream $s ) {
-      return $this->owner->readType( $s );
-   }
 
    function resolve( $token, $kind ) {
       return null;

@@ -14,6 +14,13 @@ class Tuple
 
    function items() { return $this->items; }
 
+   function run( RunCtx $ctx ) {
+	  $ret = null;
+	  foreach ($this->items as $i)
+	     $ret = $i->run( $ctx );
+	  return $ret;
+   }
+
    function add( Expr $e ) {
       $this->items [] = $e;
    }

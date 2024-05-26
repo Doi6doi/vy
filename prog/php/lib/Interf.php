@@ -312,7 +312,7 @@ class Interf
 
    /// kifejezés olvasása
    protected function readExpr( $s ) {
-      return $this->stack->readExpr( $s );
+      return $s->readExpr();
    }
 
    /// típusok kiírása

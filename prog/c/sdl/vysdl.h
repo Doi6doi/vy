@@ -15,14 +15,13 @@ struct View {
    Window wnd;
 };
 
-extern VyRepr vyrVView;
-extern VectorFun vviews;
-
 typedef struct VySdl {
    SDL_DisplayMode displayMode;
 } VySdl;
 
 extern VySdl vySdl;
+
+void vySdlDirty( View );
 
 void vySdlError( VyCStr );
 

@@ -4,6 +4,10 @@ namespace vy;
 
 class Tools {
 
+   const
+      LINUX = "Linux",
+      WINDOWS = "Windows";
+
    static function g($arr,$fld) {
       if ( is_array($arr) && array_key_exists($fld,$arr))
          return $arr[$fld];
@@ -95,6 +99,15 @@ class Tools {
 	  if ( 0 == strlen($s))
 	     return $s;
 	  return strtolower( $s[0] ).substr($s,1);
+   }
+
+   static function system() {
+	  if ( preg_match('#^win#i', PHP_OS))
+	     return self::WINDOWS;
+	  else if ( preg_match('#^linux#i', PHP_OS ))
+	     return self::LINUX;
+	  else
+	     return PHP_OS;
    }
 
 }

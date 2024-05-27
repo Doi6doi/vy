@@ -20,7 +20,7 @@ class Func
    function __construct( ExprCtx $owner, $name = null ) {
 	  parent::__construct( $owner );
       $this->name = $name;
-      $this->sign = new Sign( $this );
+      $this->sign = new Sign( $this, true );
    }
 
    function name() { return $this->name; }

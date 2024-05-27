@@ -26,10 +26,13 @@ class Make
    protected $names;
    /// futtatási környezet
    protected $runCtx;
+   /// generálási szabályok
+   protected $rules;
    
    function __construct() {
 	  $this->targets = [];
 	  $this->names = [];
+	  $this->rules = [];
 	  $this->baseFuncs();
    }
 
@@ -71,6 +74,29 @@ class Make
 	        
 		}
 	  throw new EVy("Cannot resolve $kind: $token " );
+   }
+
+   /// egy fájl generálása, ha szükséges
+   function generate( $dest ) {
+	  if ( ! $this->modified( $dest )
+	     || $this->generateDep( $dest ))
+	     $this->doGenerate( $dest );
+   }
+
+   /// egy fájl módosítási dátuma
+   function modified( $fname ) {
+	  if ( ! file_exists( $fname ))
+	     return null;
+	  return filemtime( $fname );
+   }
+
+   /// egy fájl generálása
+   protected function doGenerate( $fname ) {
+	  foreach ( $this->rules as $r ) {
+		 if ( $r->matches( $fname ))
+		    $r->apply( $fname );
+	  }
+	  throw new EVy("No rule to generate ".$fname);
    }
 
    /// make file beolvasása
@@ -142,6 +168,7 @@ class Make
 	  $this->add( $this->names, $name, $i );
 	  $s->readWS();
 	  $s->readToken(";");
+	  $i->init();
    }
 
    /// függvény rész beolvasása
@@ -183,5 +210,6 @@ class Make
       else
          return $target;
    }
+
 	
 }

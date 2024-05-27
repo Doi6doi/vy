@@ -46,7 +46,9 @@ class Braced
 
    function run( RunCtx $ctx ) {
 	  switch ($this->kind) {
-		 case self::ROUND: return $this->body->run( $ctx );
+		 case self::ROUND: 
+		 case self::SQUARE: 
+		    return $this->body->run( $ctx );
 		 default: throw new EVy("Cannot run braced: ".$this->kind);
 	  }
    }

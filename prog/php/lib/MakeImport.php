@@ -26,6 +26,8 @@ class MakeImport
 	
     function run( RunCtx $ctx ) { return $this; }
 	
+    function init() { }	
+	
 	function __toString() { return $this->name; }
 	
 	function member( $field ) {

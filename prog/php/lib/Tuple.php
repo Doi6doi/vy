@@ -15,9 +15,9 @@ class Tuple
    function items() { return $this->items; }
 
    function run( RunCtx $ctx ) {
-	  $ret = null;
+	  $ret = [];
 	  foreach ($this->items as $i)
-	     $ret = $i->run( $ctx );
+	     $ret [] = $i->run( $ctx );
 	  return $ret;
    }
 

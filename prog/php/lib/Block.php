@@ -17,6 +17,8 @@ class Block
    protected $stack;
    /// utasítások
    protected $stms;
+   /// blokk helye
+   protected $position;
 
    function __construct( ExprCtx $owner, $kind ) {
 	  parent::__construct( $owner );
@@ -29,6 +31,7 @@ class Block
    /// törzsrész olvasása
    function read( ExprStream $s ) {
       $s->readWS();
+      $this->position = $s->position();
       $s->readToken("{");
       $s->push( $this, true );
       while ( $this->addStm( $s ) )
@@ -39,13 +42,17 @@ class Block
 
    // blokk futtatása
    function run( RunCtx $ctx ) {
-	  $ret = null;
-	  foreach ( $this->stms as $s ) {
-		 $ret = $s->run( $ctx );
-		 if ( $this->isTerm( $s ))
-		    return $ret;
+	  try {
+         $ret = null;
+	     foreach ( $this->stms as $s ) {
+		    $ret = $s->run( $ctx );
+		    if ( $this->isTerm( $s ))
+		       return $ret;
+         }
+         return $ret;
+      } catch (\Exception $e) {
+		 throw new EVy( $this->position.": ".$e->getMessage(), $e->getCode(), $e );
       }
-      return $ret;
    }
    
    function isTerm( Stm $s ) {

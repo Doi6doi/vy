@@ -47,7 +47,7 @@ class Stack {
             return 25;
          case "+": case "-": return 30;
          case "*": case "/": case "%": return 40;
-         case "(": return 90;
+         case "(": case ".": return 90;
          default: return null;
       }
    }
@@ -92,8 +92,9 @@ class Stack {
    /// nulláris összevonás
    protected function joinNullary() {
       return $this->joinOper()
-         || $this->joinName()
-         || $this->joinLiteral();
+         || $this->joinLiteral()
+         || $this->joinGlobal()
+         || $this->joinName();
    }
 
    /// unáris összevonás
@@ -148,7 +149,9 @@ class Stack {
    /// azonosító kiértékelés
    protected function joinName() {
       if ( ! $this->isToken(0) ) return false;
-      if ( 1 < $this->count() && "." == $this->items[1] ) return false;
+      if ( 1 < $this->count() 
+         && in_array( $this->items[1], [".","$"] )) 
+         return false;
       $t = $this->items[0];
       if ( ! $this->stream->isIdent( $t[0], true )) return false;
       if ( ! $ret = $this->owner->resolve( $t, ExprCtx::NAME ))
@@ -156,15 +159,34 @@ class Stack {
       return $this->join( 1, $ret );
    }
 
+   /// globális változó 
+   protected function joinGlobal() {
+	  if ( ! (2 <= $this->count() 
+	     && "$" == $this->items[1]
+	     && $this->isToken(0)))
+	     return false;
+	  $t = $this->items[0];
+	  if ( ! $this->stream->isIdent( $t[0], true )) return false;
+	  return $this->join( 2, new GlobalVar( $t ));
+   }
+
    /// literál készítés
    protected function joinLiteral() {
       if ( ! $this->isToken(0)) return false;
       $t = $this->items[0];
       if ( preg_match('#^\d+$#', $t ))
-         return $this->join( 1, new Literal($t));
+         $lit = 0+$t;
       else if ( preg_match('#^".*"$#', $t ))
-         return $this->join( 1, new Literal( Stream::unescape( $t )));
-      return false;
+         $lit = Stream::unescape( $t );
+      else if ( "true" == $t )
+         $lit = true;
+      else if ( "false" == $t )
+         $lit = false;
+      else if ( "null" == $t )
+         $lit = null;
+      else
+         return false;
+      return $this->join( 1, new Literal($lit));
    }
 
    /// következő stream elem

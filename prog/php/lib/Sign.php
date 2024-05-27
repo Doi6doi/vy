@@ -9,13 +9,16 @@ class Sign
 
    /// tulajdonos
    protected $owner;
+   /// típusos függvény
+   protected $typed;
    /// argumentumok
    protected $args;
    /// visszatérési érték
    protected $result;
 
-   function __construct( ExprCtx $owner ) {
+   function __construct( ExprCtx $owner, $typed ) {
       $this->owner = $owner;
+      $this->typed = $typed;
       $this->args = [];
    }
 
@@ -38,7 +41,7 @@ class Sign
    /// argumentumok értékének beáálítása
    function setArgs( RunCtx $ctx, array $args ) {
 	  for ( $i=0; $i < count($this->args); ++$i )
-		 $ctx->setVar( $this->args[$i], Tools::g( $args, $i ));
+		 $ctx->setVar( $this->args[$i]->name(), Tools::g( $args, $i ));
    }
 
    /// visszatérési típus olvasása
@@ -100,7 +103,7 @@ class Sign
       if ( $this->args )
          $s->readToken(",");
       $ret = new Arg( $this );
-      $ret->read( $s );
+      $ret->read( $s, $this->typed );
       $this->args [] = $ret;
       return true;
    }

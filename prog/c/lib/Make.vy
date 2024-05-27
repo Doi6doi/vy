@@ -5,11 +5,13 @@ make {
    target {
 
       build {
-         generate( libFile() );
+         init(true);
+         generate( $lib );
       }
 
       clean {
-         purge( [ libFile(), C.objFiles(), genHeads() ] );
+         init();
+         purge( [ $lib, C.objFiles(), $heads ] );
       }
 
       help {
@@ -24,7 +26,12 @@ make {
    }
 
    function {
-      libFile() { return C.libFile("vy"); }
+      init( dep ) {
+         $lib := C.libFile("vy");
+         $items := ["string","rect","random","color","circle",
+            "caption","filled","shape"];
+         $hitems := ["key","window","view","vector"];
+      }
    } 
 
 }

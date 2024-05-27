@@ -32,6 +32,7 @@ class Oper {
          case "&": case "|":
             return $pre == $ch;
          case "!": case "<": case ">": case "*": case "/":
+         case ":":
             return "=" == $ch;
          case "+": case "-":
             return $pre == $ch || "=" == $ch;
@@ -44,10 +45,15 @@ class Oper {
       if ( self::PREFIX == $kind ) {
          return in_array( $token, ["!","++","-","--"] );
       } else if ( self::INFIX == $kind ) {
-         return in_array( $token, ["=","<",">","<=",">=","!=",
+         return in_array( $token, [":=","=","<",">","<=",">=","!=",
             "+","-","*","/","||","&&"] );
       } else
          return false;
+   }
+
+   /// értékadó operátor
+   static function isAssign( $token ) {
+	  return in_array( $token, [":=","+=","-=","/=","*="] );
    }
 
    protected $owner;

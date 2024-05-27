@@ -6,6 +6,8 @@ namespace vy;
 class Arg
    implements Expr
 {
+   const
+      ARG = "arg";
 
    protected $owner;
    protected $name;
@@ -21,18 +23,24 @@ class Arg
 
    function type() { return $this->type; }
 
-   function read( Stream $s ) {
+   function read( Stream $s, $typed ) {
       $s->readWS();
       $this->name = $s->readIdent();
       $s->readWS();
-      if ( $s->readIf(":") ) {
-         $this->type = $this->owner->readType( $s );
-      } else {
-         $this->type = $this->name;
-         $this->owner->checkType( $this->type );
-         $this->name = null;
+      if ( $typed ) {
+         if ( $s->readIf(":") ) {
+            $this->type = $this->owner->readType( $s );
+         } else {
+            $this->type = $this->name;
+            $this->owner->checkType( $this->type );
+            $this->name = null;
+         }
       }
    }
+
+   function run( RunCtx $ctx ) {
+	  return $ctx->var( $this->name );
+   } 
 
    function checkCompatible( Arg $other, $map ) {
       if ( $this->type() != Tools::gc( $map, $other->type() ))

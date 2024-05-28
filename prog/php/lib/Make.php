@@ -28,12 +28,14 @@ class Make
    protected $runCtx;
    /// generálási szabályok
    protected $rules;
+   /// alap függvények
+   protected $core;
    
    function __construct() {
 	  $this->targets = [];
 	  $this->names = [];
 	  $this->rules = [];
-	  $this->baseFuncs();
+	  $this->core = new MakeCore( $this );
    }
 
    /// futtatás célokkal
@@ -61,6 +63,12 @@ class Make
 
    function canCall( $x ) {
 	  return true;
+   }
+
+   function addFunc( $name, $call ) {
+	  $f = new MakeFunc( $this );
+	  $f->setCall( $name, $call );
+	  $this->add( $this->names, $name, $f );
    }
 
    function resolve( $token, $kind ) {
@@ -185,19 +193,6 @@ class Make
       }
    }
 	  
-   /// alap függvények
-   protected function baseFuncs() {
-	  $this->addFunc( "echo" );
-	  $this->addFunc( "generate" );
-   }
-	     
-   /// egy függvény hozzáadása
-   protected function addFunc( $name ) {
-	  $f = new MakeFunc( $this );
-	  $f->setCall( $name, [$this,$name] );
-	  $this->add( $this->names, $name, $f );
-   }
-	
    /// a cél egy nem üres tömb legyen
    protected function refineTarget( $target ) {
 	  if ( ! $target ) {

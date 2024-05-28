@@ -52,6 +52,23 @@ class Stack {
       }
    }
 
+   /// literál készítése tokenből, ha lehet
+   function makeLiteral( $t ) {
+      if ( preg_match('#^\d+$#', $t ))
+         $lit = 0+$t;
+      else if ( preg_match('#^".*"$#', $t ))
+         $lit = Stream::unescape( $t );
+      else if ( "true" == $t )
+         $lit = true;
+      else if ( "false" == $t )
+         $lit = false;
+      else if ( "null" == $t )
+         $lit = null;
+      else
+         return false;
+      return new Literal( $lit );
+   }
+
    /// elemk törlése
    protected function clear() {
       $this->items = [];
@@ -173,20 +190,8 @@ class Stack {
    /// literál készítés
    protected function joinLiteral() {
       if ( ! $this->isToken(0)) return false;
-      $t = $this->items[0];
-      if ( preg_match('#^\d+$#', $t ))
-         $lit = 0+$t;
-      else if ( preg_match('#^".*"$#', $t ))
-         $lit = Stream::unescape( $t );
-      else if ( "true" == $t )
-         $lit = true;
-      else if ( "false" == $t )
-         $lit = false;
-      else if ( "null" == $t )
-         $lit = null;
-      else
-         return false;
-      return $this->join( 1, new Literal($lit));
+      if ( ! $ret = $this->makeLiteral( $this->items[0] )) return false;
+      return $this->join( 1, $ret );
    }
 
    /// következő stream elem

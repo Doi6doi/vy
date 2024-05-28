@@ -35,8 +35,21 @@ class Infix
    protected function runOp( $lv, $rv ) {
 	  switch ($this->op) {
 		 case ":=": return $rv; 
+		 case "+": 
+		 case "+=": 
+		    return $this->plus( $lv, $rv );
 		 default: throw new EVy("Cannot run operator ".$this->op);
 	  }
+   }
+   
+   /// összeadás
+   protected function plus( $lv, $rv ) {
+	  if ( is_array($lv) ) {
+		 if ( ! is_array( $rv ))
+		    $rv = [$rv];
+		 return array_merge( $lv, $rv ); 
+	  } else
+	     return $lv + $rv;
    }
    
 }

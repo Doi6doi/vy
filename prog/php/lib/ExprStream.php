@@ -49,14 +49,22 @@ class ExprStream
 		 if ( Given::GIVEN == $n )
 		    $ret = new Given( $top );
 	  }
+	  $semi = false;
 	  switch( $n ) {
-		 case StmIf::IF: $ret = new IfCond( $kind ); break;
-		 case StmReturn::RETURN: $ret = new StmReturn(); break;
+		 case StmCase::CASE: $ret = new StmCase( $top ); break;
+		 case StmIf::IF: $ret = new StmIf( $top ); break;
+		 case StmForeach::FOREACH: $ret = new StmForeach( $top ); break;
+		 case StmReturn::RETURN: 
+		    $ret = new StmReturn(); 
+		    $semi = true;
+		 break;
+		 default: $semi = true;
 	  }
 	  if ( $ret )
          $ret->read( $this );
          else $ret = $this->readExpr();
-      $this->readToken(";");
+      if ( $semi )
+         $this->readToken(";");
 	  return $ret;
    }
 

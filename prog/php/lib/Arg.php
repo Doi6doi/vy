@@ -4,7 +4,7 @@ namespace vy;
 
 /// függvény argumentum, vagy változó
 class Arg
-   implements Expr
+   implements Expr, Vari
 {
    const
       ARG = "arg";

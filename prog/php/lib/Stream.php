@@ -92,7 +92,7 @@ class Stream {
       if ( $this->eos() )
          return self::EOS;
       $ch = $this->nextChar(0);
-      if ( $this->isWS($ch) )
+      if ( $this->isWS() )
          return self::WS;
       else if ( $this->isIdent($ch, true))
          return self::IDENT;
@@ -107,7 +107,7 @@ class Stream {
    }
 
    /// sor olvasása
-   function readLine() {
+/*   function readLine() {
       $ret = "";
       while ( true ) {
          $nxt = $this->nextKind();
@@ -119,14 +119,19 @@ class Stream {
             return $ret;
       }
    }
+*/
 
-   function isWS( $ch ) {
+   function isWS() {
+	  $ch = $this->nextChar(0);
       switch ($ch) {
          case " ":
          case "\t":
          case "\n":
          case "\r":
             return true;
+         case "/":
+            $ch2 = $this->nextChar(1);
+            return "/" == $ch2 || "*" == $ch2;
          default:
             return false;
       }
@@ -172,7 +177,14 @@ class Stream {
       $l = strlen( $this->data );
       switch ( $k = $this->nextKind() ) {
          case self::EOS: return 0;
-         case self::WS: return 1;
+         case self::WS: 
+            if ( "/" != $this->nextChar(0) )
+               return 1;
+            $e = ( "/" == $this->nextChar(1) ? "\n" : "*/" );
+			if ( $i = strpos( $this->data, $e, $this->at ))
+			   return $i - $this->at + strlen($e);
+			return $l - $this->at;
+         return 1;
          case self::IDENT:
             $i = 0;
             while ( $this->at+$i < $l ) {

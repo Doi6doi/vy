@@ -4,7 +4,7 @@ namespace vy;
 
 /// make változó
 class MakeVar 
-   implements Expr
+   implements Vari
 {
 
    protected $name;
@@ -13,6 +13,8 @@ class MakeVar
    function __construct( $name ) {
 	  $this->name = $name;
    }
+   
+   function name() { return $this->name; }
    
    function setValue( $x ) { $this->value = $x; }
    

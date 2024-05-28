@@ -18,6 +18,8 @@ class Given
       $this->vars = [];
    }
 
+   function kind() { return Block::COND; }
+
    function resolve( $token, $kind ) {
       if ( ExprCtx::NAME == $kind ) {
          if ( $ret = Tools::g( $this->vars, $token ))

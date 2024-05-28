@@ -19,6 +19,8 @@ class MakeFunc
 
    function name() { return $this->name; }
 
+   function kind() { return Block::BODY; }
+
    /// hívható beállítása
    function setCall( $name, $call ) {
 	  $this->name = $name;
@@ -31,7 +33,7 @@ class MakeFunc
 	  $this->name = $s->readIdent();
 	  $this->sign = new Sign( $this, false );
 	  $this->sign->read( $s );
-	  $this->body = new Block( $this, Block::BODY );
+	  $this->body = new Block( $this );
 	  $this->body->read( $s );
    }
    

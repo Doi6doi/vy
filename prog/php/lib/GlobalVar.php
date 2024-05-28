@@ -3,7 +3,7 @@
 namespace vy;
 
 class GlobalVar
-   implements Expr
+   implements Vari
 {
 	
 	protected $name;

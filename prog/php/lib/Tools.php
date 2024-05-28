@@ -101,6 +101,7 @@ class Tools {
 	  return strtolower( $s[0] ).substr($s,1);
    }
 
+   /// futó operációs rendszer
    static function system() {
 	  if ( preg_match('#^win#i', PHP_OS))
 	     return self::WINDOWS;
@@ -110,4 +111,11 @@ class Tools {
 	     return PHP_OS;
    }
 
+   /// érték osztállyal   
+   static function withClass( $x ) {
+	  switch ( $t = gettype($x) ) {
+		 case "object": return sprintf("%s (%s)", $x, get_class($x));
+		 default: return $x;
+	  }
+   }
 }

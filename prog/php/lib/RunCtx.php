@@ -30,8 +30,10 @@ class RunCtx {
 	function assign( $obj, $val ) {
 	   if ( $obj instanceof GlobalVar )
 	      $this->setGlobal( $obj->name(), $val );
+	   else if ( $obj instanceof Vari )
+	      $this->setVar( $obj->name(), $val ); 
 	   else 
-          throw new EVy("Cannot assign to $obj");
+          throw new EVy("Cannot assign to ".Tools::withClass($obj));
 	}
 	
 	function getGlobal( $name ) {

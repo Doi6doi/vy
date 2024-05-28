@@ -12,6 +12,8 @@ class Literal
       $this->value = $value;
    }
 
+   function value() { return $this->value; }
+
    function run( RunCtx $ctx ) {
 	  return $this->value;
    }

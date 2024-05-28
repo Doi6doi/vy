@@ -11,8 +11,6 @@ class Block
       BODY = "body",
       COND = "cond";
 
-   /// törzs fajta
-   protected $kind;
    /// kifejezés verem
    protected $stack;
    /// utasítások
@@ -20,31 +18,46 @@ class Block
    /// blokk helye
    protected $position;
 
-   function __construct( ExprCtx $owner, $kind ) {
+   function __construct( ExprCtx $owner ) {
 	  parent::__construct( $owner );
 	  $this->stms = [];
-	  $this->kind = $kind;
    }
 
-   function kind() { return $this->kind; }
+   function kind() { return $this->owner->kind(); }
 
    /// törzsrész olvasása
    function read( ExprStream $s ) {
       $s->readWS();
       $this->position = $s->position();
-      $s->readToken("{");
-      $s->push( $this, true );
-      while ( $this->addStm( $s ) )
-         ;
+      $this->readPart( $s, true );
+   }
+
+   /// esetleg zárójelzett rész olvasása
+   function readPart( ExprStream $s, $mustBlock = false ) {
+	  $s->readWS();
+	  $s->push( $this, true );
+	  if ( $mustBlock || "{" == $s->next() ) {
+		 $s->readToken( "{" );
+		 while ( $this->addStm( $s ) )
+		    ;
+		 $s->readToken( "}" );
+	  } else
+	     $this->addStm( $s );
       $s->pop( true );
-      $s->readToken("}");
    }
 
    // blokk futtatása
    function run( RunCtx $ctx ) {
+	  return $this->runPart( $ctx, 0 );
+   }
+
+   /// blokk rész futtatása
+   function runPart( RunCtx $ctx, $first, $unt = null ) {
 	  try {
          $ret = null;
-	     foreach ( $this->stms as $s ) {
+         $ui = (null === $unt ? count($this->stms) : $unt );
+	     for( $i=$first; $i<$ui; ++$i) {
+			$s = $this->stms[$i];
 		    $ret = $s->run( $ctx );
 		    if ( $this->isTerm( $s ))
 		       return $ret;

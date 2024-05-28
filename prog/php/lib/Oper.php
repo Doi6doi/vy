@@ -29,7 +29,7 @@ class Oper {
                   return true;
             }
          break;
-         case "&": case "|":
+         case "&": case "|": case ".":
             return $pre == $ch;
          case "!": case "<": case ">": case "*": case "/":
          case ":":
@@ -46,7 +46,7 @@ class Oper {
          return in_array( $token, ["!","++","-","--"] );
       } else if ( self::INFIX == $kind ) {
          return in_array( $token, [":=","=","<",">","<=",">=","!=",
-            "+","-","*","/","||","&&"] );
+            "+","-","*","/","||","&&","+=","-=","*=","/="] );
       } else
          return false;
    }

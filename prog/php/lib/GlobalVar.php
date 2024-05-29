@@ -15,7 +15,7 @@ class GlobalVar
 	function name() { return $this->name; }
 	
 	function run( RunCtx $ctx ) {
-	   return $ctx->getGlobal( $this->name );
+	   return $ctx->globl()->getVar( $this->name );
 	}	
 
     function __toString() {

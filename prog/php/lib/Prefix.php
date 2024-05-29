@@ -15,6 +15,14 @@ class Prefix
       $this->body = $body;
    }
 
+   function run( RunCtx $ctx ) {
+	  $ret = $this->body->run( $ctx );
+	  $ret = Oper::run( $this->op, $ret );
+	  if ( Oper::isAssign( $this->op ))
+	     $ctx->assign( $this->body, $ret );
+	  return $ret;
+   } 
+
    function __toString() {
       return sprintf("<%s%s>", $this->op, $this->body );
    }

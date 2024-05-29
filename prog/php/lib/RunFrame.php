@@ -11,6 +11,11 @@ class RunFrame {
 	  $this->name = $name;
 	  $this->vars = [];
    }
+
+   /// van-e ilyen változó
+   function has( $name ) {
+	  return array_key_exists( $name, $this->vars );
+   }
    
    /// változó értéke
    function getVar( $name ) {

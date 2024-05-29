@@ -2,6 +2,8 @@
 
 require_once( __DIR__."/../lib/autoload.php" );
 
+vy\Autoload::addPath( __DIR__ );
+
 /// vy make eszköz
 class VyMake {
 
@@ -10,7 +12,7 @@ class VyMake {
 
    protected $file;
    protected $target;
-	
+
    function run( $argv ) {
       $this->getParams( $argv );
       $make = vy\Make::load( $this->file );
@@ -38,7 +40,6 @@ class VyMake {
          default: throw new Exception("Unknown parameter: $argv[$i]");
       }
    }
-
 
 }
 

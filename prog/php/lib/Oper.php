@@ -18,6 +18,36 @@ class Oper {
          && $a->oper() == $b->oper();
    }
 
+   static function run( $o, $a, $b=null ) {
+	  switch ($o) {
+		 case ":=": return $b; 
+		 case "+": case "+=": 
+		    return self::plus( $a, $b );
+		 case "++": return ++$a;
+		 case "--": return --$a;
+		 case "<": return $a < $b;
+		 case ">": return $a > $b;
+		 case "<=": return $a <= $b;
+		 case ">=": return $a >= $b;
+		 case "=": return $a == $b;
+		 case "!=": return $a != $b;
+		 default: throw new EVy("Cannot run operator $o");
+	  }
+   }
+
+   /// összeadás
+   static function plus( $a, $b ) {
+	  if ( is_array($a) ) {
+		 if ( ! is_array( $b ))
+		    $b = [$b];
+		 return array_merge( $a, $b ); 
+      } else if ( is_string($a)) {
+         return $a . $b;
+	  } else
+	     return $a + $b;
+   }
+
+
    /// többjegyű operátor folytatása
    static function cont( $pre, $ch ) {
       switch ($pre) {
@@ -53,7 +83,7 @@ class Oper {
 
    /// értékadó operátor
    static function isAssign( $token ) {
-	  return in_array( $token, [":=","+=","-=","/=","*="] );
+	  return in_array( $token, [":=","+=","-=","/=","*=","++","--"] );
    }
 
    protected $owner;

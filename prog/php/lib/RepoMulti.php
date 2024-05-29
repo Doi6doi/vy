@@ -12,6 +12,11 @@ class RepoMulti extends Repo {
       $this->choices = [];
    }
 
+   /// minden elem törlése
+   function clear() {
+	  $this->choices = [];
+   } 
+
    /// új elem hozzáadása
    function add( $repo ) {
       if ( ! ( $repo instanceof Repo ))

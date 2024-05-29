@@ -4,7 +4,7 @@ namespace vy;
 
 class Autoload {
 
-   protected static $path = [".","../lib"];
+   protected static $path = [__DIR__];
 
    /// hozzáadás az elérési úthoz
    static function addPath( $dir ) {
@@ -12,7 +12,8 @@ class Autoload {
          foreach ( $dir as $d )
             self::addPath($d);
       } else {
-         array_push( self::$path, $dir );
+		 if ( ! in_array( $dir, self::$path ))
+            array_push( self::$path, $dir );
       }
    }
 
@@ -21,8 +22,10 @@ class Autoload {
          $cls = $m[1];
       foreach ( self::$path as $dir ) {
          $fname = $dir."/$cls.php";
-         if ( file_exists( $fname ))
+         if ( file_exists( $fname )) {
            require_once( $fname );
+           return;
+         }
       }
       require_once("$cls.php");
    }

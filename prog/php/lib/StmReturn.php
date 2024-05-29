@@ -16,11 +16,14 @@ class StmReturn
 	
 	function read( Stream $s ) {
 	   $s->readToken(self::RETURN);
-  	   $this->expr = $s->readExpr();
+	   $s->readWS();
+	   if ( ";" != $s->next() )
+  	      $this->expr = $s->readExpr();
   	}
   	
   	function run( RunCtx $ctx ) {
-	   return $this->expr->run( $ctx );
+	   $val = $this->expr->run( $ctx );
+	   return new Cont( Cont::RETURN, $val );
 	}
 	
 }

@@ -1,13 +1,13 @@
 make {
 
-   import C;
+   import { C; Comp; }
 
    target {
 
       build {
          init();
-         generateHeads();
-         generate( $lib );
+         genHeads();
+         genLib();
       }
 
       clean {
@@ -51,28 +51,38 @@ make {
             [ "view", "vy.ui", "View", 20240301 ],
             [ "vector", "vy.cont", "Vector", 20240301 ]
          ];
-         $vyroot := "../../..";
+         Comp.setRepo( "../../.." );
+         Comp.setRepr( "Repr.vy" );
+      }
+      
+      /// fejléc fordítása
+      genHead( v ) {
+         df := format( "vy_%s%s", h, ".h" );
+         sf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
+            v[2], v[3] );
+         depend( df, sf );
+         if ( ! needGen( df ) ) return;
+         src = format("%s.%s@=%s", v[1], v[2], v[3]);
+         Comp.setForce( true );
+         Comp.compile( src, df );
       }
       
       /// generált .h fájlok készítése
-      generateHeads() {
+      genHeads() {
          foreach ( h | $items + $hitems ) {
-            hf := format( "vy_%s%s", h, ".h" );
-            v := findVy( h );
-            vf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
-               v[2], v[3] );
-            depend( hf, vf );
-            rule( hf, vycHead );
-            generate( hf );
+            if ( ! v := findVy( h ) )
+               throw "Unkown part: "+h;
+            genHead( v );
          }
       }
       
       /// vy sor megkeresése
       findVy( x ) {
-         for (i=0; i < $vys.count; ++i) {
-            if ( $vys[i][0] == x )
+         for (i:=0; i < $vys.count ; ++i) {
+            if ( $vys[i][0] = x )
                return $vys[i];
          }
+         throw "Unkown item: "+x;
       }
    } 
 

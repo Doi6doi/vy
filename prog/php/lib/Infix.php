@@ -22,7 +22,7 @@ class Infix
 	  if ( ":=" != $this->op )
 	     $lv = $this->left->run( $ctx );
 	  $rv = $this->right->run( $ctx );
-	  $ret = $this->runOp( $lv, $rv );
+	  $ret = Oper::run( $this->op, $lv, $rv );
 	  if ( Oper::isAssign( $this->op ))
 	     $ctx->assign( $this->left, $ret );
 	  return $ret;
@@ -30,26 +30,6 @@ class Infix
 
    function __toString() {
       return sprintf("<%s%s%s>", $this->left, $this->op, $this->right );
-   }
-
-   protected function runOp( $lv, $rv ) {
-	  switch ($this->op) {
-		 case ":=": return $rv; 
-		 case "+": 
-		 case "+=": 
-		    return $this->plus( $lv, $rv );
-		 default: throw new EVy("Cannot run operator ".$this->op);
-	  }
-   }
-   
-   /// összeadás
-   protected function plus( $lv, $rv ) {
-	  if ( is_array($lv) ) {
-		 if ( ! is_array( $rv ))
-		    $rv = [$rv];
-		 return array_merge( $lv, $rv ); 
-	  } else
-	     return $lv + $rv;
    }
    
 }

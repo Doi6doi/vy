@@ -47,7 +47,7 @@ class Stack {
             return 25;
          case "+": case "-": return 30;
          case "*": case "/": case "%": return 40;
-         case "(": case ".": return 90;
+         case "(": case ".": case "[": return 90;
          default: return null;
       }
    }
@@ -126,6 +126,7 @@ class Stack {
    protected function joinBinary() {
       return $this->joinTuple()
          || $this->joinCall()
+         || $this->joinIndex()
          || $this->joinInfix();
    }
 
@@ -210,6 +211,7 @@ class Stack {
          return false;
       return $this->join(2, new Prefix($t,$this->items[0]));
    }
+   
 
    /// lista összefűzés
    protected function joinTuple() {
@@ -250,9 +252,20 @@ class Stack {
       if ( ! ($this->isExpr(1) && $this->isExpr(0))) return false;
       $e0 = $this->items[0];
       if ( ! $e0 instanceof Braced ) return false;
+      if ( Braced::ROUND != $e0->kind() ) return false;
       $e1 = $this->items[1];
       if ( ! $this->owner->canCall( $e1 ) ) return false;
       return $this->join( 2, new Call( $e1, $e0->body()) );
+   }
+
+   /// indexelés összevonás
+   protected function joinIndex() {
+      if ( $this->count() < 2 )  return false;
+      if ( ! ($this->isExpr(1) && $this->isExpr(0))) return false;
+      $e0 = $this->items[0];
+      if ( ! $e0 instanceof Braced ) return false;
+      if ( Braced::SQUARE != $e0->kind() || ! $e0->body() ) return false;
+      return $this->join( 2, new Indexed( $this->items[1], $e0->body()) );
    }
 
    /// összevonás

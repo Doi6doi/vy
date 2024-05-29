@@ -4,12 +4,15 @@ namespace vy;
 
 class RunCtx {
 	
+	protected $globl;
 	protected $frames;
 	
 	function __construct() {
+	   $this->globl = new RunFrame("global");
 	   $this->frames = [];
-	   $this->push( "global" );
 	}
+
+    function globl() { return $this->globl; }
 	
 	function push( $name ) {
 	   $this->frames [] = new RunFrame( $name );
@@ -22,35 +25,41 @@ class RunCtx {
 	}
 	
 	function pop() {
-	   if ( 1 == count( $this->frames ))
-	      throw new EVy("Cannot pop global frame");
+	   if ( ! $this->frames )
+	      throw new EVy("No frames to pop");
 	   array_pop( $this->frames );
 	}
 	
 	function assign( $obj, $val ) {
 	   if ( $obj instanceof GlobalVar )
-	      $this->setGlobal( $obj->name(), $val );
+	      $this->globl->setVar( $obj->name(), $val );
 	   else if ( $obj instanceof Vari )
 	      $this->setVar( $obj->name(), $val ); 
 	   else 
           throw new EVy("Cannot assign to ".Tools::withClass($obj));
 	}
 	
-	function getGlobal( $name ) {
-	   return $this->frames[0]->getVar( $name );
-	}
-	
-	function setGlobal( $name, $val ) {
-	   $this->frames[0]->setVar( $name, $val );
-	}	
-	
 	function getVar( $name ) {
-	   return $this->top()->getVar( $name );
+	   if ( $f = $this->find( $name ))	
+	      return $f->getVar( $name );
+	      else throw new EVy("Unknown variable: $name");
 	}
 	
 	function setVar( $name, $val ) {
-	   $this->top()->setVar( $name, $val );
+	   if ( ! $f = $this->find( $name ))
+	      $f = $this->top();
+	   $f->setVar( $name, $val );
 	}
 	
+   /// változót tartalmazó blokk keresése
+   protected function find( $name ) {
+	  for ($i=count($this->frames)-1; 0<=$i; --$i) {
+	     $f = $this->frames[$i];
+	     if ( $f->has( $name ))
+		    return $f;
+	  }
+	  return false;
+   }
+	       
 	
 }

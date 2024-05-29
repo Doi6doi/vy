@@ -34,6 +34,7 @@ class VyC {
          return false;
       switch ($argv[$i]) {
 		 case "-f": return $this->setForce( $i );
+		 case "-p": return $this->getParRepr( $argv, $i );
          case "-r": return $this->getParRepo( $argv, $i );
          case "-i": return $this->getParInput( $argv, $i );
          case "-t": return $this->getParType( $argv, $i );
@@ -62,6 +63,12 @@ class VyC {
       return true;
    }
 
+   /// repr paraméter olvasása
+   function getParRepr( $argv, & $i ) {
+      $this->comp->setRepr( $this->nextPar( $argv, $i, "repr" ) );
+      return true;
+   }
+
    /// input paraméter olvasása
    function getParInput( $argv, & $i ) {
       $this->comp->addInput( $this->nextPar( $argv, $i, "input" ));
@@ -87,6 +94,7 @@ class VyC {
          "",
          "Options:",
          "   -f: force overwrite of output",
+         "   -p <filename>: set representation file",
          "   -r <path>: add <path> as repository",
          "   -i <item>: add <item> as input",
          "   -t <typemap>: add <typemap> as type mapping",

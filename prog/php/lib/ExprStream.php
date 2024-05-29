@@ -53,9 +53,14 @@ class ExprStream
 	  switch( $n ) {
 		 case StmCase::CASE: $ret = new StmCase( $top ); break;
 		 case StmIf::IF: $ret = new StmIf( $top ); break;
+		 case StmFor::FOR: $ret = new StmFor( $top ); break;
 		 case StmForeach::FOREACH: $ret = new StmForeach( $top ); break;
 		 case StmReturn::RETURN: 
 		    $ret = new StmReturn(); 
+		    $semi = true;
+		 break;
+		 case StmThrow::THROW:
+		    $ret = new StmThrow();
 		    $semi = true;
 		 break;
 		 default: $semi = true;

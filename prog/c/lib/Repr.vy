@@ -11,20 +11,22 @@ representation {
    Color: native VyColor;
    Coord: native float;
    Shape: refcount;
-   Rect: inherit Shape;
-   Circle: inherit Shape;
-   Caption: inherit Shape;
-   Filled: inherit Shape;
+   Rect: inherit Shape {
+      width: Coord;
+      height: Coord;
+   }
+   Circle: inherit Shape {
+      radius: Coord;
+   }
+   Caption: inherit Shape {
+      text: String;
+   }
+   Filled: inherit Shape {
+      color: Color;
+   }
    ViewCoord: native VyViewCoord;
    View: refcount;
    Vector: refcount;
    Any: native VyAny;
    
 }
-
-
-
-
-
-
-

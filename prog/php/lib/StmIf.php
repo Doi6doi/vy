@@ -20,6 +20,8 @@ class StmIf
 	  parent::__construct( $owner );
    }
 
+   function kind() { return $this->owner->kind(); }
+
    /// if olvasása
    function read( ExprStream $s ) {
       $s->readWS();

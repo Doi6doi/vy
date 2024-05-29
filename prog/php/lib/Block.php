@@ -48,28 +48,16 @@ class Block
 
    // blokk futtatása
    function run( RunCtx $ctx ) {
-	  return $this->runPart( $ctx, 0 );
-   }
-
-   /// blokk rész futtatása
-   function runPart( RunCtx $ctx, $first, $unt = null ) {
 	  try {
          $ret = null;
-         $ui = (null === $unt ? count($this->stms) : $unt );
-	     for( $i=$first; $i<$ui; ++$i) {
-			$s = $this->stms[$i];
+	     foreach( $this->stms as $s ) {
 		    $ret = $s->run( $ctx );
-		    if ( $this->isTerm( $s ))
-		       return $ret;
+		    if ( Cont::term( $ret, Cont::BLOCK ) ) return $ret;
          }
          return $ret;
       } catch (\Exception $e) {
 		 throw new EVy( $this->position.": ".$e->getMessage(), $e->getCode(), $e );
       }
-   }
-   
-   function isTerm( Stm $s ) {
-	  return $s instanceof StmReturn;
    }
    
    /// egy elem olvasása

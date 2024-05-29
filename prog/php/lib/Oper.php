@@ -31,6 +31,7 @@ class Oper {
 		 case ">=": return $a >= $b;
 		 case "=": return $a == $b;
 		 case "!=": return $a != $b;
+		 case "!": return ! $a;
 		 default: throw new EVy("Cannot run operator $o");
 	  }
    }

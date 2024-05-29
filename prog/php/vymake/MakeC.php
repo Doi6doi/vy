@@ -21,5 +21,14 @@ class MakeC extends MakeImport {
       }
    }
  
+   /// object fájlok a könyvtárban
+   function objFiles() {
+	  switch ($sys = Tools::system() ) {
+		 case Tools::WINDOWS: $ptn = "*.obj"; break;
+		 case Tools::LINUX: $ptn = "*.o"; break;
+		 default: throw new EVy("Unknown system: $sys");
+      }
+      return glob( $ptn );
+   }
 
 }

@@ -11,12 +11,16 @@ class VyMake {
       MAKEVY = "Make.vy";
 
    protected $file;
-   protected $target;
+   protected $targets;
+
+   function __construct() {
+      $this->targets = [];
+   }
 
    function run( $argv ) {
       $this->getParams( $argv );
       $make = vy\Make::load( $this->file );
-      $make->run( $this->target );
+      $make->run( $this->targets );
    }
 
    /// paraméterek olvasása
@@ -36,10 +40,28 @@ class VyMake {
    function getParam( $argv, & $i ) {
       if ( $i >= count($argv))
          return false;
-      switch ($argv[$i]) {
-         default: throw new Exception("Unknown parameter: $argv[$i]");
+      switch ($a = $argv[$i]) {
+         default: 
+            $this->targets [] = $a;
+            ++$i;
+            return true;
       }
    }
+
+   /// használat
+   function usage( $msg ) {
+      $ret = [
+         "",
+         "Usage: php vymake.php [<target>..]",
+         "",
+         ""
+      ];
+      fprintf( STDERR, implode("\n",$ret) );
+      if ( $msg )
+         fprintf( STDERR, "$msg\n" );
+      exit(1);
+   }
+
 
 }
 

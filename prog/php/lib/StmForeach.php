@@ -14,6 +14,7 @@ class StmForeach
     protected $range;
 	
 	function read( ExprStream $s ) {
+      $this->position = $s->position();
 	   $s->read( self::FOREACH );
 	   $s->readWS();
 	   $s->readToken("(");
@@ -28,7 +29,7 @@ class StmForeach
 	      throw $s->notexp("separator");
 	   $this->range = $s->readExpr();	
 	   $s->readToken(")");
-	   parent::read( $s );
+	   $this->readPart( $s );
 	}
 	
    function run( RunCtx $ctx ) {

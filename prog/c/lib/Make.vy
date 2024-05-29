@@ -7,12 +7,16 @@ make {
       build {
          init();
          genHeads();
+         genCodes();
+         genObjs();
          genLib();
       }
 
       clean {
          init();
-         purge( [ $lib, C.objFiles(), $heads ] );
+         purge( [ $lib, C.objFiles() ] );
+         foreach ( h | $items + $hitems )
+            purge( headFile(h) );
       }
 
       help {
@@ -29,6 +33,7 @@ make {
    function {
       init() {
          $lib := C.libFile("vy");
+         $libs := [];
          $items := ["string","rect","random","color","circle",
             "caption","filled","shape"];
          $hitems := ["key","window","view","vector"];
@@ -37,6 +42,7 @@ make {
             "Windows": $parts += "windows";
             "Linux": $parts += "linux";
          }
+         $vyroot := "../../..";
          $vys := [
             [ "string", "vy.char", "String", 20240301 ],
             [ "rect", "vy.geom", "Rect", 20240301 ],
@@ -51,18 +57,39 @@ make {
             [ "view", "vy.ui", "View", 20240301 ],
             [ "vector", "vy.cont", "Vector", 20240301 ]
          ];
-         Comp.setRepo( "../../.." );
+         Comp.setRepo( $vyroot );
          Comp.setRepr( "Repr.vy" );
+      }
+
+      /// egy elemhez tartozó .h fájl
+      headFile( i ) { return format("vy_%s.h", i); }
+      
+      /// egy elemhez tartozó .c fájl
+      codeFile( i ) { return format("vy_%s.c", i ); } 
+      
+      /// egy elemhez tartozó obj fájl
+      objFile( i ) { return C.objFile("vy_%s"); }
+      
+      /// könyvtár fordítása
+      genLib() {
+         objs := [];
+         foreach ( i | $items + $parts ) {
+            o := objFile(i);
+            depend( $lib, o );
+            objs += o;
+         }
+         if ( needGen( $lib ) )
+            C.link( $lib, objs, $libs );
       }
       
       /// fejléc fordítása
       genHead( v ) {
-         df := format( "vy_%s%s", h, ".h" );
+         df := headFile( v[0] );
          sf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
             v[2], v[3] );
          depend( df, sf );
          if ( ! needGen( df ) ) return;
-         src = format("%s.%s@=%s", v[1], v[2], v[3]);
+         src := format("%s.%s@=%s", v[1], v[2], v[3]);
          Comp.setForce( true );
          Comp.compile( src, df );
       }
@@ -70,7 +97,7 @@ make {
       /// generált .h fájlok készítése
       genHeads() {
          foreach ( h | $items + $hitems ) {
-            if ( ! v := findVy( h ) )
+            if ( ! ( v := findVy( h ) ) )
                throw "Unkown part: "+h;
             genHead( v );
          }

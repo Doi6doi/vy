@@ -69,7 +69,7 @@ class Interf
    }
 
    /// fájl beolvasása
-   function read( Stream $s, Repo $repo ) {
+   function read( ExprStream $s, Repo $repo ) {
       $this->repo = $repo;
       $this->readHead( $s );
       while (true) {
@@ -109,6 +109,9 @@ class Interf
       if ( ! array_key_exists($type, $this->types) )
          throw new EVy("Unknown type: $type" );
    }
+
+   /// hívható-e 
+   function canCall( $x ) { return true; }
 
    function __toString() { return $this->fullName(); }
 
@@ -307,7 +310,7 @@ class Interf
 
    /// provide olvasása
    protected function readProvide( $s ) {
-      $this->provides->readItem( $s );
+      $this->provides->readPart( $s );
    }
 
    /// kifejezés olvasása

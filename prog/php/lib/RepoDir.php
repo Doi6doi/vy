@@ -27,7 +27,7 @@ class RepoDir extends Repo {
             return $ret;
       }
       $fname = $this->root."/".$fname;
-      return $this->readStream( new Stream($fname) );
+      return $this->readStream( new ExprStream($fname) );
    }
 
    function read( $x, $ver ) {

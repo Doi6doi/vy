@@ -21,7 +21,7 @@ class MakeCore
 	  $this->rules = [];
 	  $this->depends = [];
 	  $this->addFuncs(["echo","depend","format","generate",
-	     "needGen","replace","system"]);
+	     "level","needGen","purge","replace","system"]);
    }
 	  
    /// egy fájl módosítási dátuma
@@ -60,8 +60,32 @@ class MakeCore
 
    /// kiírás
    function echo( $x ) {
-	  print( "$x\n" );
+	  if ( is_array( $x )) {
+	     foreach ( $x as $i )
+	        $this->echo( $i );
+	  } else {
+	     print( "$x\n" );
+	  }
    } 
+   
+   /// fájl törlés
+   function purge( $x ) {
+	  if ( is_array( $x )) {
+	     foreach ( $x as $i )
+	        $this->purge( $i );
+	  } else {
+		 if ( file_exists( $x )) {
+			$this->owner->log( Make::INFO, "Purging $x");
+			unlink( $x );
+	      }
+	  }
+   }
+   
+   /// naplózási szint
+   function level( $v ) {
+      $this->owner->log( Make::INFO, "Log level: $v");
+	  $this->owner->setLevel( $v );
+   }
 
    /// szükséges-e generálni
    function needGen( $dest ) {

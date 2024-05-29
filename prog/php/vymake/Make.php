@@ -7,6 +7,11 @@ class Make
 {
 
    const
+      ERROR = 1,
+      WARNING = 2,
+      INFO = 3;
+
+   const
       FUNCTION = "function",
       IMPORT = "import",
       MAKE = "make",
@@ -28,11 +33,14 @@ class Make
    protected $runCtx;
    /// alap függvények
    protected $core;
+   /// naplózási szint
+   protected $level;
    
    function __construct() {
 	  $this->targets = [];
 	  $this->names = [];
 	  $this->core = new MakeCore( $this );
+	  $this->level = self::INFO;
    }
 
    /// futtatás célokkal
@@ -67,6 +75,16 @@ class Make
 	  $f->setCall( $name, $call );
 	  $this->add( $this->names, $name, $f );
 	  return $f;
+   }
+
+   function setLevel( $v ) {
+	  $this->level = $v;
+   }
+
+   function log( $lvl, $msg ) {
+	  if ( $this->level < $lvl )
+	     return;
+	  print( "$msg\n" );
    }
 
    function resolve( $token, $kind ) {

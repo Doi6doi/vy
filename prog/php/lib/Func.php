@@ -35,6 +35,10 @@ class Func
       return null;
    }
 
+   function run( RunCtx $ctx ) {
+      return $this;
+   }
+
    function __toString() { return "<".$this->name().">"; }
 
    function read( Stream $s ) {

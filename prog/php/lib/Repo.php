@@ -55,7 +55,7 @@ abstract class Repo {
    }
 
    /// stream olvasása
-   protected function readStream( Stream $s ) {
+   protected function readStream( ExprStream $s ) {
       try {
          $s->readWS();
          switch ( $n = $s->next() ) {

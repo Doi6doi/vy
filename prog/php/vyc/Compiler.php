@@ -50,13 +50,20 @@ class Compiler {
 
    /// reprezentációk beállítása
    function setRepr( $filename ) {
-	  $this->repr->read( new Stream( $filename ) );
+      $s = new Stream( $filename );
+	  try {
+	     $this->repr->read( $s );
+	  } catch (\Exception $e) {
+		 throw new EVy( $s->position().": ".$e->getMessage(),
+		    $e->getCode(), $e );
+      }
    }
 
    /// futtatás
    function run() {
       $this->forceInputs();
       $this->writeAll();
+      $this->done();
    }
 
    /// minden bemenet beolvasása
@@ -115,6 +122,13 @@ class Compiler {
          $this->cWriter->setTypeMap( $this->typemap );
       }
       return $this->cWriter;
+   }
+
+   /// fordítás utáni takarítás
+   function done() {
+	  $this->inputs = [];
+	  $this->outputs = [];
+	  $this->objs = [];
    }
 
 }

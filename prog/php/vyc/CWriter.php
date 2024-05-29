@@ -94,7 +94,6 @@ class CWriter {
 	  $map = $this->map;
 	  foreach ( $intf->types() as $t ) {
 		 $i = $this->addItem( CItem::TYPE, $t, $map );
-     	printf( "type ".$t->name()." ".$i->extra()."\n" ); 
 		 if ( ":" == $i->tKind() ) {
 		    $this->addItem( CItem::CAST, $t->name(), $i->extra() );
 		 }

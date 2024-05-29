@@ -35,4 +35,13 @@ class Reprs {
 	  $this->add( $r );
 	  return true;
    }
+   
+   /// reprezentáció hozzáadása
+   protected function add( $r ) {
+	  $n = $r->name();
+	  if ( array_key_exists( $n, $this->items ))
+	     throw new EVy("Duplicate item: $n" );
+	  $this->items[ $n ] = $r;
+   }
+   
 }

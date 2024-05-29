@@ -15,6 +15,7 @@ class StmFor
     protected $inc;
 	
 	function read( ExprStream $s ) {
+      $this->position = $s->position();
 	   $s->read( self::FOR );
 	   $s->readWS();
 	   $s->readToken("(");
@@ -24,7 +25,7 @@ class StmFor
 	   $s->readToken(";");
 	   $this->inc = $s->readExpr();
 	   $s->readToken(")");
-	   parent::read( $s );
+      $this->readPart( $s );
 	}
 	
    function run( RunCtx $ctx ) {

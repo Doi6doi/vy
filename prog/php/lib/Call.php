@@ -28,7 +28,10 @@ class Call
 	  $vals = [];
 	  foreach( $this->args as $a )
 	     $vals [] = $a->run( $ctx );
-	  return $this->target->call( $ctx, $vals );
+	  $t = $this->target;
+	  if ( ! method_exists( $t, "call" ))
+	     throw new EVy("Cannot call ".Tools::withClass($t));
+	  return $t->call( $ctx, $vals );
    }
 
    function add( Expr $e ) {

@@ -10,7 +10,7 @@ representation {
    Stamp: native VyStamp;
    Color: native VyColor;
    Coord: native float;
-   Shape: refcount;
+   Shape: public refcount;
    Rect: inherit Shape {
       width: Coord;
       height: Coord;
@@ -25,7 +25,7 @@ representation {
       color: Color;
    }
    ViewCoord: native VyViewCoord;
-   View: refcount;
+   View: public refcount;
    Vector: refcount;
    Any: native VyAny;
    

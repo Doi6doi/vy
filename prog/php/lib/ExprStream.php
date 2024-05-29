@@ -45,29 +45,37 @@ class ExprStream
 	  $n = $this->next();
 	  $top = $this->top();
 	  $kind = $top->kind();
-	  if ( Block::COND == $kind ) {
-		 if ( Given::GIVEN == $n )
-		    $ret = new Given( $top );
-	  }
 	  $semi = false;
+     switch ( $kind ) {
+	     case Block::COND:
+		     if ( Given::GIVEN == $n )
+		         $ret = new Given( $top );
+        break;
+        case Block::BODY:
+           switch ( $n ) {
+              case StmReturn::RETURN:
+		           $ret = new StmReturn(); 
+		           $semi = true;
+              break;
+              case StmThrow::THROW:
+		           $ret = new StmThrow();
+		           $semi = true;
+		        break;
+           }
+		  break;
+	  }
 	  switch( $n ) {
 		 case StmCase::CASE: $ret = new StmCase( $top ); break;
 		 case StmIf::IF: $ret = new StmIf( $top ); break;
 		 case StmFor::FOR: $ret = new StmFor( $top ); break;
 		 case StmForeach::FOREACH: $ret = new StmForeach( $top ); break;
-		 case StmReturn::RETURN: 
-		    $ret = new StmReturn(); 
-		    $semi = true;
-		 break;
-		 case StmThrow::THROW:
-		    $ret = new StmThrow();
-		    $semi = true;
-		 break;
-		 default: $semi = true;
 	  }
-	  if ( $ret )
+	  if ( $ret ) {
          $ret->read( $this );
-         else $ret = $this->readExpr();
+     } else {
+         $ret = $this->readExpr();
+         $semi = true;
+     }
       if ( $semi )
          $this->readToken(";");
 	  return $ret;

@@ -44,7 +44,7 @@ class Stack {
          case "&&": return 21;
          case "!": return 22;
          case "=": case "!=": case "<=": case ">=": case "<": case ">":
-            return 25;
+            return 23;
          case "+": case "-": return 30;
          case "*": case "/": case "%": return 40;
          case "(": case ".": case "[": return 90;
@@ -207,8 +207,10 @@ class Stack {
       if ( ! ( $this->isExpr(0) && $this->isToken(1))) return false;
       if ( 3 <= $n && $this->isExpr(2)) return false;
       $t = $this->items[1];
-      if ( ! Oper::isOper($t, Oper::PREFIX ))
-         return false;
+      if ( ! Oper::isOper($t, Oper::PREFIX)
+            || $this->precedence( $t ) < $this->precedence( $this->next() )
+         ) return false;
+      
       return $this->join(2, new Prefix($t,$this->items[0]));
    }
    

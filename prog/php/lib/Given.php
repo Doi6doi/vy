@@ -30,10 +30,11 @@ class Given
 
    /// given olvasása
    function read( Stream $s ) {
+      $this->position = $s->position();
       $s->readWS();
       $s->readToken( self::GIVEN );
       $this->readHead( $s );
-      parent::read( $s );
+      $this->readPart( $s );
    }
 
    /// változó hozzáadása

@@ -51,6 +51,10 @@ class Oper {
 
    /// többjegyű operátor folytatása
    static function cont( $pre, $ch ) {
+	  if ( "" === $pre && 2 == strlen($ch)) {
+		 $pre = $ch[0];
+		 $ch = $ch[1];
+	  }
       switch ($pre) {
          case "":
             switch ( $ch ) {

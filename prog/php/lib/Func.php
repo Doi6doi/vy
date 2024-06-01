@@ -12,13 +12,15 @@ class Func
    protected $name;
    /// konstans
    protected $cons;
+   /// speciális konstans
+   protected $special;
    /// argumentumok
    protected $sign;
    /// művelet
    protected $oper;
 
    function __construct( ExprCtx $owner, $name = null ) {
-	  parent::__construct( $owner );
+	   parent::__construct( $owner );
       $this->name = $name;
       $this->sign = new Sign( $this, true );
    }
@@ -30,6 +32,8 @@ class Func
    function cons() { return $this->cons; }
 
    function sign() { return $this->sign; }
+
+   function special() { return $this->special; }
 
    function resolve( $token, $kind ) {
       return null;
@@ -43,6 +47,10 @@ class Func
 
    function read( Stream $s ) {
       $this->name = $s->readIdent();
+      if ( "&" == substr( $this->name, 0, 1 )) {
+         $this->special = true;
+         $this->name = substr( $this->name, 1 );
+      }
       $this->sign->read( $s );
       $s->readWS();
       if ( "{" == $s->next() )

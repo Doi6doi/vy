@@ -8,7 +8,7 @@ class Compiler {
    /// szükséges tár
    protected $repo;
    /// reprezentációk
-   protected $repr;
+   protected $reprs;
    /// bemenetek
    protected $inputs;
    /// beolvasott objektumok
@@ -28,7 +28,7 @@ class Compiler {
       $this->objs = [];
       $this->typemap = [];
       $this->repo = new RepoMulti();
-      $this->repr = new Reprs();
+      $this->reprs = new Reprs();
    }
 
    function repo() { return $this->repo; }
@@ -49,10 +49,10 @@ class Compiler {
    }
 
    /// reprezentációk beállítása
-   function setRepr( $filename ) {
+   function setReprs( $filename ) {
       $s = new Stream( $filename );
 	  try {
-	     $this->repr->read( $s );
+	     $this->reprs->read( $s );
 	  } catch (\Exception $e) {
 		 throw new EVy( $s->position().": ".$e->getMessage(),
 		    $e->getCode(), $e );
@@ -97,14 +97,15 @@ class Compiler {
    }
 
    /// típusmegfeleltetés beállítása
-   function addTypeMap( $mapstr ) {
+   function setTypeMap( $mapstr ) {
+      $this->typemap = [];
       $maps = explode(";",$mapstr);
       foreach ( $maps as $map ) {
          if ( preg_match('#^(.*)=(.*)$#', $map, $m ))
             $this->typemap[ $m[1] ] = $m[2];
-         else
+         else if ( $map )
             throw new EVy("Unknown mapping: $map" );
-      }
+      } 
    }
 
    /// egy bemenet olvasása
@@ -117,10 +118,10 @@ class Compiler {
 
    /// c író
    function cWriter() {
-      if ( ! $this->cWriter ) {
+      if ( ! $this->cWriter )
          $this->cWriter = new CWriter();
-         $this->cWriter->setTypeMap( $this->typemap );
-      }
+      $this->cWriter->setTypeMap( $this->typemap );
+      $this->cWriter->setReprs( $this->reprs );
       return $this->cWriter;
    }
 

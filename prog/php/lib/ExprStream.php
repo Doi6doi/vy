@@ -81,5 +81,14 @@ class ExprStream
 	  return $ret;
    }
 
+   function nextLength() {
+      if ( self::SYMBOL == $this->nextKind() ) {
+         if ( Oper::cont( $this->nextChar(0), $this->nextChar(1)) )
+            return 2;
+            else return 1;
+      }
+      return parent::nextLength();      
+   }
+ 
 }
 

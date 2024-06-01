@@ -27,7 +27,7 @@ class Tools {
       foreach (func_get_args() as $x) {
          $ret [] = $x;
       }
-      fprintf( STDERR, implode(", ",$ret)."\n" );
+      fprintf( STDERR, "%s", implode(", ",$ret)."\n" );
    }
 
    static function allErrors() {
@@ -118,4 +118,52 @@ class Tools {
 		 default: return $x;
 	  }
    }
+   
+   /// tömör exception stack
+   static function shortTrace( \Throwable $e ) {
+      if ( $p = $e->getPrevious() )
+         return self::shortTrace( $p );
+      $ret = "";
+      $ts = $e->getTrace();
+      for ( $i = count($ts)-1; 0<=$i; --$i) {
+         $t = $ts[$i];
+         $c = self::g( $t, "class" );
+         $f = self::g( $t, "file");
+         $l = self::g( $t, "line");
+         $a = self::g( $t, "args" );
+         $ret .= sprintf("%s:%d:   %s%s%s\n", 
+            $f ? basename($f): "<unknown>", $l ? $l : "", 
+            $c ? "$c::" : "", $t["function"],
+            $a ? "(".self::flatten($a,60).")" : "" );
+      }
+      return $ret;
+   }
+
+   /// kiírható forma
+   static function flatten( $x, $max=null ) {
+      $ret = "";
+      if ( is_array($x)) {
+         $arr = [];
+         foreach ($x as $i)
+            $arr [] = self::flatten($i,$max);
+         $ret = implode(",",$arr);
+      } else if ( is_object($x)) {
+         if ( method_exists( $x, "__toString"))
+            $ret = "$x";
+            else $ret = "?";
+      } else {
+         $ret = "$x";
+      }
+      if ( $max && $max < strlen($ret))
+         $ret = substr( $ret, 0, $max-2 )."..";
+      return $ret;
+   }
+
+   static function shortTraceMsg( \Throwable $e ) {   
+      return sprintf( "%s\n%s (%s:%s): %s\n",
+         self::shortTrace( $e ),
+         get_class($e), basename( $e->getFile() ),
+            $e->getLine(), $e->getMessage() );
+   }
+   
 }

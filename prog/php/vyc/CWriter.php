@@ -27,6 +27,8 @@ class CWriter {
    protected $items;
    /// interfész
    protected $intf;
+   /// reprezentációk
+   protected $reprs;
    /// egyetlen cast
    protected $onlyCast;
    /// egyetlen saját típus
@@ -62,9 +64,30 @@ class CWriter {
 	  }
    }
 
+   function typeMap() { return $this->map; }
+
    /// típusmegfeleltetés beállítása
    function setTypeMap( array $map ) {
       $this->map = $map;
+   }
+   
+   /// reprezentációk beállítása
+   function setReprs( Reprs $r ) {
+	  $this->reprs = $r;
+   }
+   
+   /// egy típus reprezentációja
+   function repr( $name ) {
+	  if ( ! $t = Tools::g( $this->map, $name ))
+	     $t = $name;
+	  return $this->reprs()->get( $t );
+   }
+
+   /// reprezentációk ellenőrzéssel
+   protected function reprs() {
+	  if ( ! $this->reprs )
+	     throw new EVy("Representations not set");
+	  return $this->reprs;
    }
    
    /// a modul neve
@@ -93,15 +116,14 @@ class CWriter {
 	  $this->intf = $intf;
 	  $map = $this->map;
 	  foreach ( $intf->types() as $t ) {
-		 $i = $this->addItem( CItem::TYPE, $t, $map );
-		 if ( ":" == $i->tKind() ) {
-		    $this->addItem( CItem::CAST, $t->name(), $i->extra() );
-		 }
+		 $i = $this->addItem( CItem::TYPE, $t );
+		 if ( Repr::INHERIT == $i->reprKind() )
+		    $this->addItem( CItem::CAST, $t );
 	  }
       foreach ( $intf->consts() as $c )
-         $this->addItem( CItem::CONS, $c, $map );
+         $this->addItem( CItem::CONS, $c );
       foreach ( $intf->funcs() as $f )
-         $this->addItem( CItem::FUNC, $f, $map );
+         $this->addItem( CItem::FUNC, $f );
       if ( $this->onlyCast )
          $this->onlyCast->setOnly();
       if ( $this->onlyOwn )
@@ -109,8 +131,8 @@ class CWriter {
    }
         
    /// egy elem létrehozása
-   protected function addItem( $kind, $obj, $extra=null ) {
-	  $i = new CItem( $kind, $obj, $extra );
+   protected function addItem( $kind, $obj ) {
+	  $i = new CItem( $this, $kind, $obj );
 	  $this->items [] = $i;
 	  if ( CItem::TYPE == $kind && $i->own() )
          $this->onlyOwn = (null === $this->onlyOwn) ? $i : false;

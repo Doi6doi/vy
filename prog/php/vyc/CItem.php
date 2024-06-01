@@ -11,33 +11,36 @@ class CItem {
 	   CONS = "cons",
 	   FUNC = "func";
 	
+   protected $writer;
 	protected $kind;
 	protected $obj;
-	protected $map;
-	protected $extra;
-	protected $tKind;
 	protected $only;
 	
-	function __construct( $kind, $obj, $extra = null ) {
+	function __construct( CWriter $writer, $kind, $obj ) {
+      $this->writer = $writer;
 	   $this->kind = $kind;
 	   $this->obj = $obj;
-	   $this->map = $this->extra = $extra;
-	   switch ( $kind ) {
-	      case self::TYPE: $this->initType(); break;
-	      case self::CONS: $this->initCons(); break;
-	   }
 	}
 
    /// saját típus
    function own() { 
-	  return self::TYPE == $this->kind 
-         && in_array($this->tKind, [null,"#"]); 
+      return in_array( $this->reprKind(), 
+         [Repr::REFCOUNT, Repr::MANAGED] );
    }
 
    function extra() { return $this->extra; }
 
-   function tKind() { return $this->tKind; }
-	
+   function reprKind() { return $this->repr()->kind(); }
+   
+   /// a reprezentáció
+   function repr( $name=null ) {
+      if ( ! $name )
+         $name = $this->obj->name();
+      if ( ! $ret = $this->writer->repr( $name ))
+         throw new EVy("Unknown repr: $name");
+      return $ret;
+   }
+   
    /// egyetlen elem beállítás
    function setOnly() {
 	  $this->only = true;
@@ -71,56 +74,19 @@ class CItem {
 	  }
    }	
 
-   /// típus inicializálás
-   protected function initType() {
-	  $n = $this->obj->name();
-	  if ( ! $this->extra = Tools::g( $this->map, $n ))
-	     $this->extra = $n;
-	  $this->tKind = $this->trim( $this->extra );
-	  if ("#" == $this->tKind )
-	     $this->extra = $n;
-   }
-
-   /// konstans inicializálás
-   protected function initCons() {
-	  $this->extra = $this->getType( $this->obj->name() );
-	  $this->tKind = $this->trim( $this->extra );
-   }
-
-   /// típus beállítása
-   protected function getType( $typ ) {
-	  if ( $ret = Tools::g( $this->map, $typ ) ) {
-		 $ch = substr( $ret, 0, 1 );
-		 if (in_array( $ch, [":","#"] ))
-		    return $typ; 
-	     return $ret;
-	  }
-	  return $typ;
-   }
-
-   /// jel trim-elés
-   protected function trim( & $nam ) {
-	  $ch = substr( $nam, 0, 1 );
-	  if ( in_array( $ch, ["&","^",":","#"] )) {
-	     $nam = substr($nam,1);
-	     return $ch;
-	  } else
-	     return null;
-   }
-	  
    /// típusdeklaráció kiírása
    protected function writeTypeDecl( $s ) {
-	  if ( ! in_array( $this->kind, [self::TYPE] )) return;
-	  switch ( $this->tKind ) {
-		 case "&": return;
-		 case ":": 
-		    $t = $this->obj->name();
-            $s->writel( "typedef struct %s * %s;\n", $t, $t );
-		    $t = $this->extra;
+	  if ( self::TYPE != $this->kind ) return;
+	  switch ( $this->reprKind() ) {
+		 case Repr::NATIVE: return;
+		 case Repr::INHERIT: 
+		    $t = $this->repr()->old();
+          $s->writel( "typedef struct %s * %s;\n", $t, $t );
 		 break;
 		 default: 
       }
-      $s->writel( "typedef struct %s * %s;\n", $this->extra, $this->extra );
+      $t = $this->repr()->name();
+      $s->writel( "typedef struct %s * %s;\n", $t, $t );
    }
    
    /// típusdefiníció kiírása
@@ -157,19 +123,19 @@ class CItem {
    /// kiírás struktúrában
    protected function writeStruct( $s ) {
 	  switch ( $this->kind ) {
-		 case self::TYPE: 
-		    if ( $this->own() )
-		       $this->writeSetter( $s, false );
-		 return;
-		 case self::CAST:
-		    $e = $this->extra;
-            $s->writel( "%s (* %s)( %s );", 
-               $e, $this->shortName(), $this->obj );
-         break;
-         case self::CONS: return $this->writeConst( $s, false );
-         case self::FUNC: return $this->writeFunc( $s, false );
-         default:
-            throw $this->unKind();
+		  case self::TYPE: 
+		     if ( $this->own() )
+		        $this->writeSetter( $s, false );
+		  return;
+        case self::CAST:
+		     $e = $this->repr()->old();
+           $s->writel( "%s (* %s)( %s );", 
+              $e, $this->shortName(), $this->obj );
+        break;
+        case self::CONS: return $this->writeConst( $s, false );
+        case self::FUNC: return $this->writeFunc( $s, false );
+        default:
+           throw $this->unKind();
       }
    }
    
@@ -177,15 +143,13 @@ class CItem {
    function shortName() {
 	  switch ( $this->kind ) {
 		 case self::CAST:
-		    return "cast".( $this->only ? "" : $this->extra );
+		    return "cast".( $this->only ? "" : $this->repr()->str() );
 		 case self::CONS:
-		    if ( $this->tKind )
-		       return "const".Tools::firstUpper( $this->extra );
-		       else return $this->extra;
+          return "const".Tools::firstUpper( $this->obj->name() );
 		 case self::FUNC:
 		    return $this->obj->name();
 		 case self::TYPE:
-		    return "set".( $this->only ? "" : $this->extra );
+		    return "set".( $this->only ? "" : $this->repr()->str() );
 		 default:
 		    throw $this->unKind();
       }
@@ -210,21 +174,20 @@ class CItem {
       if ( $stub )
          $s->write( "static " );
          else $s->writeIndent();
-      $t = $this->getType( $f->sign()->result() );
-      $tk = $this->trim( $t );
+      $t = $this->repr( $f->sign()->result() )->str();
       $s->writef( "$t " );
       if ( $stub )
 	     $s->writef( "%s( ", $this->longName() );
 	     else $s->writef("(* %s)( ", $this->shortName() );
-      if ( "&" == $this->tKind ) {
-         switch ( $this->extra ) {
+      if ( $this->obj->special() ) {
+         switch ( $n = $this->obj->name() ) {
             case "ascii": case "utf": case "hex":
                $s->write("VyCStr, VySize");
             break;
             case "dec":
                $s->write("VyDec");
             break;
-            default: throw new EVy("Unknown special constant:".$this->extra);
+            default: throw new EVy("Unknown special constant: $n" );
          }
       }
       if ( $stub )
@@ -232,24 +195,23 @@ class CItem {
          else $s->write(" );\n");
    }
 
-   /// konstans kiírása
+   /// setter kiírása
    protected function writeSetter( $s, $stub ) {
-	  if ( ! $this->own() ) return;
       if ( $stub )
          $s->write( "static " );
          else $s->writeIndent();
       $s->writef( "void " );
       if ( $stub )
-	     $s->writef( "%s( ", $this->longName() );
-	     else $s->writef("(* %s)( ", $this->shortName() );
-	  $t = $this->getType( $this->obj->name() );
+	      $s->writef( "%s( ", $this->longName() );
+	      else $s->writef("(* %s)( ", $this->shortName() );
+	   $t = $this->repr()->str();
       $s->writef("%s * dest, %s val", $t, $t );
       if ( $stub ) {
-		 $s->write( ") {\n" );
-		 $s->indent(true);
-		 $s->writel("vySetter( (VyAny *)dest, (VyAny)val );" );
-		 $s->indent(false);
-		 $s->writel("}\n");
+		   $s->write( ") {\n" );
+		   $s->indent(true);
+		   $s->writel("vySetter( (VyAny *)dest, (VyAny)val );" );
+		   $s->indent(false);
+		   $s->writel("}\n");
       } else 
          $s->write(" );\n");
    }
@@ -260,11 +222,9 @@ class CItem {
       if ( $stub )
          $s->write( "static " );
          else $s->writeIndent();
-      if ( $t = $this->getType( $f->sign()->result() ) ) {
-		 $tk = $this->trim( $t );
-         $s->write( "$t " );
-      } else
-		 $s->write( "void " );
+      if ( $r = $f->sign()->result() )
+         $s->write( $this->repr( $r )->str() );
+         else $s->write( "void " );
       if ( $stub )
 	     $s->writef( "%s( ", $this->longName() );
 	     else $s->writef("(* %s)( ", $this->shortName() );
@@ -273,8 +233,7 @@ class CItem {
          if ( $first )
             $first = false;
             else $s->write(", ");
-         $t = $this->getType( $a->type() );
-         $tk = $this->trim( $t );
+         $t = $this->repr( $a->type() )->str();
          $s->write( "$t" );
          if ( $n = $a->name() )
             $s->write(" $n");
@@ -288,21 +247,21 @@ class CItem {
    protected function writeArgs( $s ) {
 	  switch ( $this->kind ) {
 		 case self::TYPE: 
-		    if ( "&" == $this->tKind )
-               $re = sprintf("vyNative( ctx, \"%s\" )", $this->extra );
-               else $re = "NULL";
-            $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
-               $this->obj->name(), $re );
-            if ( $this->own() )
-               $s->writel( "vyArgsFunc( name, \"%s\"); \\", $this->shortName() );
-         break;
-         case self::CAST:
-         case self::CONS:
-         case self::FUNC:
-            $s->writel( "vyArgsFunc( name, \"%s\"); \\", $this->shortName() );
-         break;
-         default:
-            throw $this->unKind();
+          if ( Repr::NATIVE == $this->reprKind() )
+             $re = sprintf("vyNative( ctx, \"%s\" )", $this->repr()->str() );
+             else $re = "NULL";
+          $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
+             $this->obj->name(), $re );
+          if ( $this->own() )
+             $s->writel( "vyArgsFunc( name, \"%s\"); \\", $this->shortName() );
+       break;
+       case self::CAST:
+       case self::CONS:
+       case self::FUNC:
+          $s->writel( "vyArgsFunc( name, \"%s\"); \\", $this->shortName() );
+       break;
+       default:
+          throw $this->unKind();
       }
    }
    
@@ -331,7 +290,7 @@ class CItem {
    /// body include rész kiírása
    protected function writeBodyInclude( $s ) {
 	  if ( self::TYPE == $this->kind
-	     && in_array( $this->tKind, [":","^"] ))
+	     && in_array( $this->reprKind(), [Repr::INHERIT] ))
 	  {
 	     $s->writel("#include \"vy_%s.h\"\n", 
 	        Tools::firstLower( $this->extra ));

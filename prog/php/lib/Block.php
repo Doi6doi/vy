@@ -49,7 +49,7 @@ class Block
    // blokk futtatása
    function run( RunCtx $ctx ) {
 	  try {
-         $ret = null;
+        $ret = null;
 	     foreach( $this->stms as $s ) {
 		    $ret = $s->run( $ctx );
 		    if ( Cont::term( $ret, Cont::BLOCK ) ) return $ret;

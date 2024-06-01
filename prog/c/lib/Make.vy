@@ -8,13 +8,14 @@ make {
          init();
          genHeads();
          genCodes();
+         genDep();
          genObjs();
          genLib();
       }
 
       clean {
          init();
-         purge( [ $lib, C.objFiles() ] );
+         purge( [ $lib, "*"+C.objExt() ] );
          foreach ( h | $items + $hitems )
             purge( headFile(h) );
       }
@@ -32,33 +33,107 @@ make {
 
    function {
       init() {
-         $lib := C.libFile("vy");
+         $lib := C.libFile( "vy" );
          $libs := [];
-         $items := ["string","rect","random","color","circle",
-            "caption","filled","shape"];
+         $vyh := "vy.h";
+         $items := ["caption","circle","color","filled",
+            "random","rect","shape","string","time"];
          $hitems := ["key","window","view","vector"];
-         $parts := ["","core","geom","mem","sm","ui","util"];
+         $parts := ["implem","core","geom","mem","sm","ui","util"];
          case ( system() ) {
             "Windows": $parts += "windows";
             "Linux": $parts += "linux";
          }
          $vyroot := "../../..";
          $vys := [
-            [ "string", "vy.char", "String", 20240301 ],
-            [ "rect", "vy.geom", "Rect", 20240301 ],
-            [ "random", "vy.util", "Random", 20240301 ],
-            [ "color", "vy.geom", "Color", 20240301 ],
-            [ "circle", "vy.geom", "Circle", 20240301 ],
-            [ "caption", "vy.geom", "Caption", 20240301 ],
-            [ "filled", "vy.geom", "Filled", 20240301 ],
-            [ "shape", "vy.geom", "Shape", 20240301 ],
-            [ "key", "vy.ui", "Key", 20240301 ],
-            [ "window", "vy.ui", "Window", 20240301 ],
-            [ "view", "vy.ui", "View", 20240301 ],
-            [ "vector", "vy.cont", "Vector", 20240301 ]
+            [ "caption", "vy.geom", "Caption", 20240301, "" ],
+            [ "circle", "vy.geom", "Circle", 20240301, "" ],
+            [ "color", "vy.geom", "Color", 20240301, "" ],
+            [ "filled", "vy.geom", "Filled", 20240301, "Sub=Shape;Brush=Color" ],
+            [ "key", "vy.ui", "Key", 20240301, "" ],
+            [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
+            [ "rect", "vy.geom", "Rect", 20240301, "" ],
+            [ "shape", "vy.geom", "Shape", 20240301, "" ],
+            [ "string", "vy.char", "String", 20240301, "" ],
+            [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
+            [ "vector", "vy.cont", "Vector", 20240301, "Value=Any" ],
+            [ "view", "vy.ui", "View", 20240301, "" ],
+            [ "window", "vy.ui", "Window", 20240301, "Sub=View" ]
          ];
+         $dep := "all.dep";
          Comp.setRepo( $vyroot );
-         Comp.setRepr( "Repr.vy" );
+         Comp.setReprs( "Repr.vy" );
+         C.setShow(true);
+         C.setIncDir(".");
+      }
+
+      /// generált .h fájlok készítése
+      genHeads() {
+         foreach ( i | $items + $hitems )
+            genHead( findVy( i ) );
+      }
+      
+      /// generált .c fájlok készítése
+      genCodes() {
+         foreach ( i | $items )
+            genCode( findVy( i ) );
+      }
+      
+      /// depend fájl készítése
+      genDep() {
+         cs := [];
+         hs := [$vyh];
+         foreach ( i | $items + $parts ) {
+            cs += codeFile( i );
+            hs += headFile( i );
+         }
+         foreach ( i | $hitems )
+            hs += headFile( i );
+         if ( older( $dep, cs+hs ) )
+            C.depend( $dep, cs );
+      }
+      
+      /// object fájlok fordítása
+      genObjs() {
+         deps := C.loadDep( $dep );
+         foreach ( i | $items + $parts ) {
+            of := objFile( i );
+            if ( older( of, deps[of] ))
+               C.compile( of, codeFile(i) );
+         }
+      }
+      
+      /// könyvtár fordítása
+      genLib() {
+         objs := [];
+         foreach ( i | $items + $parts )
+            objs += objFile(i);
+         if ( older( $lib, objs ))
+            C.linkLib( $lib, objs, $libs );
+      }
+
+      /// .h féj generálása
+      genHead( v ) {
+         df := headFile( v[0] );
+         sf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
+            v[2], v[3] );
+         if ( ! older( df, sf )) return;
+         src := format("%s.%s@=%s", v[1], v[2], v[3]);
+         Comp.setMap( v[4] );
+         Comp.setForce( true );
+         Comp.compile( src, df );
+      }
+
+      /// .c fájl generálása
+      genCode( v ) {
+         df := codeFile( v[0] );
+         sf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
+            v[2], v[3] );
+         if ( ! older( df, sf )) return;
+         src := format("%s.%s@=%s", v[1], v[2], v[3]);
+         Comp.setMap( v[4] );
+         Comp.setForce( false );
+         Comp.compile( src, df );
       }
 
       /// egy elemhez tartozó .h fájl
@@ -68,41 +143,8 @@ make {
       codeFile( i ) { return format("vy_%s.c", i ); } 
       
       /// egy elemhez tartozó obj fájl
-      objFile( i ) { return C.objFile("vy_%s"); }
-      
-      /// könyvtár fordítása
-      genLib() {
-         objs := [];
-         foreach ( i | $items + $parts ) {
-            o := objFile(i);
-            depend( $lib, o );
-            objs += o;
-         }
-         if ( needGen( $lib ) )
-            C.link( $lib, objs, $libs );
-      }
-      
-      /// fejléc fordítása
-      genHead( v ) {
-         df := headFile( v[0] );
-         sf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
-            v[2], v[3] );
-         depend( df, sf );
-         if ( ! needGen( df ) ) return;
-         src := format("%s.%s@=%s", v[1], v[2], v[3]);
-         Comp.setForce( true );
-         Comp.compile( src, df );
-      }
-      
-      /// generált .h fájlok készítése
-      genHeads() {
-         foreach ( h | $items + $hitems ) {
-            if ( ! ( v := findVy( h ) ) )
-               throw "Unkown part: "+h;
-            genHead( v );
-         }
-      }
-      
+      objFile( i ) { return format("vy_%s%s", i, C.objExt()); }
+
       /// vy sor megkeresése
       findVy( x ) {
          for (i:=0; i < $vys.count ; ++i) {

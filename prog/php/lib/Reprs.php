@@ -13,16 +13,22 @@ class Reprs {
    function __construct() {
 	  $this->items = [];
    }
+
+   /// egy reprezentáció
+   function get( $name ) {
+	  return Tools::g( $this->items, $name );
+   }
    
    /// fájl felolvasása
    function read( Stream $s ) {
-	  $s->readWS();
-	  $s->readToken( self::REPRESENTATION );
-	  $s->readWS();
-	  $s->readToken("{");
-	  while ( $this->readItem( $s ))
-	     ;
-	  $s->readToken("}");
+      $this->items = [];
+      $s->readWS();
+	   $s->readToken( self::REPRESENTATION );
+      $s->readWS();
+	   $s->readToken("{");
+	   while ( $this->readItem( $s ))
+	      ;
+	   $s->readToken("}");
    }
 	
    /// egy elem felolvasása

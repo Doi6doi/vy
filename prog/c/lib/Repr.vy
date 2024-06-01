@@ -26,6 +26,8 @@ representation {
    }
    ViewCoord: native VyViewCoord;
    View: public refcount;
+   Group: inherit View;
+   Window: inherit Group;
    Vector: refcount;
    Any: native VyAny;
    

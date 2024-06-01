@@ -7,28 +7,70 @@ class MakeC extends MakeImport {
    const
       C = "C";
 
+   protected $compiler;
+
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::C );
-	  $this->addFuncs( ["libFile","objFiles"] );
+	  $this->setCompiler( null );
+	  $this->addFuncs( ["setCompiler","compile","depend",
+	     "libFile","linkLib","loadDep","objExt",
+	     "setIncDir","setShow"] );
+   }
+
+   /// fordítás
+   function compile( $dst, $src ) {
+	  $this->log( Make::INFO, "Compiling -> $dst" );
+	  $this->compiler->compile( $dst, $src );
    }
 
    /// könyvtár neve
    function libFile( $name ) {
 	  switch ( $sys = Tools::system() ) {
-		 case Tools::WINDOWS: return $name.".dll";
-		 case Tools::LINUX: return "lib".$name.".so";
+		 case Tools::WINDOWS: return "$name.dll";
+		 case Tools::LINUX: return "lib$name.so";
 		 default: throw new EVy("Unknown system: $sys");
       }
    }
  
    /// object fájlok a könyvtárban
-   function objFiles() {
-	  switch ($sys = Tools::system() ) {
-		 case Tools::WINDOWS: $ptn = "*.obj"; break;
-		 case Tools::LINUX: $ptn = "*.o"; break;
-		 default: throw new EVy("Unknown system: $sys");
+   function objExt() {
+	  switch (Tools::system() ) {
+		 case Tools::WINDOWS: return ".obj";
+		 default: return ".o";
       }
-      return glob( $ptn );
+   }
+
+   /// depend fájl készítése
+   function depend( $dst, $src ) {
+	  $this->log( Make::INFO, "Creating dependency file -> $dst" );
+	  $this->compiler->depend( $dst, $src );
+   }
+
+   /// könyvtár linkelése
+   function linkLib( $dst, $src ) {
+	  $this->log( Make::INFO, "Linking library -> $dst" );
+	  $this->compiler->linkLib( $dst, $src );
+   }
+	   
+   /// dep fájl beolvasása
+   function loadDep( $fname ) {
+	  $this->log( Make::INFO, "Loading dependencies: $fname" );
+	  return $this->compiler->loadDep( $fname );
+   }
+
+   /// include könyvtár beállítása
+   function setIncDir( $dir ) {
+	  return $this->compiler->setIncDir( $dir );
+   }
+
+   /// include könyvtár beállítása
+   function setShow( $x ) {
+	  return $this->compiler->setShow( $x );
+   }
+
+   /// fordító beállítása
+   function setCompiler( $cmp ) {
+	  $this->compiler = CCompiler::create( $cmp );
    }
 
 }

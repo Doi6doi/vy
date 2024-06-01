@@ -12,10 +12,11 @@ class MakeComp
 	protected $comp;
 	
    function __construct( $owner ) {
-	  parent::__construct( $owner, self::COMP );
-	  Autoload::addPath( __DIR__."/../vyc" );
-	  $this->comp = new Compiler();
-      $this->addFuncs( ["compile", "setForce", "setRepo", "setRepr"] );
+	   parent::__construct( $owner, self::COMP );
+	   Autoload::addPath( __DIR__."/../vyc" );
+	   $this->comp = new Compiler();
+      $this->addFuncs( ["compile", "setForce", "setMap",
+         "setRepo", "setReprs"] );
    }
 	
    /// fordító futtatása
@@ -31,6 +32,11 @@ class MakeComp
 	  $this->comp->setForce( $x );
    }
 	
+   /// megfeleltetés beállítása
+   function setMap( $x ) {
+      $this->comp->setTypeMap( $x );
+   }
+   
 	/// repository beállítása
 	function setRepo( $x ) {
 	   $r = $this->comp->repo();
@@ -39,8 +45,8 @@ class MakeComp
 	}
 	
 	/// reprezentáció beállítása
-	function setRepr( $x ) {
-	   $this->comp->setRepr( $x );
+	function setReprs( $x ) {
+	   $this->comp->setReprs( $x );
 	}
 	
 }

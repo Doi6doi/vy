@@ -22,6 +22,21 @@ class Repr {
 	
 	function name() { return $this->name; }
 	
+	function kind() { return $this->kind; }
+	
+	function old() { return $this->old; }
+	
+	function str() {
+       switch ( $this->kind ) {
+		  case self::INHERIT: 
+		  case self::REFCOUNT:
+		  case self::MANAGED:
+		     return $this->name;
+		  case self::NATIVE: return $this->old;
+		  default: return $this->unKind();
+	   }
+	}
+
     function read( Stream $s ) {
 	   $s->readWS();
 	   $this->name = $s->readIdent();
@@ -46,7 +61,7 @@ class Repr {
 		  break;
 		  case self::REFCOUNT: case self::MANAGED; break;
 		  default:
-		     throw new EVy("Unknown representation kind: $k");
+		     throw $this->unKind();
 	   }
 	}
 	
@@ -79,12 +94,9 @@ class Repr {
 	   $this->fields[$name] = $typ;
 	   return true;
 	}
-	   
-		     
-		     
-		  
-	   
-		   
-	   	
+
+   protected function unKind() {
+      return new EVy("Unknown representation kind:".$this->kind);
+   }	   
 	
 }

@@ -13,8 +13,12 @@ class VyC {
    }
 
    function run( $argv ) {
-      $this->getParams( $argv );
-      $this->comp->run();
+	  try {
+         $this->getParams( $argv );
+         $this->comp->run();
+      } catch ( Exception $e ) {
+         print( vy\Tools::shortTraceMsg( $e ));
+      }         
    }
 
    /// paraméterek olvasása
@@ -82,7 +86,7 @@ class VyC {
    }
 
    function getParType( $argv, & $i ) {
-      $this->comp->addTypeMap( $this->nextPar( $argv, $i, "typemap" ));
+      $this->comp->setTypeMap( $this->nextPar( $argv, $i, "typemap" ));
       return true;
    }
 
@@ -97,7 +101,7 @@ class VyC {
          "   -p <filename>: set representation file",
          "   -r <path>: add <path> as repository",
          "   -i <item>: add <item> as input",
-         "   -t <typemap>: add <typemap> as type mapping",
+         "   -t <typemap>: set <typemap> as type mapping",
          "   -o <filename>: add <filename> as output",
          "",
          ""

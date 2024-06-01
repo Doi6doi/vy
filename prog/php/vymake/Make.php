@@ -40,6 +40,8 @@ class Make
 	  $this->targets = [];
 	  $this->names = [];
 	  $this->core = new MakeCore( $this );
+	  foreach ( $this->core->names() as $f )
+	     $this->add( $this->names, $f->name(), $f );
 	  $this->level = self::INFO;
    }
 
@@ -68,13 +70,6 @@ class Make
 
    function canCall( $x ) {
 	  return true;
-   }
-
-   function addFunc( $name, $call ) {
-	  $f = new MakeFunc( $this );
-	  $f->setCall( $name, $call );
-	  $this->add( $this->names, $name, $f );
-	  return $f;
    }
 
    function setLevel( $v ) {

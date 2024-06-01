@@ -22,8 +22,10 @@ class StmReturn
   	}
   	
   	function run( RunCtx $ctx ) {
-	   $val = $this->expr->run( $ctx );
-	   return new Cont( Cont::RETURN, $val );
+	   $ret = null;
+	   if ( $e = $this->expr )
+	      $ret = $e->run( $ctx );
+	   return new Cont( Cont::RETURN, $ret );
 	}
 	
 }

@@ -11,17 +11,11 @@ class MakeCore
 
    protected $owner;
 
-   /// generálási szabályok
-   protected $rules;
-   /// függőségek
-   protected $depends;
-
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
 	  $this->rules = [];
-	  $this->depends = [];
-	  $this->addFuncs(["echo","depend","format","generate",
-	     "level","needGen","purge","replace","system"]);
+	  $this->addFuncs(["echo","format","older",
+	     "level","purge","replace","system"]);
    }
 	  
    /// egy fájl módosítási dátuma
@@ -31,31 +25,11 @@ class MakeCore
 	  return filemtime( $fname );
    }
 
-   /// egy fájl generálása
-   protected function doGenerate( $fname ) {
-	  foreach ( $this->rules as $r ) {
-		 if ( $r->matches( $fname ))
-		    $r->apply( $fname );
-	  }
-	  throw new EVy("No rule to generate ".$fname);
-   }
-
-   /// függőség hozzáadása
-   function depend( $dst, $src ) {
-	  if ( ! $dst || ! $src ) {
-	     return;
-	  } else if ( is_array( $dst )) {
-	     foreach ( $dst as $d )
-	        $this->depend( $d, $src );
-	  } else if ( is_array( $src )) {
-	     foreach ( $src as $s )
-	        $this->depend( $dst, $s );
-	  } else {
-		  if ( ! array_key_exists( $dst, $this->depends ))
-		     $this->depends[$dst] = [];
-		  if ( ! in_array( $src, $this->depends[$dst] ))
-		     $this->depends[$dst] [] = $src;
-      }
+   /// a cél régebbi, mint a feltétlek
+   function older( $dst, $src=null ) {
+	  if ( ! $ot = $this->modified( $dst ))
+	     return true;
+	  return $this->newerThan( $ot, $src );
    }
 
    /// kiírás
@@ -87,18 +61,6 @@ class MakeCore
 	  $this->owner->setLevel( $v );
    }
 
-   /// szükséges-e generálni
-   function needGen( $dest ) {
-	  return ! $this->modified( $dest )
-         || $this->generateDep( $dest );
-   }
-
-   /// egy fájl generálása, ha szükséges
-   function generate( $dest ) {
-	  if ( $this->needGen( $dest ))
-	     $this->doGenerate( $dest );
-   }
-
    /// string csere
    function replace( $s, $src, $dst ) {
 	  return str_replace( $src, $dst, $s );
@@ -112,5 +74,18 @@ class MakeCore
 	  return call_user_func_array( "sprintf", func_get_args() );
    }
 
-
+   /// egy időpontnál van újabb fájl, vagy valamelyik nincs
+   protected function newerThan( $at, $f ) {
+	  if ( ! $f )
+	     return false;
+	  if ( is_array( $f )) {
+		 foreach ( $f as $i )
+		    if ( $this->newerThan( $at, $i ))
+		       return true;
+		 return false;
+      }
+      $ft = $this->modified( $f );
+      return ! $ft || $ft > $at;
+   }
+   
 }

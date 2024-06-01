@@ -28,6 +28,8 @@ class MakeImport
     function run( RunCtx $ctx ) { return $this; }
 	
     function init() { }	
+
+    function names() { return $this->names; }
 	
 	function __toString() { return $this->name; }
 	
@@ -46,10 +48,20 @@ class MakeImport
 	
    /// függvények hozzáadása
    protected function addFuncs( $arr ) {
-	  foreach ( $arr as $a ) {
-	     $f = $this->owner->addFunc( $a, [$this,$a] );
-	     $this->add( $a, $f );
-	  }
+	  foreach ( $arr as $a )
+	     $this->addFunc( $a );
    }
 	
+   /// egy függvény hozzáadása
+   function addFunc( $name ) {
+      $f = new MakeFunc( $this );
+      $f->setCall( $name, [$this,$name] );
+	  $this->add( $name, $f );
+	  return $f;
+   }
+	
+   /// naplózás	
+   protected function log( $lvl, $msg ) {
+	  $this->owner->log( $lvl, $msg );
+   }
 }

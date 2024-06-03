@@ -3,6 +3,7 @@ Makefile
 *.o
 libvy.geany
 megsem
+vy_caption.h
 vy_rect.h
 vy_view.h
 vy_window.h
@@ -14,4 +15,6 @@ vy_filled.h
 vy_random.h
 vy_shape.h
 vy_sprite.h
+vy_string.h
+vy_vector.h
 all.dep

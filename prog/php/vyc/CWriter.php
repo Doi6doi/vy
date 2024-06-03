@@ -180,9 +180,9 @@ class CWriter {
             $s->writel( "#endif // $hh");
          break;   
          case self::HEADERINCLUDE:
-            $s->writel( "#include <vy.h>\n" );
-            if ( $this->hasOwn() )
+            if ( $this->hasOwnPublic() )
                $s->writel("#include <vy_implem.h>\n");
+               else $s->writel( "#include <vy.h>\n" );
          break;
          case self::STRUCT:
             $s->writel( "typedef struct %sFun {", $intf->name() );
@@ -241,10 +241,11 @@ class CWriter {
    }
 
    /// van-e saját típus
-   protected function hasOwn() {
+   protected function hasOwnPublic() {
       foreach ($this->map as $k=>$v) {
          if ( "*" == substr( $v, 0, 1 ))
-            return true;
+            if ( $this->repr( $k )->public() )
+               return true;
       }
       return false;
    }

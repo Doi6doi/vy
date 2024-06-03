@@ -47,11 +47,12 @@ class MakeCore
 	  if ( is_array( $x )) {
 	     foreach ( $x as $i )
 	        $this->purge( $i );
-	  } else {
-		 if ( file_exists( $x )) {
+	  } else if ( preg_match('#\*#', $x )) {
+        foreach ( glob($x) as $i )
+           $this->purge( $i );
+     } else if ( file_exists( $x )) {
 			$this->owner->log( Make::INFO, "Purging $x");
 			unlink( $x );
-	      }
 	  }
    }
    

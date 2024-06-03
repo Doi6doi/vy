@@ -47,10 +47,6 @@ class Func
 
    function read( Stream $s ) {
       $this->name = $s->readIdent();
-      if ( "&" == substr( $this->name, 0, 1 )) {
-         $this->special = true;
-         $this->name = substr( $this->name, 1 );
-      }
       $this->sign->read( $s );
       $s->readWS();
       if ( "{" == $s->next() )
@@ -61,8 +57,9 @@ class Func
    /// konstans függvény olvasása
    function readConst( Stream $s ) {
       $this->cons = true;
-      $pre = $s->readIf("&") ? "&" : "";
-      $this->name = $pre.$s->readIdent();
+      if ( $s->readIf( "&" ))
+         $this->special = true;
+      $this->name = $s->readIdent();
       if ( ! $this->sign->readResult( $s ) )
          throw $s->notexp("result");
       $s->readWS();

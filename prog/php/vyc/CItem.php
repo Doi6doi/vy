@@ -23,9 +23,8 @@ class CItem {
 	}
 
    /// saját típus
-   function own() { 
-      return in_array( $this->reprKind(), 
-         [Repr::REFCOUNT, Repr::MANAGED] );
+   function own() {
+      return $this->writer->own( $this->obj->name() );
    }
 
    function extra() { return $this->extra; }
@@ -55,7 +54,7 @@ class CItem {
 		 case CWriter::TYPEDECL:
 		    return $this->writeTypeDecl( $s );
 		 case CWriter::TYPEDEF:
-		    return $this->writeTypeDef( $s );
+		    return $this->writeTypeDef( $s, true );
 		 case CWriter::STRUCT:
 		    return $this->writeStruct( $s );
 		 case CWriter::ARGS:
@@ -76,48 +75,51 @@ class CItem {
 
    /// típusdeklaráció kiírása
    protected function writeTypeDecl( $s ) {
-	  if ( self::TYPE != $this->kind ) return;
-	  switch ( $this->reprKind() ) {
-		 case Repr::NATIVE: return;
-		 case Repr::INHERIT: 
-		    $t = $this->repr()->old();
-          $s->writel( "typedef struct %s * %s;\n", $t, $t );
-		 break;
-		 default: 
+	   if ( self::TYPE != $this->kind ) return;
+      $r = $this->repr();
+      if ( Repr::NATIVE == $r->kind() ) return;
+	   if ( Repr::INHERIT == $r->kind() ) {
+	      $t = $this->repr()->old();
+         $s->writel( "typedef struct %s * %s;\n", $t, $t );
       }
       $t = $this->repr()->name();
       $s->writel( "typedef struct %s * %s;\n", $t, $t );
+      $this->writeTypeDef( $s, false );
    }
    
    /// típusdefiníció kiírása
-   protected function writeTypeDef( $s ) {
+   protected function writeTypeDef( $s, $impl ) {
 	  if ( self::TYPE != $this->kind ) return; 
-	  $tk = $this->tKind;
-	  $e = $this->extra;
-	  switch ( $tk ) {
-		 case null: case "#": case ":":
-		    $tt = $this->extra;
-		    if ( ":" == $tk )
-		       $tt = $this->obj->name();
-            $s->writel( "struct %s {", $tt );
-            $s->indent(true);
-            switch ( $tk ) {
-			   case "#": $l = "VyRefCount ref"; break;
-			   case ":": $l = sprintf( "struct %s %s", $this->extra,
-			      Tools::firstLower( $this->extra )); break;
-			   default: $l = "VyRepr repr";
-			}
-			$s->writel( "$l;" );
-            $s->indent(false);
-            $s->writel("};\n");
-         break;
-      }
-      switch ( $tk ) {
-		 case ":": $s->writel("extern VyRepr vyr%s;\n", $this->extra ); break;
-		 case "^": $s->write("extern "); break;
-      }
-      if ( "&" != $tk )
-         $s->writel( "VyRepr vyr%s;\n", $tt );
+     $r = $this->repr();
+     if ( Repr::NATIVE == $r->kind() ) return;
+     if ( $this->own() ) {
+        if ( $r->public() != $impl ) {
+           $s->writel( "struct %s {", $r->str() );
+           $s->indent( true );
+           switch ( $r->kind() ) {
+              case Repr::CUSTOM: $s->writel("VyRepr repr;"); break;
+              case Repr::INHERIT:
+                 $s->writel("struct %s %s;", $r->old(), 
+                    Tools::firstLower( $r->old() ));
+              break;
+              case Repr::REFCOUNT: $s->writel("VyRefCount ref;"); break;
+              default: throw $r->unKind();
+           }
+           if ( $fs = $r->fields() ) {
+              foreach ( $fs as $k=>$v ) {
+                 $fr = $this->repr( $v );
+                 $s->writel("%s %s;", $fr->str(), $k );
+              }
+           }
+           $s->indent( false );
+           $s->writel("};\n");
+        }
+     }
+     if ( $impl ) {
+        $s->writel("%sVyRepr vyr%s;\n", $this->own() ? "": "extern ", $r->str() ); 
+        if ( Repr::INHERIT == $r->kind() )
+           $s->writel("extern VyRepr vyr%s;\n", $r->old() );
+     }
    }
    
    /// kiírás struktúrában
@@ -128,9 +130,9 @@ class CItem {
 		        $this->writeSetter( $s, false );
 		  return;
         case self::CAST:
-		     $e = $this->repr()->old();
+           $r = $this->repr();
            $s->writel( "%s (* %s)( %s );", 
-              $e, $this->shortName(), $this->obj );
+              $r->old(), $this->shortName(), $this->obj->name() );
         break;
         case self::CONS: return $this->writeConst( $s, false );
         case self::FUNC: return $this->writeFunc( $s, false );
@@ -157,9 +159,7 @@ class CItem {
    
    /// függvény hosszú neve
    function longName() {
-      if ( self::CAST == $this->kind )
-         $ow = $this->obj;
-         else $ow = $this->obj->owner()->name();
+     $ow = $this->obj->owner()->name();
 	  return sprintf( "vy%s%s", $ow, Tools::firstUpper( $this->shortName() ));
    }
    
@@ -197,23 +197,17 @@ class CItem {
 
    /// setter kiírása
    protected function writeSetter( $s, $stub ) {
-      if ( $stub )
-         $s->write( "static " );
-         else $s->writeIndent();
-      $s->writef( "void " );
-      if ( $stub )
-	      $s->writef( "%s( ", $this->longName() );
-	      else $s->writef("(* %s)( ", $this->shortName() );
-	   $t = $this->repr()->str();
-      $s->writef("%s * dest, %s val", $t, $t );
+      $rs = $this->repr()->str();
       if ( $stub ) {
-		   $s->write( ") {\n" );
+         $s->writel( "static void %s( %s * dest, %s val ) {",
+            $this->longName(), $rs, $rs );
 		   $s->indent(true);
 		   $s->writel("vySetter( (VyAny *)dest, (VyAny)val );" );
 		   $s->indent(false);
 		   $s->writel("}\n");
-      } else 
-         $s->write(" );\n");
+      } else {
+         $s->writel( "void (* %s)( %s *, %s );", $this->shortName(), $rs, $rs );
+      }
    }
 
    /// interfész struktúra függvény kiírása
@@ -223,7 +217,7 @@ class CItem {
          $s->write( "static " );
          else $s->writeIndent();
       if ( $r = $f->sign()->result() )
-         $s->write( $this->repr( $r )->str() );
+         $s->write( $this->repr( $r )->str()." " );
          else $s->write( "void " );
       if ( $stub )
 	     $s->writef( "%s( ", $this->longName() );
@@ -267,18 +261,21 @@ class CItem {
    
    /// stub-ok kiírása
    protected function writeStub( $s ) {
-	  switch ( $this->kind ) {
-		 case self::TYPE: 
-		    if ( $this->own() ) {
-		       $s->writef( "void vyDestroy%s( VyPtr", $this->extra );
-		       $this->writeThrowStub( $s, "vyDestroy".$this->extra );
-		       $this->writeSetter( $s, true );
-		    }
-		 break;
+      switch ( $this->kind ) {
+		   case self::TYPE: 
+            $r = $this->repr();
+		      if ( $this->own() ) {
+               $sn = "vyDestroy".$r->str();
+               $s->writef( "void $sn( VyPtr" );
+	 	         $this->writeThrowStub( $s, $sn );
+		         $this->writeSetter( $s, true );
+		      }
+		   break;
          case self::CAST:
-            $s->writef( "%s %s( %s", $this->extra, $this->longName(),
-               $this->obj );
-            $this->writeThrowStub($s);
+            $r = $this->repr();
+            $s->writef( "%s %s( %s x ) { ", $r->old(), $this->longName(),
+               $r->str() );
+            $s->writel("return (%s)x; }\n", $r->old());
          break;
          case self::CONS: return $this->writeConst( $s, true );
          case self::FUNC: return $this->writeFunc( $s, true );
@@ -293,7 +290,7 @@ class CItem {
 	     && in_array( $this->reprKind(), [Repr::INHERIT] ))
 	  {
 	     $s->writel("#include \"vy_%s.h\"\n", 
-	        Tools::firstLower( $this->extra ));
+	        Tools::firstLower( $this->repr()->old() ));
 	  }
    } 
 
@@ -301,18 +298,17 @@ class CItem {
    protected function writeInit( $s ) {
 	  switch ( $this->kind ) {
 		 case self::TYPE:
- 		    $tn = $this->extra;
+          $r = $this->repr();
+          $rs = $r->str();
 		    if ( $this->own() ) {
                $s->writel( "vyr%s = vyRepr( sizeof(struct %s), false, vyDestroy%s);",
-                  $tn, $tn, $tn );
-            }
-            if ( "&" != $this->tKind ) {
-               $s->writel( 'vyArgsType( args, "%s", vyr%s );', 
-                  $this->obj->name(), $tn );
-            }
-            if ( $this->own() ) {
+                  $rs, $rs, $rs );
                $s->writel( 'vyArgsImpl( args, "%s", %s );', 
                   $this->shortName(), $this->longName() );
+            }
+            if ( Repr::NATIVE == $r->kind() ) {
+               $s->writel( 'vyArgsType( args, "%s", vyNative(ctx,"%s") );', 
+                  $this->obj->name(), $r->str() );
             }
          break;
          case self::CAST:

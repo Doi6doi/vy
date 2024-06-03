@@ -9,6 +9,7 @@ class Repr {
 	   PUBLIC = "public";
 
     const
+       CUSTOM = "custom",
        INHERIT = "inherit",
        NATIVE = "native",
        REFCOUNT = "refcount",
@@ -25,6 +26,10 @@ class Repr {
 	function kind() { return $this->kind; }
 	
 	function old() { return $this->old; }
+	
+	function fields() { return $this->fields; }
+
+    function public() { return $this->public; }
 	
 	function str() {
        switch ( $this->kind ) {
@@ -50,6 +55,10 @@ class Repr {
           $s->readToken(";");
 	}
 	
+    function unKind() {
+       return new EVy("Unknown representation kind:".$this->kind);
+    }	   
+
 	/// fajta olvasása
 	protected function readKind( $s ) {
 	   $s->readWS();
@@ -95,8 +104,5 @@ class Repr {
 	   return true;
 	}
 
-   protected function unKind() {
-      return new EVy("Unknown representation kind:".$this->kind);
-   }	   
 	
 }

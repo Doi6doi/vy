@@ -1,62 +1,41 @@
 #include <vy_implem.h>
 #include "vy_caption.h"
 
-struct  {
-   VyRepr repr;
+#include "vy_shape.h"
+
+extern VyRepr vyrString;
+
+struct Caption {
+   struct Shape shape;
+   String text;
 };
 
-VyRepr vyr;
+VyRepr vyrCaption;
 
-struct  {
-   VyRepr repr;
-};
+extern VyRepr vyrShape;
 
-VyRepr vyr;
-
-struct  {
-   VyRepr repr;
-};
-
-VyRepr vyr;
-
-struct  {
-   VyRepr repr;
-};
-
-VyRepr vyr;
-
-struct  {
-   VyRepr repr;
-};
-
-VyRepr vyr;
-
-void vyDestroy( VyPtr ) {
-   vyThrow("stub vyDestroy");
+void vyDestroyCaption( VyPtr ) {
+   vyThrow("stub vyDestroyCaption");
 }
 
-static void vyCaptionSet( String * dest, String val) {
+static void vyCaptionSet( Caption * dest, Caption val ) {
    vySetter( (VyAny *)dest, (VyAny)val );
 }
 
- vyCaption:Shape.ShapeCast( Caption:Shape.Shape ) {
-   vyThrow("stub vyCaption:Shape.ShapeCast");
-}
+Shape vyCaptionCast( Caption x ) { return (Shape)x; }
 
-static CaptionvyCaptionCreateCaption( String ) {
+static Caption vyCaptionCreateCaption( String ) {
    vyThrow("stub vyCaptionCreateCaption");
 }
 
 void vyInitCaption( VyContext ctx ) {
    VYCAPTIONARGS( ctx, args );
-   vyArgsType( args, "Bool", vyr );
-   vyArgsType( args, "Char", vyr );
-   vyr = vyRepr( sizeof(struct ), false, vyDestroy);
-   vyArgsType( args, "String", vyr );
+   vyArgsType( args, "Bool", vyNative(ctx,"bool") );
+   vyArgsType( args, "Char", vyNative(ctx,"wchar_t") );
+   vyArgsType( args, "Coord", vyNative(ctx,"float") );
+   vyrCaption = vyRepr( sizeof(struct Caption), false, vyDestroyCaption);
    vyArgsImpl( args, "set", vyCaptionSet );
-   vyArgsType( args, "Coord", vyr );
-   vyArgsType( args, "Caption", vyr );
-   vyArgsImpl( args, "cast", vyCaption:Shape.ShapeCast );
+   vyArgsImpl( args, "cast", vyCaptionCast );
    vyArgsImpl( args, "createCaption", vyCaptionCreateCaption );
    vyAddImplem( ctx, args );
 }

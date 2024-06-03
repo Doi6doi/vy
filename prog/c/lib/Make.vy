@@ -46,14 +46,14 @@ make {
          }
          $vyroot := "../../..";
          $vys := [
-            [ "caption", "vy.geom", "Caption", 20240301, "" ],
+            [ "caption", "vy.geom", "Caption", 20240301, "Caption=*" ],
             [ "circle", "vy.geom", "Circle", 20240301, "" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
             [ "filled", "vy.geom", "Filled", 20240301, "Sub=Shape;Brush=Color" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
             [ "rect", "vy.geom", "Rect", 20240301, "" ],
-            [ "shape", "vy.geom", "Shape", 20240301, "" ],
+            [ "shape", "vy.geom", "Shape", 20240301, "Shape=*" ],
             [ "string", "vy.char", "String", 20240301, "" ],
             [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
             [ "vector", "vy.cont", "Vector", 20240301, "Value=Any" ],

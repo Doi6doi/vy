@@ -76,11 +76,21 @@ class CWriter {
 	  $this->reprs = $r;
    }
    
+   /// itt definiált típus
+   function own( $name ) {
+      if ( $t = Tools::g( $this->map, $name ))
+         return "*" == substr( $t, 0, 1 );
+      return false;
+   }
+   
    /// egy típus reprezentációja
    function repr( $name ) {
-	  if ( ! $t = Tools::g( $this->map, $name ))
-	     $t = $name;
-	  return $this->reprs()->get( $t );
+      $t = Tools::g( $this->map, $name );
+      if ( "*" == substr( $t, 0, 1 ))
+         $t = substr( $t, 1 );
+      if ( ! $t )
+         $t = $name;   
+      return $this->reprs()->get( $t );
    }
 
    /// reprezentációk ellenőrzéssel
@@ -171,6 +181,8 @@ class CWriter {
          break;   
          case self::HEADERINCLUDE:
             $s->writel( "#include <vy.h>\n" );
+            if ( $this->hasOwn() )
+               $s->writel("#include <vy_implem.h>\n");
          break;
          case self::STRUCT:
             $s->writel( "typedef struct %sFun {", $intf->name() );
@@ -227,5 +239,15 @@ class CWriter {
          break;
       }
    }
+
+   /// van-e saját típus
+   protected function hasOwn() {
+      foreach ($this->map as $k=>$v) {
+         if ( "*" == substr( $v, 0, 1 ))
+            return true;
+      }
+      return false;
+   }
+      
 		 
 }

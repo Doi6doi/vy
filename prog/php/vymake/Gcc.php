@@ -17,7 +17,7 @@ class Gcc extends CCompiler {
    }
  
    function compile( $dst, $src ) {
-      $this->run( "%s-o %s %s", $this->incArg(),
+      $this->run( "%s-c -fPIC -o %s %s", $this->incArg(),
          $this->esc($dst), $this->esc($src));
    }
    

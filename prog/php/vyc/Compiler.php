@@ -28,7 +28,7 @@ class Compiler {
       $this->objs = [];
       $this->typemap = [];
       $this->repo = new RepoMulti();
-      $this->reprs = new Reprs();
+      $this->reprs = [];
    }
 
    function repo() { return $this->repo; }
@@ -49,10 +49,22 @@ class Compiler {
    }
 
    /// reprezentációk beállítása
-   function setReprs( $filename ) {
+   function setReprs( $fns ) {
+      $this->reprs = [];
+      if ( ! $fns ) return;
+      if ( ! is_array( $fns ))
+         $fns = [$fns];
+      foreach ( $fns as $fn )
+         $this->addReprs( $fn );
+   }
+
+   /// reprezentációk hozzáadása
+   function addReprs( $filename ) {
       $s = new Stream( $filename );
-	  try {
-	     $this->reprs->read( $s );
+	   try {
+         $r = new Reprs();
+         $r->read( $s );
+         $this->reprs [] = $r;
 	  } catch (\Exception $e) {
 		 throw new EVy( $s->position().": ".$e->getMessage(),
 		    $e->getCode(), $e );
@@ -120,8 +132,8 @@ class Compiler {
    function cWriter() {
       if ( ! $this->cWriter )
          $this->cWriter = new CWriter();
-      $this->cWriter->setTypeMap( $this->typemap );
       $this->cWriter->setReprs( $this->reprs );
+      $this->cWriter->setTypeMap( $this->typemap );
       return $this->cWriter;
    }
 

@@ -14,10 +14,21 @@ class MakeCore
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
 	  $this->rules = [];
-	  $this->addFuncs(["echo","format","older",
-	     "level","purge","replace","system"]);
+	  $this->addFuncs(["echo","exec","exeExt","format","older",
+	     "level","purge","replace","setEnv", "system"]);
    }
 	  
+   /// környezeti változó beállítása
+   function setEnv( $name, $val ) {
+      putenv( "$name=$val" );
+   }
+     
+   /// shell parancs futtatás
+   function exec( $cmd ) {  
+      passthru( $cmd, $rv );
+      return $rv;
+   }
+     
    /// egy fájl módosítási dátuma
    protected function modified( $fname ) {
 	  if ( ! file_exists( $fname ))
@@ -70,6 +81,16 @@ class MakeCore
    function system() {
 	  return Tools::system();
    } 
+
+   /// futtatható fájl kiterjesztése
+   function exeExt() {
+      switch ( $s = Tools::system() ) {
+         case Tools::WINDOWS: return ".exe";
+         case Tools::LINUX: return "";
+         default:
+            throw new EVy("Unknown system: $s");
+      }
+   }
 
    function format() {
 	  return call_user_func_array( "sprintf", func_get_args() );

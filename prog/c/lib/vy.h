@@ -44,6 +44,9 @@ VyVer vyVer( unsigned );
 /// egy objektum megsemmisítése
 void vyFree( void * );
 
+/// értékadás (refcount, managed)
+void vySet( VyAny *, VyAny );
+
 /// kivétel
 void vyThrow( VyCStr );
 

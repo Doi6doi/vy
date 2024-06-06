@@ -24,10 +24,13 @@ representation {
    Filled: inherit Shape {
       color: Color;
    }
+
    ViewCoord: native VyViewCoord;
-   View: public refcount;
-   Group: inherit View;
-   Window: inherit Group;
+   View: custom;
+   Sprite: custom;
+   Group: custom;
+   Window: custom;
+
    Vector: refcount;
    Any: native VyAny;
    

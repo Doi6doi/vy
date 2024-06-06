@@ -43,10 +43,10 @@ class MakeComp
 	   $r->clear();
 	   $r->add( $x );
 	}
-	
-	/// reprezentáció beállítása
-	function setReprs( $x ) {
-	   $this->comp->setReprs( $x );
-	}
+   
+   /// reprezentációk beállítása
+   function setReprs( $x ) {
+      $this->comp->setReprs( $x );
+   }
 	
 }

@@ -31,12 +31,27 @@ abstract class CCompiler {
    
    /// parancsok kiírása
    protected $show;
+   /// include könyvtár
+   protected $incDir;
+   /// lib könyvtár
+   protected $libDir;
+   /// használt könyvtárak
+   protected $lib;
+
+   function __construct() {
+      $this->incDir = [];
+      $this->libDir = [];
+      $this->lib = [];
+   }
    
    /// depend fájl készítés
    abstract function depend( $dst, $src );
 
    /// object fáljok linkelése könyvtárrá
    abstract function linkLib( $dst, $src );
+
+   /// object fájlok linkelése programmá
+   abstract function linkPrg( $dst, $src );
 
    /// dep fájl felolvasása 
    abstract function loadDep( $fname );
@@ -47,10 +62,22 @@ abstract class CCompiler {
    /// a futtatható program
    abstract function executable();
 
-   /// a futtatható program
-   abstract function setIncDir( $dir ); 
-
    function setShow( $value ) { $this->show = $value; }
+
+   /// include könyvtár beállítása
+   function setIncDir( $dir ) { 
+      $this->setArray( $this->incDir, $dir ); 
+   }
+
+   /// lib könyvtár beállítása
+   function setLibDir( $dir ) { 
+      $this->setArray( $this->libDir, $dir ); 
+   }
+
+   /// használt könyvtárak beállítása
+   function setLib( $dir ) { 
+      $this->setArray( $this->lib, $dir ); 
+   }
 
    /// fordító futtatása
    protected function run($fmt) {
@@ -86,6 +113,24 @@ abstract class CCompiler {
       foreach ( $x as $i )
          $ret .= " ".escapeshellarg($i);
       return trim($ret);
+   }
+
+   /// egy tömb adatainak beállítása
+   protected function setArray( & $arr, $x ) {
+      if ( ! $x )
+         $arr = [];
+      else if ( is_array( $x ))
+         $arr = $x;
+      else
+         $arr = [$x];
+   }
+
+   /// tömbből összeállított argumentum
+   protected function arrayArg( $arr, $pre ) {
+      $ret = "";
+      foreach ( $arr as $i )
+         $ret .= " $pre$i";
+      return $ret;
    }
    
 }

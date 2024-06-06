@@ -38,7 +38,7 @@ make {
          $vyh := "vy.h";
          $items := ["caption","circle","color","filled",
             "random","rect","shape","string","time"];
-         $hitems := ["key","window","view","vector"];
+         $hitems := ["key","sprite","view","vector","window"];
          $parts := ["implem","core","geom","mem","sm","ui","util"];
          case ( system() ) {
             "Windows": $parts += "windows";
@@ -47,23 +47,24 @@ make {
          $vyroot := "../../..";
          $vys := [
             [ "caption", "vy.geom", "Caption", 20240301, "Caption=*" ],
-            [ "circle", "vy.geom", "Circle", 20240301, "" ],
+            [ "circle", "vy.geom", "Circle", 20240301, "Circle=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
             [ "filled", "vy.geom", "Filled", 20240301, "Sub=Shape;Brush=Color" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
-            [ "rect", "vy.geom", "Rect", 20240301, "" ],
+            [ "rect", "vy.geom", "Rect", 20240301, "Rect=*" ],
             [ "shape", "vy.geom", "Shape", 20240301, "Shape=*" ],
-            [ "string", "vy.char", "String", 20240301, "" ],
+            [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
+            [ "string", "vy.char", "String", 20240301, "String=*" ],
             [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
             [ "vector", "vy.cont", "Vector", 20240301, "Value=Any" ],
-            [ "view", "vy.ui", "View", 20240301, "" ],
-            [ "window", "vy.ui", "Window", 20240301, "Sub=View" ]
+            [ "view", "vy.ui", "View", 20240301, "View=*" ],
+            [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]
          ];
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( "Repr.vy" );
-         C.setShow(true);
+//         C.setShow(true);
          C.setIncDir(".");
       }
 

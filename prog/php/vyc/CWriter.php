@@ -37,6 +37,7 @@ class CWriter {
    function __construct() {
       $this->map = [];
       $this->items = [];
+      $this->reprs = [];
    }
    
    /// objektum alapján c header kiírása
@@ -72,8 +73,12 @@ class CWriter {
    }
    
    /// reprezentációk beállítása
-   function setReprs( Reprs $r ) {
-	  $this->reprs = $r;
+   function setReprs( $r ) {
+      if ( is_array( $r ))
+         $this->reprs = $r;
+      else if ( $r )
+         $this->reprs = [$r];
+      else $this->reprs = [];
    }
    
    /// itt definiált típus
@@ -90,16 +95,19 @@ class CWriter {
          $t = substr( $t, 1 );
       if ( ! $t )
          $t = $name;   
-      return $this->reprs()->get( $t );
+      return $this->getRepr( $t );
    }
 
-   /// reprezentációk ellenőrzéssel
-   protected function reprs() {
-	  if ( ! $this->reprs )
-	     throw new EVy("Representations not set");
-	  return $this->reprs;
+   /// egy reprezentáció
+   protected function getRepr( $name ) {
+      $rs = $this->reprs;
+      for ($i = count($rs)-1; 0 <= $i; --$i) {
+         if ( $ret = $rs[$i]->get($name))
+            return $ret;
+      }
+      return null;
    }
-   
+
    /// a modul neve
    protected function module() {
       return pathinfo( $this->filename(), PATHINFO_FILENAME );

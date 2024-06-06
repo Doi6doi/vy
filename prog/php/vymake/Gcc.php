@@ -9,31 +9,39 @@ class Gcc extends CCompiler {
    function executable() { return "gcc"; }
    
    function depend( $dst, $src ) {
-      $this->run( "-MM %s > %s", $this->esc( $src ), $this->esc( $dst ));
+      $this->run( "%s -MM %s > %s", $this->incDirArg(),
+         $this->esc( $src ), $this->esc( $dst ));
    }
    
    function linkLib( $dst, $src ) {
-      $this->run( "-shared -o %s %s", $this->esc($dst), $this->esc($src));
+      $this->run( "-shared -o %s %s %s %s", $this->esc($dst), 
+         $this->esc($src), $this->libDirArg(), $this->libArg() );
+   }
+ 
+   function linkPrg( $dst, $src ) {
+      $this->run( "-o %s %s %s %s", $this->esc($dst), $this->esc($src),
+         $this->libDirArg(), $this->libArg() );
    }
  
    function compile( $dst, $src ) {
-      $this->run( "%s-c -fPIC -o %s %s", $this->incArg(),
+      $this->run( "%s -c -fPIC -o %s %s", $this->incDirArg(),
          $this->esc($dst), $this->esc($src));
    }
    
-   function setIncDir( $x ) {
-      if ( ! $x )
-         return $this->inc = [];
-      if ( ! is_array( $x ))
-         $x = [$x];
-      $this->inc = $x;
-   }
-   
    /// include könyvtár parancssori argumentum
-   function incArg() {
-      if ( ! $this->inc ) return "";
-      return sprintf("-I %s ", implode(":",$this->inc));
+   function incDirArg() { 
+      return $this->arrayArg( $this->incDir, "-I " ); 
    }
+      
+   /// include könyvtár parancssori argumentum
+   function libDirArg() {
+      return $this->arrayArg( $this->libDir, "-L " );
+   }
+
+   /// használt könyvtár parancssori argumentum
+   function libArg() {
+      return $this->arrayArg( $this->lib, "-l" );
+   }      
    
    function loadDep( $fname ) {
       $ret = [];

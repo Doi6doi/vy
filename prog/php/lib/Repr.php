@@ -33,6 +33,7 @@ class Repr {
 	
 	function str() {
        switch ( $this->kind ) {
+		  case self::CUSTOM:
 		  case self::INHERIT: 
 		  case self::REFCOUNT:
 		  case self::MANAGED:
@@ -68,7 +69,7 @@ class Repr {
 		     $s->readWS();
 		     $this->old = $s->readIdent();
 		  break;
-		  case self::REFCOUNT: case self::MANAGED; break;
+		  case self::CUSTOM: case self::REFCOUNT: case self::MANAGED; break;
 		  default:
 		     throw $this->unKind();
 	   }

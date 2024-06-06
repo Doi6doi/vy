@@ -125,10 +125,7 @@ class CItem {
    /// kiírás struktúrában
    protected function writeStruct( $s ) {
 	  switch ( $this->kind ) {
-		  case self::TYPE: 
-		     if ( $this->own() )
-		        $this->writeSetter( $s, false );
-		  return;
+        case self::TYPE: break;
         case self::CAST:
            $r = $this->repr();
            $s->writel( "%s (* %s)( %s );", 
@@ -150,8 +147,6 @@ class CItem {
           return "const".Tools::firstUpper( $this->obj->name() );
 		 case self::FUNC:
 		    return $this->obj->name();
-		 case self::TYPE:
-		    return "set".( $this->only ? "" : $this->repr()->str() );
 		 default:
 		    throw $this->unKind();
       }
@@ -195,21 +190,6 @@ class CItem {
          else $s->write(" );\n");
    }
 
-   /// setter kiírása
-   protected function writeSetter( $s, $stub ) {
-      $rs = $this->repr()->str();
-      if ( $stub ) {
-         $s->writel( "static void %s( %s * dest, %s val ) {",
-            $this->longName(), $rs, $rs );
-		   $s->indent(true);
-		   $s->writel("vySetter( (VyAny *)dest, (VyAny)val );" );
-		   $s->indent(false);
-		   $s->writel("}\n");
-      } else {
-         $s->writel( "void (* %s)( %s *, %s );", $this->shortName(), $rs, $rs );
-      }
-   }
-
    /// interfész struktúra függvény kiírása
    protected function writeFunc( $s, $stub ) {
 	  $f = $this->obj;
@@ -246,8 +226,6 @@ class CItem {
              else $re = "NULL";
           $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
              $this->obj->name(), $re );
-          if ( $this->own() )
-             $s->writel( "vyArgsFunc( name, \"%s\"); \\", $this->shortName() );
        break;
        case self::CAST:
        case self::CONS:
@@ -268,7 +246,6 @@ class CItem {
                $sn = "vyDestroy".$r->str();
                $s->writef( "void $sn( VyPtr" );
 	 	         $this->writeThrowStub( $s, $sn );
-		         $this->writeSetter( $s, true );
 		      }
 		   break;
          case self::CAST:
@@ -296,15 +273,13 @@ class CItem {
 
    /// init rész kiírása
    protected function writeInit( $s ) {
-	  switch ( $this->kind ) {
-		 case self::TYPE:
-          $r = $this->repr();
-          $rs = $r->str();
-		    if ( $this->own() ) {
-               $s->writel( "vyr%s = vyRepr( sizeof(struct %s), false, vyDestroy%s);",
-                  $rs, $rs, $rs );
-               $s->writel( 'vyArgsImpl( args, "%s", %s );', 
-                  $this->shortName(), $this->longName() );
+      switch ( $this->kind ) {
+		   case self::TYPE:
+            $r = $this->repr();
+            $rs = $r->str();
+		      if ( $this->own() ) {
+               $s->writel( "vyr%s = vyRepr( sizeof(struct %s), %s, vyDestroy%s);",
+                  $rs, $rs, $this->setter(), $rs );
             }
             if ( Repr::NATIVE == $r->kind() ) {
                $s->writel( 'vyArgsType( args, "%s", vyNative(ctx,"%s") );', 
@@ -321,15 +296,25 @@ class CItem {
       }
    }
 
-
    /// stub kivétel
    protected function writeThrowStub( $s, $name=null ) {
-	  $s->writel(" ) {");
-	  $s->indent(true);
+	   $s->writel(" ) {");
+	   $s->indent(true);
       $s->writel("vyThrow(\"stub %s\");", $name ? $name : $this->longName() );
-	  $s->indent(false);
-	  $s->writel("}\n");
+	   $s->indent(false);
+	   $s->writel("}\n");
    }
 
+   /// beállító függvény
+   protected function setter($typ=null) {
+      $r = $this->repr($typ);
+      switch ( $r->kind() ) {
+         case Repr::CUSTOM: return "vySetCustom";
+         case Repr::REFCOUNT: return "vySetRef";
+         case Repr::MANAGED: return "vySetManaged";   
+         case Repr::INHERIT: return $this->setter( $r->old() );
+         default: throw $r->unKind();
+      }
+   }
    
 }

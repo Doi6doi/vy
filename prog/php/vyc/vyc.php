@@ -37,8 +37,8 @@ class VyC {
       if ( $i >= count($argv))
          return false;
       switch ($argv[$i]) {
-		 case "-f": return $this->setForce( $i );
-		 case "-p": return $this->getParRepr( $argv, $i );
+		   case "-f": return $this->setForce( $i );
+		   case "-p": return $this->getParRepr( $argv, $i );
          case "-r": return $this->getParRepo( $argv, $i );
          case "-i": return $this->getParInput( $argv, $i );
          case "-t": return $this->getParType( $argv, $i );
@@ -69,7 +69,7 @@ class VyC {
 
    /// repr paraméter olvasása
    function getParRepr( $argv, & $i ) {
-      $this->comp->setRepr( $this->nextPar( $argv, $i, "repr" ) );
+      $this->comp->addReprs( $r, $this->nextPar( $argv, $i, "repr" ) );
       return true;
    }
 
@@ -98,8 +98,8 @@ class VyC {
          "",
          "Options:",
          "   -f: force overwrite of output",
-         "   -p <filename>: set representation file",
-         "   -r <path>: add <path> as repository",
+         "   -p <filename>: add representation file",
+         "   -r <path>: set <path> as repository",
          "   -i <item>: add <item> as input",
          "   -t <typemap>: set <typemap> as type mapping",
          "   -o <filename>: add <filename> as output",

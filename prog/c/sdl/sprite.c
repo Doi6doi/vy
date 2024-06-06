@@ -1,33 +1,28 @@
 #include <vy_implem.h>
+#include "vysdl.h"
 #include "vy_ui.h"
 #include "vy_sprite.h"
-#include "vy_shape.h"
+#include "vy_view.h"
 
 extern VyRepr vyrShape;
-static ShapeFun shapes;
 
 struct Sprite {
-   VyRepr repr;
+   struct View view;
    Shape shape;
 };
 
 VyRepr vyrSprite;
 
+extern VyRepr vyrView;
+
 void vyDestroySprite( VyPtr ) {
    vyThrow("stub vyDestroySprite");
 }
 
-static void vySpriteSet( Sprite *, Sprite ) {
-   vyThrow("stub vySpriteSet");
-}
+View vySpriteCast( Sprite x ) { return (View)x; }
 
-View vySpriteCast( Sprite s ) { return (View)s; }
-
-static Sprite vySpriteCreateSprite( Shape shape ) {
-   Sprite ret = vyAlloc( vyrSprite );
-   ret->shape = NULL;
-   shapes.set( &(ret->shape), shape );
-   return ret;
+static Sprite vySpriteCreateSprite( Shape ) {
+   vyThrow("stub vySpriteCreateSprite");
 }
 
 static void vySpriteMoveTo( Sprite, float x, float y ) {
@@ -46,13 +41,12 @@ static void vySpriteSetCoord( Sprite, VyViewCoord, float ) {
    vyThrow("stub vySpriteSetCoord");
 }
 
-void vySdlInitSprite( VyContext ctx ) {
-   VYIMPORTSHAPE( ctx, shapes );
+void vyInitSprite( VyContext ctx ) {
    VYSPRITEARGS( ctx, args );
-   vyArgsType( args, "Shape", vyrShape );
+   vyArgsType( args, "Bool", vyNative(ctx,"bool") );
+   vyArgsType( args, "Coord", vyNative(ctx,"float") );
+   vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
    vyrSprite = vyRepr( sizeof(struct Sprite), false, vyDestroySprite);
-   vyArgsType( args, "Sprite", vyrSprite );
-   vyArgsImpl( args, "set", vySpriteSet );
    vyArgsImpl( args, "cast", vySpriteCast );
    vyArgsImpl( args, "createSprite", vySpriteCreateSprite );
    vyArgsImpl( args, "moveTo", vySpriteMoveTo );

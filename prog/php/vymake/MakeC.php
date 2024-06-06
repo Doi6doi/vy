@@ -13,8 +13,8 @@ class MakeC extends MakeImport {
 	  parent::__construct( $owner, self::C );
 	  $this->setCompiler( null );
 	  $this->addFuncs( ["setCompiler","compile","depend",
-	     "libFile","linkLib","loadDep","objExt",
-	     "setIncDir","setShow"] );
+	     "libFile","linkLib","linkPrg", "loadDep","objExt",
+	     "setIncDir","setLib","setLibDir","setShow"] );
    }
 
    /// fordítás
@@ -52,6 +52,12 @@ class MakeC extends MakeImport {
 	  $this->compiler->linkLib( $dst, $src );
    }
 	   
+   /// program linkelése
+   function linkPrg( $dst, $src ) {
+	  $this->log( Make::INFO, "Linking executable -> $dst" );
+	  $this->compiler->linkPrg( $dst, $src );
+   }
+	   
    /// dep fájl beolvasása
    function loadDep( $fname ) {
 	  $this->log( Make::INFO, "Loading dependencies: $fname" );
@@ -61,6 +67,16 @@ class MakeC extends MakeImport {
    /// include könyvtár beállítása
    function setIncDir( $dir ) {
 	  return $this->compiler->setIncDir( $dir );
+   }
+
+   /// lib könyvtár beállítása
+   function setLibDir( $dir ) {
+	  return $this->compiler->setLibDir( $dir );
+   }
+
+   /// használt könyvtárak beállítása
+   function setLib( $dir ) {
+	  return $this->compiler->setLib( $dir );
    }
 
    /// include könyvtár beállítása

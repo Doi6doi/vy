@@ -3,16 +3,22 @@
 
 #include <SDL2/SDL.h>
 #include "vy.h"
+#include "vy_vector.h"
 
 #define REALLOC( p, s ) realloc( p,s )
 
 typedef struct View * View;
 
-typedef struct Window * Window;
+typedef struct Group * Group;
 
 struct View {
    VyRefCount rc;
-   Window wnd;
+   Group group;
+};
+
+struct Group {
+   View view;
+   Vector items;
 };
 
 typedef struct VySdl {

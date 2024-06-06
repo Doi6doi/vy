@@ -281,10 +281,11 @@ class CItem {
                $s->writel( "vyr%s = vyRepr( sizeof(struct %s), %s, vyDestroy%s);",
                   $rs, $rs, $this->setter(), $rs );
             }
-            if ( Repr::NATIVE == $r->kind() ) {
-               $s->writel( 'vyArgsType( args, "%s", vyNative(ctx,"%s") );', 
-                  $this->obj->name(), $r->str() );
-            }
+            if ( Repr::NATIVE == $r->kind() )
+               $ars = sprintf( 'vyNative(ctx,"%s")', $r->str() );
+               else $ars = sprintf( "vyr%s", $rs );
+            $s->writel( 'vyArgsType( args, "%s", %s );', 
+               $this->obj->name(), $ars );
          break;
          case self::CAST:
          case self::CONS:

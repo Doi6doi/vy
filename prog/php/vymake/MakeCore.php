@@ -14,10 +14,15 @@ class MakeCore
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
 	  $this->rules = [];
-	  $this->addFuncs(["echo","exec","exeExt","format","older",
-	     "level","purge","replace","setEnv", "system"]);
+	  $this->addFuncs(["echo","exec","exeExt","format","getEnv",
+	     "level","older","purge","replace","setEnv", "system"]);
    }
 	  
+   /// környezeti változó lekérése
+   function getEnv( $name ) {
+      return getenv( $name );
+   }
+     
    /// környezeti változó beállítása
    function setEnv( $name, $val ) {
       putenv( "$name=$val" );

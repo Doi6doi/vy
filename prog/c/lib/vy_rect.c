@@ -5,15 +5,19 @@
 
 struct Rect {
    struct Shape shape;
+   float width;
+   float height;
 };
-
-extern VyRepr vyrShape;
 
 VyRepr vyrRect;
 
-Shape vyRectCast( Rect ) {
-   vyThrow("stub vyRectCast");
+extern VyRepr vyrShape;
+
+void vyDestroyRect( VyPtr ) {
+   vyThrow("stub vyDestroyRect");
 }
+
+Shape vyRectCast( Rect x ) { return (Shape)x; }
 
 static Rect vyRectCreateRect( float width, float height ) {
    vyThrow("stub vyRectCreateRect");
@@ -29,7 +33,10 @@ static float vyRectHeight( Rect ) {
 
 void vyInitRect( VyContext ctx ) {
    VYRECTARGS( ctx, args );
-   vyArgsType( args, "Rect", vyrShape );
+   vyArgsType( args, "Bool", vyNative(ctx,"bool") );
+   vyArgsType( args, "Coord", vyNative(ctx,"float") );
+   vyrRect = vyRepr( sizeof(struct Rect), vySetRef, vyDestroyRect);
+   vyArgsType( args, "Rect", vyrRect );
    vyArgsImpl( args, "cast", vyRectCast );
    vyArgsImpl( args, "createRect", vyRectCreateRect );
    vyArgsImpl( args, "width", vyRectWidth );

@@ -11,6 +11,7 @@ void vyInitShape( VyContext ctx ) {
    VYSHAPEARGS( ctx, args );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyrShape = vyRepr( sizeof(struct Shape), vySetRef, vyDestroyShape);
+   vyArgsType( args, "Shape", vyrShape );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyAddImplem( ctx, args );
 }

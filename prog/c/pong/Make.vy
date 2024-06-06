@@ -6,7 +6,8 @@ make {
 
       run {
          init();
-         setEnv("LD_LIBRARY_PATH","../sdl:../lib");
+         lp := getEnv("LD_LIBRARY_PATH");
+         setEnv("LD_LIBRARY_PATH",lp+":../sdl:../lib");
          exec( "./"+$prg );
       }
 
@@ -41,7 +42,7 @@ make {
          C.setShow(true);
          C.setIncDir(["../lib"]);
          C.setLibDir(["../lib","../sdl"]);
-         C.setLib(["m","vy","vysdl"]);
+         C.setLib(["m","vy","vysdl","SDL2"]);
       }
 
       /// object fordítása

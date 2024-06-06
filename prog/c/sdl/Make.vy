@@ -1,0 +1,126 @@
+make {
+
+   import { C; Comp; }
+
+   target {
+
+      build {
+         init();
+         genCodes();
+         genDep();
+         genObjs();
+         genLib();
+      }
+
+      clean {
+         init();
+         purge( [ $lib, "*"+C.objExt() ] );
+      }
+
+      help {
+         echo([
+            "Targets:",
+            "   help: This help",
+            "   build: Build library",
+            "   clean: Clean generated files",
+            ""
+         ]);
+      }
+   }
+
+   function {
+      init() {
+         $lib := C.libFile( "vysdl" );
+         $libs := [];
+         $items := ["key","sprite","window"];
+         $parts := ["vysdl"];
+         $vyroot := "../../..";
+         $vys := [
+            [ "key", "vy.ui", "Key", 20240301, "" ],
+            [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
+            [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]
+         ];
+         $dep := "all.dep";
+         Comp.setRepo( $vyroot );
+         Comp.setReprs( ["../lib/Repr.vy", "Repr.vy"] );
+         C.setShow(true);
+         C.setIncDir([".","../lib"]);
+      }
+
+      /// generált .c fájlok készítése
+      genCodes() {
+         foreach ( i | $items )
+            genCode( findVy( i ) );
+      }
+      
+      /// depend fájl készítése
+      genDep() {
+         cs := [];
+         hs := [];
+         foreach ( i | $items ) {
+            hs += libHeadFile( i );
+            cs += codeFile( i );
+         }
+         foreach ( i | $parts ) {
+            hs += headFile( i );
+            cs += codeFile( i );
+         }
+         if ( older( $dep, cs+hs ) )
+            C.depend( $dep, cs );
+      }
+      
+      /// object fájlok fordítása
+      genObjs() {
+         deps := C.loadDep( $dep );
+         foreach ( i | $parts + $items ) {
+            of := objFile( i );
+            if ( older( of, deps[of] ))
+               C.compile( of, codeFile(i) );
+         }
+      }
+      
+      /// könyvtár fordítása
+      genLib() {
+         objs := [];
+         foreach ( i | $parts + $items )
+            objs += objFile(i);
+         if ( older( $lib, objs ))
+            C.linkLib( $lib, objs, $libs );
+      }
+
+      /// .c fájl generálása
+      genCode( v ) {
+         df := codeFile( v[0] );
+         sf := format( "%s/%s/%s@%s.vy", $vyroot, replace(v[1],".","/"),
+            v[2], v[3] );
+         if ( ! older( df, sf )) return;
+         src := format("%s.%s@=%s", v[1], v[2], v[3]);
+         Comp.setMap( v[4] );
+         Comp.setForce( false );
+         Comp.compile( src, df );
+      }
+
+      /// egy elemhez tartozó .h fájl
+      headFile( i ) { return format("%s.h", i); }
+      
+      /// egy elemhez tartozó .h fájl a lib könyvtárban
+      libHeadFile( i ) { return format("../vy_%s.h", i); }
+      
+      /// egy elemhez tartozó .c fájl
+      codeFile( i ) { return format("%s.c", i ); } 
+      
+      /// egy elemhez tartozó obj fájl
+      objFile( i ) { return format("%s%s", i, C.objExt()); }
+
+      /// vy sor megkeresése
+      findVy( x ) {
+         for (i:=0; i < $vys.count ; ++i) {
+            if ( $vys[i][0] = x )
+               return $vys[i];
+         }
+         throw "Unkown item: "+x;
+      }
+   } 
+
+}
+

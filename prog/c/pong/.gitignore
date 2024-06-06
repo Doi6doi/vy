@@ -1,5 +1,6 @@
 Makefile
 pong
+pong.o
 megsem
 vy_*.h
 pong.geany

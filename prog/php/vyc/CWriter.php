@@ -29,8 +29,6 @@ class CWriter {
    protected $intf;
    /// reprezentációk
    protected $reprs;
-   /// egyetlen cast
-   protected $onlyCast;
    /// egyetlen saját típus
    protected $onlyOwn;
 
@@ -129,21 +127,15 @@ class CWriter {
    /// interfész elemek készítése
    protected function createInterfItems( Interf $intf ) {
 	  $this->items = [];
-	  $this->onlyCast = null;
 	  $this->onlyOwn = null;
 	  $this->intf = $intf;
 	  $map = $this->map;
-	  foreach ( $intf->types() as $t ) {
+	  foreach ( $intf->types() as $t )
 		 $i = $this->addItem( CItem::TYPE, $t );
-		 if ( Repr::INHERIT == $i->reprKind() )
-		    $this->addItem( CItem::CAST, $t );
-	  }
       foreach ( $intf->consts() as $c )
          $this->addItem( CItem::CONS, $c );
       foreach ( $intf->funcs() as $f )
          $this->addItem( CItem::FUNC, $f );
-      if ( $this->onlyCast )
-         $this->onlyCast->setOnly();
       if ( $this->onlyOwn )
          $this->onlyOwn->setOnly();
    }
@@ -154,8 +146,6 @@ class CWriter {
 	  $this->items [] = $i;
 	  if ( CItem::TYPE == $kind && $i->own() )
          $this->onlyOwn = (null === $this->onlyOwn) ? $i : false;
-	  if ( CItem::CAST == $kind )
-	     $this->onlyCast = (null === $this->onlyCast) ? $i : false;
 	  return $i;
    }             
 

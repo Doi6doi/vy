@@ -20,7 +20,8 @@ class MakeCore
 	  
    /// környezeti változó lekérése
    function getEnv( $name ) {
-      return getenv( $name );
+      $ret = getenv( $name );
+      return false === $ret ? "" : $ret;
    }
      
    /// környezeti változó beállítása
@@ -45,7 +46,9 @@ class MakeCore
    function older( $dst, $src=null ) {
 	  if ( ! $ot = $this->modified( $dst ))
 	     return true;
-	  return $this->newerThan( $ot, $src );
+     $ret = $this->newerThan( $ot, $src );
+//Tools::debug("older $dst", $src, $ret ? "+":"-");      
+	  return $ret;
    }
 
    /// kiírás
@@ -103,16 +106,19 @@ class MakeCore
 
    /// egy időpontnál van újabb fájl, vagy valamelyik nincs
    protected function newerThan( $at, $f ) {
-	  if ( ! $f )
-	     return false;
-	  if ( is_array( $f )) {
-		 foreach ( $f as $i )
-		    if ( $this->newerThan( $at, $i ))
-		       return true;
-		 return false;
+	   if ( ! $f )
+	      return false;
+	   if ( is_array( $f )) {
+		   foreach ( $f as $i ) {
+		      if ( $this->newerThan( $at, $i ))
+		         return true;
+         }
+		   return false;
       }
       $ft = $this->modified( $f );
-      return ! $ft || $ft > $at;
+// $ret = ( ! $ft || $ft > $at ) ? "+" : "-";
+// Tools::debug("newerThan $at $f $ft $ret");
+      return $ft && $ft > $at;
    }
    
 }

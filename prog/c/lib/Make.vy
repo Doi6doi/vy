@@ -37,9 +37,9 @@ make {
          $libs := [];
          $vyh := "vy.h";
          $items := ["caption","circle","color","filled",
-            "random","rect","shape","string","time"];
-         $hitems := ["key","sprite","view","vector","window"];
-         $parts := ["implem","core","geom","mem","sm","ui","util"];
+            "random","rect","shape","string","time","vector"];
+         $hitems := ["group","key","sprite","view","window"];
+         $parts := ["implem","cont","core","geom","mem","sm","ui","util"];
          case ( system() ) {
             "Windows": $parts += "windows";
             "Linux": $parts += "linux";
@@ -50,6 +50,7 @@ make {
             [ "circle", "vy.geom", "Circle", 20240301, "Circle=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
             [ "filled", "vy.geom", "Filled", 20240301, "Sub=Shape;Brush=Color" ],
+            [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
             [ "rect", "vy.geom", "Rect", 20240301, "Rect=*" ],
@@ -57,7 +58,7 @@ make {
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
             [ "string", "vy.char", "String", 20240301, "String=*" ],
             [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
-            [ "vector", "vy.cont", "Vector", 20240301, "Value=Any" ],
+            [ "vector", "vy.cont", "Vector", 20240301, "Vector=*;Value=Any" ],
             [ "view", "vy.ui", "View", 20240301, "View=*" ],
             [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]
          ];

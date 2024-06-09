@@ -4,10 +4,10 @@
 typedef struct VyMem {
    unsigned size;
    void * data;
-} VyMem;
+} * VyMem;
 
-void vyMemInit( VyMem * mem, unsigned size );
-void vyMemResize( VyMem * mem, unsigned size );
+void vyMemInit( VyMem mem, unsigned size );
+void vyMemResize( VyMem mem, unsigned size );
 
 
 #endif // VYMEMH

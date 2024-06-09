@@ -30,9 +30,7 @@ void vyInitFilled( VyContext ctx ) {
    VYFILLEDARGS( ctx, args );
    vyrFilled = vyRepr( sizeof(struct Filled), false, vyDestroyFilled);
    vyArgsType( args, "Filled", vyrFilled );
-   vyArgsImpl( args, "set", vyFilledSet );
    vyArgsType( args, "Sub", vyrShape );
-   vyArgsImpl( args, "cast", vyFilledCast );
    vyArgsImpl( args, "createFilled", vyFilledCreateFilled );
    vyAddImplem( ctx, args );
 }

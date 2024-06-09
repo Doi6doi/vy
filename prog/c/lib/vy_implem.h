@@ -36,8 +36,8 @@ void vySetCustom( VyAny *, VyAny );
 /// objektum készítése
 VyPtr vyAlloc( VyRepr );
 
-/// refcount objektum készítése
-VyPtr vyAllocRef( VyRepr );
+/// refcount objektum inicializálás
+void vyRefInit( VyRefCount );
 
 /// egy implementáció megadása
 void vyArgsImpl( VyArgs, VyCStr, VyPtr );

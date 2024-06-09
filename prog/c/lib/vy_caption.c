@@ -20,8 +20,11 @@ void vyDestroyCaption( VyPtr ) {
 
 Shape vyCaptionCast( Caption x ) { return (Shape)x; }
 
-static Caption vyCaptionCreateCaption( String ) {
-   vyThrow("stub vyCaptionCreateCaption");
+static Caption vyCaptionCreateCaption( String text ) {
+   Caption ret = vyAlloc( vyrCaption );
+   vyShapeInit( (Shape)ret );
+   ret->text = NULL;
+   vySet( & ret->text, text );
 }
 
 void vyInitCaption( VyContext ctx ) {

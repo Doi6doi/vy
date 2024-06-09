@@ -6,8 +6,8 @@
 #define CHS sizeof(wchar_t)
 
 struct String {
-   VyRefCount ref;
-   VyMem mem;
+   struct VyRefCount ref;
+   struct VyMem mem;
 };
 
 VyRepr vyrString;
@@ -16,14 +16,11 @@ void destroyString( VyPtr ) {
    vyThrow("stub destroyString");
 }
 
-static void vyStringSet( String * dst, String val ) {
-   vySetter( (VyAny *)dst, (VyAny)val );
-}
-
 static String vyStringConstAscii(VyCStr data, VySize len ) {
   if ( VY_LEN == len )
       len = strlen( data ) ;
-   String ret = vyAllocRef( vyrString );
+   String ret = vyAlloc( vyrString );
+   vyRefInit( (VyRefCount)ret );
    vyMemInit( & ret->mem, len * CHS );
    wchar_t * dest = (wchar_t *) ret->mem.data;
    for ( unsigned i=0; i<len; ++i )
@@ -63,7 +60,6 @@ void vyInitString( VyContext ctx ) {
    VYSTRINGARGS( ctx, args );
    vyrString = vyRepr( sizeof(struct String), false, destroyString);
    vyArgsType( args, "String", vyrString );
-   vyArgsImpl( args, "set", vyStringSet );
    vyArgsImpl( args, "constAscii", vyStringConstAscii );
    vyArgsImpl( args, "constUtf", vyStringConstUtf );
    vyArgsImpl( args, "less", vyStringLess );

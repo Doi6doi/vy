@@ -7,6 +7,7 @@
 #define BUFSIZE 2048
 
 VySdl vySdl;
+VectorFun vySdlVectors;
 
 static char buf[BUFSIZE];
 
@@ -20,8 +21,10 @@ void vyModuleInit( VyContext ctx ) {
       vySdlError( "SDL init error" );
    if ( SDL_GetCurrentDisplayMode( 0, &vySdl.displayMode ))
       vySdlError( "SDL displayMode error" );
+   VYIMPORTVECTOR( ctx, vySdlVectors );
    vySdlInitKey( ctx );
    vySdlInitView( ctx );
+   vySdlInitGroup( ctx );
    vySdlInitWindow( ctx );
    vySdlInitSprite( ctx );
 }

@@ -14,7 +14,7 @@ class MakeFunc
    protected $body;
 	
    function __construct( $owner ) {
-	  parent::__construct( $owner );
+	   parent::__construct( $owner );
    }
 
    function name() { return $this->name; }
@@ -38,11 +38,11 @@ class MakeFunc
    }
    
    function call( RunCtx $ctx, $args ) {
-	  if ( $this->call )
-		 return call_user_func_array( $this->call, $args );
+	   if ( $this->call )
+		   return call_user_func_array( $this->call, $args );
       else if ( $this->body ) {
-	     $ctx->push( $this->name );
-   	     $this->setArgs( $ctx, $args );
+	      $ctx->push( $this->name );
+   	      $this->setArgs( $ctx, $args );
          $ret = $this->body->run( $ctx );
          Cont::term( $ret, Cont::FUNC );
          $ctx->pop();

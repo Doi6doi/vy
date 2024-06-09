@@ -27,7 +27,7 @@ class Tools {
       foreach (func_get_args() as $x) {
          $ret [] = $x;
       }
-      fprintf( STDERR, "%s", implode(", ",$ret)."\n" );
+      fprintf( STDERR, "%s", self::flatten($ret)."\n" );
    }
 
    static function allErrors() {

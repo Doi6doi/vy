@@ -31,8 +31,6 @@ void vyInitCircle( VyContext ctx ) {
    VYCIRCLEARGS( ctx, args );
    vyrCircle = vyRepr( sizeof(struct Circle), false, vyDestroyCircle);
    vyArgsType( args, "Circle", vyrCircle );
-   vyArgsImpl( args, "set", vyCircleSet );
-   vyArgsImpl( args, "cast", vyCircleCast );
    vyArgsImpl( args, "createCircle", vyCircleCreateCircle );
    vyArgsImpl( args, "radius", vyCircleRadius );
    vyAddImplem( ctx, args );

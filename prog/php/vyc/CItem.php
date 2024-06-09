@@ -7,7 +7,6 @@ class CItem {
 	
 	const
 	   TYPE = "type",
-	   CAST = "cast",
 	   CONS = "cons",
 	   FUNC = "func";
 	
@@ -102,7 +101,7 @@ class CItem {
                  $s->writel("struct %s %s;", $r->old(), 
                     Tools::firstLower( $r->old() ));
               break;
-              case Repr::REFCOUNT: $s->writel("VyRefCount ref;"); break;
+              case Repr::REFCOUNT: $s->writel("struct VyRefCount ref;"); break;
               default: throw $r->unKind();
            }
            if ( $fs = $r->fields() ) {
@@ -126,11 +125,6 @@ class CItem {
    protected function writeStruct( $s ) {
 	  switch ( $this->kind ) {
         case self::TYPE: break;
-        case self::CAST:
-           $r = $this->repr();
-           $s->writel( "%s (* %s)( %s );", 
-              $r->old(), $this->shortName(), $this->obj->name() );
-        break;
         case self::CONS: return $this->writeConst( $s, false );
         case self::FUNC: return $this->writeFunc( $s, false );
         default:
@@ -141,8 +135,6 @@ class CItem {
    /// függvény rövid neve
    function shortName() {
 	  switch ( $this->kind ) {
-		 case self::CAST:
-		    return "cast".( $this->only ? "" : $this->repr()->str() );
 		 case self::CONS:
           return "const".Tools::firstUpper( $this->obj->name() );
 		 case self::FUNC:
@@ -227,7 +219,6 @@ class CItem {
           $s->writel( "vyArgsType( name, \"%s\", %s ); \\",
              $this->obj->name(), $re );
        break;
-       case self::CAST:
        case self::CONS:
        case self::FUNC:
           $s->writel( "vyArgsFunc( name, \"%s\"); \\", $this->shortName() );
@@ -248,12 +239,6 @@ class CItem {
 	 	         $this->writeThrowStub( $s, $sn );
 		      }
 		   break;
-         case self::CAST:
-            $r = $this->repr();
-            $s->writef( "%s %s( %s x ) { ", $r->old(), $this->longName(),
-               $r->str() );
-            $s->writel("return (%s)x; }\n", $r->old());
-         break;
          case self::CONS: return $this->writeConst( $s, true );
          case self::FUNC: return $this->writeFunc( $s, true );
          default:
@@ -287,7 +272,6 @@ class CItem {
             $s->writel( 'vyArgsType( args, "%s", %s );', 
                $this->obj->name(), $ars );
          break;
-         case self::CAST:
          case self::CONS:
          case self::FUNC:
             $s->writel( 'vyArgsImpl( args, "%s", %s );', 

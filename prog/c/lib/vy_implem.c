@@ -127,10 +127,8 @@ VyPtr vyAlloc( VyRepr r ) {
    return ret;
 }
 
-VyPtr vyAllocRef( VyRepr r ) {
-   VyPtr ret = vyAlloc( r );
-   ((VyRefCount)ret)->ref = 0;
-   return ret;
+void vyRefInit( VyRefCount r ) {
+   r->ref = 0;
 }
 
 VyVer vyVer( unsigned u ) {
@@ -154,7 +152,9 @@ Vy vyInit() {
    if ( ! ret ) vyThrow( VYNOMEM );
    vySmInit( & ret->modules );
    VyContext ctx = ret->context = vyContextCreate( ret );
+   vyAddNative( ctx, "VyAny", sizeof( VyAny ));
    vyInitCore( ctx );
+   vyInitCont( ctx );
    vyInitUtil( ctx );
    vyInitGeom( ctx );
    vyInitUi( ctx );
@@ -346,8 +346,10 @@ void vySetRef( VyAny * dest, VyAny val ) {
    ++ ((VyRefCount)val)->ref;
 }
 
-void vySetter( VyAny * dst, VyAny src ) {
+void vySet( VyAny * dst, VyAny src ) {
    ((VyRepr)dst)->set( dst, src );
 }
+
+
 
 

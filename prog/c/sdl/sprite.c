@@ -41,13 +41,14 @@ static void vySpriteSetCoord( Sprite, VyViewCoord, float ) {
    vyThrow("stub vySpriteSetCoord");
 }
 
-void vyInitSprite( VyContext ctx ) {
+void vySdlInitSprite( VyContext ctx ) {
    VYSPRITEARGS( ctx, args );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
    vyrSprite = vyRepr( sizeof(struct Sprite), false, vyDestroySprite);
-   vyArgsImpl( args, "cast", vySpriteCast );
+   vyArgsType( args, "Shape", vyrShape );
+   vyArgsType( args, "Sprite", vyrSprite );
    vyArgsImpl( args, "createSprite", vySpriteCreateSprite );
    vyArgsImpl( args, "moveTo", vySpriteMoveTo );
    vyArgsImpl( args, "setShape", vySpriteSetShape );

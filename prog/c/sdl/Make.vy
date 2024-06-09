@@ -31,19 +31,21 @@ make {
    function {
       init() {
          $lib := C.libFile( "vysdl" );
-         $libs := [];
-         $items := ["key","sprite","window"];
+         $items := ["group","key","sprite","view","window"];
          $parts := ["vysdl"];
          $vyroot := "../../..";
          $vys := [
+            [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
+            [ "view", "vy.ui", "View", 20240301, "View=*" ],
             [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]
          ];
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( ["../lib/Repr.vy", "Repr.vy"] );
-         C.setShow(true);
+//         C.setShow(true);
+         C.setLib(["SDL2"]);
          C.setIncDir([".","../lib"]);
       }
 
@@ -85,7 +87,7 @@ make {
          foreach ( i | $parts + $items )
             objs += objFile(i);
          if ( older( $lib, objs ))
-            C.linkLib( $lib, objs, $libs );
+            C.linkLib( $lib, objs );
       }
 
       /// .c fájl generálása

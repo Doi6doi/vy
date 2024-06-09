@@ -26,6 +26,7 @@ typedef struct VySdl {
 } VySdl;
 
 extern VySdl vySdl;
+extern VectorFun vySdlVectors;
 
 void vySdlDirty( View );
 
@@ -33,7 +34,11 @@ void vySdlError( VyCStr );
 
 void vySdlInitKey( VyContext );
 void vySdlInitView( VyContext );
+void vySdlInitGroup( VyContext );
 void vySdlInitWindow( VyContext );
 void vySdlInitSprite( VyContext );
+
+void vySdlGroupInit( Group );
+void vySdlViewInit( View );
 
 #endif // VYSDLH

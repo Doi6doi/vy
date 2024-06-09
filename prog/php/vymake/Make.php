@@ -100,12 +100,12 @@ class Make
       try {
          $s->readWS();
          $s->readWS();
-	     $s->readToken( self::MAKE );
-	     $s->readWS();
-	     $s->readToken("{");
-	     while ( $this->readPart($s) )
-	        ;
-	     $s->readToken("}");
+	      $s->readToken( self::MAKE );
+	      $s->readWS();
+	      $s->readToken("{");
+	      while ( $this->readPart($s) )
+	         ;
+	      $s->readToken("}");
       } catch ( \Exception $e ) {
          throw new EVy( $s->position().": ".$e->getMessage(), 0, $e );
       }
@@ -154,6 +154,7 @@ class Make
 	  $t = new MakeTarget($this);
 	  $t->read( $s );
 	  $this->add( $this->targets, $t->name(), $t );
+     $this->addFunc( $t );
    }
 
    /// import rész beolvasása
@@ -171,9 +172,14 @@ class Make
    protected function readFunction( ExprStream $s ) {
 	  $f = new MakeFunc( $this );
 	  $f->read( $s );
+     $this->addFunc( $f );
+   }
+   
+   /// függvény rögzítése a nevekhez
+   protected function addFunc( $f ) {
 	  $name = $f->name();
 	  if ( $old = Tools::g( $this->names, $name )) {
-	     if ( $old instanceof MakeFunc )
+	     if ( ! ($old instanceof MakeVar) )
 	        throw new EVy("Cannot redefine function: ".$name );
 	     $old->setValue( $f );
 	  } else {

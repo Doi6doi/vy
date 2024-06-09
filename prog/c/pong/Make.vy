@@ -5,7 +5,7 @@ make {
    target {
 
       run {
-         init();
+         build();
          lp := getEnv("LD_LIBRARY_PATH");
          setEnv("LD_LIBRARY_PATH",lp+":../sdl:../lib");
          exec( "./"+$prg );
@@ -19,7 +19,7 @@ make {
 
       clean {
          init();
-         purge( [ $prg ] );
+         purge( [ $prg, $obj ] );
       }
 
       help {

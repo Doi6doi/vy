@@ -37,7 +37,6 @@ void vyInitRect( VyContext ctx ) {
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyrRect = vyRepr( sizeof(struct Rect), vySetRef, vyDestroyRect);
    vyArgsType( args, "Rect", vyrRect );
-   vyArgsImpl( args, "cast", vyRectCast );
    vyArgsImpl( args, "createRect", vyRectCreateRect );
    vyArgsImpl( args, "width", vyRectWidth );
    vyArgsImpl( args, "height", vyRectHeight );

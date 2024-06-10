@@ -13,6 +13,7 @@ class MakeImport
 	   switch ( $name ) {
 		  case MakeC::C: return new MakeC( $owner );
 		  case MakeComp::COMP: return new MakeComp( $owner );
+        case MakeDebug::DEBUG: return new MakeDebug( $owner );
 		  default: throw new EVy("Unknown import: $name");
 	   }
 	}

@@ -3,8 +3,12 @@
 
 #include <vy.h>
 
-typedef struct VyRefCount {
+typedef struct VyAny {
    VyRepr repr;
+} * VyAny;
+
+typedef struct VyRefCount {
+   struct VyAny any;
    unsigned ref;
 } * VyRefCount;
 
@@ -24,7 +28,7 @@ typedef void (* VyModuleInit)( VyContext );
 void vyLoadModule( VyContext, VyCStr );
 
 /// saját reprezentáció
-VyRepr vyRepr( size_t, VySetter, VyDestr );
+VyRepr vyRepr( VyCStr, size_t, VySetter, VyDestr );
 
 /// beállító függvény bármire
 void vySet( VyAny *, VyAny );
@@ -47,6 +51,9 @@ void vyAddImplem( VyContext, VyArgs );
 
 /// natív reprezentáció hozzáadása
 VyRepr vyAddNative( VyContext, VyCStr name, size_t size );
+
+/// reprezentáció dump
+void vyDumpRepr( VyRepr );
 
 extern char *VYNOMEM;
 

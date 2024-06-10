@@ -66,6 +66,8 @@ make {
          Comp.setRepo( $vyroot );
          Comp.setReprs( "Repr.vy" );
 //         C.setShow(true);
+         C.setDebug( true );
+         C.setLibMode( true );
          C.setIncDir(".");
       }
 
@@ -111,7 +113,7 @@ make {
          foreach ( i | $items + $parts )
             objs += objFile(i);
          if ( older( $lib, objs ))
-            C.linkLib( $lib, objs, $libs );
+            C.link( $lib, objs, $libs );
       }
 
       /// .h féj generálása

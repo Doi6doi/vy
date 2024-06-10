@@ -5,5 +5,7 @@
 
 void vyInitVector( VyContext ctx );
 
+void vyInitCont( VyContext ctx );
+
 
 #endif // VYCONTH

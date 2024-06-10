@@ -1,13 +1,12 @@
 make {
 
-   import { C; }
+   import { C; Debug; }
 
    target {
 
       run {
          build();
-         lp := getEnv("LD_LIBRARY_PATH");
-         setEnv("LD_LIBRARY_PATH",lp+":../sdl:../lib");
+         libPath();
          exec( "./"+$prg );
       }
 
@@ -20,6 +19,12 @@ make {
       clean {
          init();
          purge( [ $prg, $obj ] );
+      }
+
+      debug {
+         build();
+         libPath();
+         Debug.debug( $prg );
       }
 
       help {
@@ -40,6 +45,7 @@ make {
          $obj := "pong"+C.objExt();
          $prg := "pong"+exeExt();
          C.setShow(true);
+         C.setDebug(true);
          C.setIncDir(["../lib"]);
          C.setLibDir(["../lib","../sdl"]);
          C.setLib(["m","vy","vysdl","SDL2"]);
@@ -54,7 +60,13 @@ make {
       /// könyvtár fordítása
       genPrg() {
          if ( older( $prg, $obj ))
-            C.linkPrg( $prg, $obj );
+            C.link( $prg, $obj );
+      }
+
+      /// lib könyvtár beállítása futtatáshoz
+      libPath() {
+         lp := getEnv("LD_LIBRARY_PATH");
+         setEnv("LD_LIBRARY_PATH",lp+":../sdl:../lib");
       }
 
    } 

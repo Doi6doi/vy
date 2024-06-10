@@ -29,7 +29,7 @@ static float vyCircleRadius( Circle ) {
 
 void vyInitCircle( VyContext ctx ) {
    VYCIRCLEARGS( ctx, args );
-   vyrCircle = vyRepr( sizeof(struct Circle), false, vyDestroyCircle);
+   vyrCircle = vyRepr( "Circle", sizeof(struct Circle), false, vyDestroyCircle);
    vyArgsType( args, "Circle", vyrCircle );
    vyArgsImpl( args, "createCircle", vyCircleCreateCircle );
    vyArgsImpl( args, "radius", vyCircleRadius );

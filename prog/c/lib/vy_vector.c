@@ -44,7 +44,7 @@ void vyInitVector( VyContext ctx ) {
    vyArgsType( args, "Index", vyNative(ctx,"unsigned") );
    vyArgsType( args, "Value", vyNative(ctx,"VyAny") );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
-   vyrVector = vyRepr( sizeof(struct Vector), vySetRef, vyDestroyVector);
+   vyrVector = vyRepr( "Vector", sizeof(struct Vector), vySetRef, vyDestroyVector);
    vyArgsType( args, "Vector", vyrVector );
    vyArgsImpl( args, "createVector", vyVectorCreateVector );
    vyArgsImpl( args, "insert", vyVectorInsert );

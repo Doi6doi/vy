@@ -28,7 +28,7 @@ static Filled vyFilledCreateFilled( Shape, VyColor ) {
 
 void vyInitFilled( VyContext ctx ) {
    VYFILLEDARGS( ctx, args );
-   vyrFilled = vyRepr( sizeof(struct Filled), false, vyDestroyFilled);
+   vyrFilled = vyRepr( "Filled", sizeof(struct Filled), false, vyDestroyFilled);
    vyArgsType( args, "Filled", vyrFilled );
    vyArgsType( args, "Sub", vyrShape );
    vyArgsImpl( args, "createFilled", vyFilledCreateFilled );

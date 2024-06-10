@@ -13,6 +13,8 @@ typedef struct VyPoint2f {
 
 void vyInitGeom( VyContext );
 
+typedef struct Shape * Shape;
+
 void vyShapeInit( Shape );
 
 #endif // VY_GEOMH

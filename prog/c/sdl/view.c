@@ -25,7 +25,7 @@ void vySdlInitView( VyContext ctx ) {
    VYVIEWARGS( ctx, args );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
-   vyrView = vyRepr( sizeof(struct View), vySetRef, vyDestroyView);
+   vyrView = vyRepr( "View", sizeof(struct View), vySetRef, vyDestroyView);
    vyArgsType( args, "View", vyrView );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyArgsImpl( args, "coord", vyViewCoord );

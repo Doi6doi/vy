@@ -4,8 +4,6 @@ namespace vy;
 
 class Gcc extends CCompiler {
  
-   protected $inc;
- 
    function executable() { return "gcc"; }
    
    function depend( $dst, $src ) {
@@ -13,19 +11,31 @@ class Gcc extends CCompiler {
          $this->esc( $src ), $this->esc( $dst ));
    }
    
-   function linkLib( $dst, $src ) {
-      $this->run( "-shared -o %s %s %s %s", $this->esc($dst), 
+   function link( $dst, $src ) {
+      $this->run( "%s -o %s %s %s %s", $this->modeLinkArg(), $this->esc($dst), 
          $this->esc($src), $this->libDirArg(), $this->libArg() );
    }
  
-   function linkPrg( $dst, $src ) {
-      $this->run( "-o %s %s %s %s", $this->esc($dst), $this->esc($src),
-         $this->libDirArg(), $this->libArg() );
-   }
- 
    function compile( $dst, $src ) {
-      $this->run( "%s -c -fPIC -o %s %s", $this->incDirArg(),
-         $this->esc($dst), $this->esc($src));
+      $this->run( "%s %s -c %s -o %s %s", $this->debugArg(),
+         $this->modeCompArg(), $this->incDirArg(), $this->esc($dst), 
+         $this->esc($src)
+      );
+   }
+   
+   /// mód argumentum linkelésnél
+   function modeLinkArg() {
+      return $this->libMode ? "-shared" : "";
+   }
+   
+   /// debug argumentum
+   function debugArg() {
+      return $this->debug ? "-g": "";
+   }
+   
+   /// mód argumentum fordításnál
+   function modeCompArg() {
+      return $this->libMode ? "-fPIC" : "";
    }
    
    /// include könyvtár parancssori argumentum

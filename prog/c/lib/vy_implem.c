@@ -3,6 +3,7 @@
 #include "vy_sm.h"
 
 #include "vy_core.h"
+#include "vy_cont.h"
 #include "vy_util.h"
 #include "vy_geom.h"
 #include "vy_ui.h"
@@ -41,6 +42,7 @@ char
 char vyBuf[BUFSIZE];
 
 struct VyRepr {
+   VyCStr name;
    size_t size;
    VySetter set;
    VyDestr destr;
@@ -122,8 +124,8 @@ void vyThrow( VyCStr msg ) {
 }
 
 VyPtr vyAlloc( VyRepr r ) {
-   VyPtr ret = REALLOC( NULL, r->size );
-   *((VyRepr *)ret) = r;
+   VyAny ret = REALLOC( NULL, r->size );
+   ret->repr = r;
    return ret;
 }
 
@@ -249,8 +251,9 @@ VyArgs vyGetImplem( VyContext ctx, VyArgs args, void * dest ) {
    vyThrow( vyBuf );
 }
 
-VyRepr vyRepr( size_t size, VySetter set, VyDestr destr ) {
+VyRepr vyRepr( VyCStr name, size_t size, VySetter set, VyDestr destr ) {
    VyRepr ret = REALLOC( NULL, sizeof( struct VyRepr ) );
+   ret->name = name;
    ret->size = size;
    ret->set = set;
    ret->destr = destr;
@@ -329,26 +332,37 @@ void vyAddImplem( VyContext ctx, VyArgs ia ) {
 }
 
 VyRepr vyAddNative( VyContext ctx, VyCStr name, size_t size ) {
-   VyRepr ret = vyRepr( size, NULL, NULL );
+   VyRepr ret = vyRepr( name, size, NULL, NULL );
    vySmAdd( & ctx->natvs, name, ret );
    return ret;
 }
 
 void vySetRef( VyAny * dest, VyAny val ) {
    VyRefCount old = *(VyRefCount *)dest;
-   if ( old == val )
+   if ( (VyAny)old == val )
       return;
    if ( NULL != old ) {
       if ( 0 >= -- old->ref )
          vyFree( old );
    }
    *dest = val;
-   ++ ((VyRefCount)val)->ref;
+   if ( val )
+      ++ ((VyRefCount)val)->ref;
 }
 
 void vySet( VyAny * dst, VyAny src ) {
-   ((VyRepr)dst)->set( dst, src );
+   if ( *dst )   
+      (*dst)->repr->set( dst, src );
+   else if ( src )
+      src->repr->set( dst, src );
 }
+
+void vyDumpRepr( VyRepr r ) {
+   printf( "[%s %d %p %p]\n", r->name, r->size, r->set, r->destr );
+   fflush(stdout);
+}
+
+
 
 
 

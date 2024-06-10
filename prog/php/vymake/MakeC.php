@@ -13,8 +13,8 @@ class MakeC extends MakeImport {
 	  parent::__construct( $owner, self::C );
 	  $this->setCompiler( null );
 	  $this->addFuncs( ["setCompiler","compile","depend",
-	     "libFile","linkLib","linkPrg", "loadDep","objExt",
-	     "setIncDir","setLib","setLibDir","setShow"] );
+	     "libFile","link","loadDep","objExt","setDebug",
+	     "setIncDir","setLib","setLibDir","setLibMode","setShow"] );
    }
 
    /// fordítás
@@ -46,16 +46,10 @@ class MakeC extends MakeImport {
 	  $this->compiler->depend( $dst, $src );
    }
 
-   /// könyvtár linkelése
-   function linkLib( $dst, $src ) {
-	  $this->log( Make::INFO, "Linking library -> $dst" );
-	  $this->compiler->linkLib( $dst, $src );
-   }
-	   
-   /// program linkelése
-   function linkPrg( $dst, $src ) {
-	  $this->log( Make::INFO, "Linking executable -> $dst" );
-	  $this->compiler->linkPrg( $dst, $src );
+   /// linkelés
+   function link( $dst, $src ) {
+	  $this->log( Make::INFO, "Linking -> $dst" );
+	  $this->compiler->link( $dst, $src );
    }
 	   
    /// dep fájl beolvasása
@@ -67,6 +61,16 @@ class MakeC extends MakeImport {
    /// include könyvtár beállítása
    function setIncDir( $dir ) {
 	  return $this->compiler->setIncDir( $dir );
+   }
+
+   /// debug mód beállítása
+   function setDebug( $val ) {
+	  return $this->compiler->setDebug( $val );
+   }
+
+   /// lib mód beállítása
+   function setLibMode( $val ) {
+	  return $this->compiler->setLibMode( $val );
    }
 
    /// lib könyvtár beállítása

@@ -263,8 +263,8 @@ class CItem {
             $r = $this->repr();
             $rs = $r->str();
 		      if ( $this->own() ) {
-               $s->writel( "vyr%s = vyRepr( sizeof(struct %s), %s, vyDestroy%s);",
-                  $rs, $rs, $this->setter(), $rs );
+               $s->writel( "vyr%s = vyRepr( \"%s\", sizeof(struct %s), %s, vyDestroy%s);",
+                  $rs, $rs, $rs, $this->setter(), $rs );
             }
             if ( Repr::NATIVE == $r->kind() )
                $ars = sprintf( 'vyNative(ctx,"%s")', $r->str() );

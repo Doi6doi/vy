@@ -1,6 +1,6 @@
 #include <vy_implem.h>
+#include "vy_geom.h"
 #include "vy_caption.h"
-
 #include "vy_shape.h"
 
 extern VyRepr vyrString;
@@ -24,7 +24,7 @@ static Caption vyCaptionCreateCaption( String text ) {
    Caption ret = vyAlloc( vyrCaption );
    vyShapeInit( (Shape)ret );
    ret->text = NULL;
-   vySet( & ret->text, text );
+   vySet( (VyAny *)&ret->text, (VyAny)text );
 }
 
 void vyInitCaption( VyContext ctx ) {
@@ -33,7 +33,7 @@ void vyInitCaption( VyContext ctx ) {
    vyArgsType( args, "Char", vyNative(ctx,"wchar_t") );
    vyArgsType( args, "String", vyrString );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
-   vyrCaption = vyRepr( sizeof(struct Caption), vySetRef, vyDestroyCaption);
+   vyrCaption = vyRepr( "Caption", sizeof(struct Caption), vySetRef, vyDestroyCaption);
    vyArgsType( args, "Caption", vyrCaption );
    vyArgsImpl( args, "cast", vyCaptionCast );
    vyArgsImpl( args, "createCaption", vyCaptionCreateCaption );

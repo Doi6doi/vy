@@ -44,7 +44,9 @@ make {
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( ["../lib/Repr.vy", "Repr.vy"] );
-//         C.setShow(true);
+         C.setShow(true);
+         C.setDebug(true);
+         C.setLibMode(true);
          C.setLib(["SDL2"]);
          C.setIncDir([".","../lib"]);
       }
@@ -87,7 +89,7 @@ make {
          foreach ( i | $parts + $items )
             objs += objFile(i);
          if ( older( $lib, objs ))
-            C.linkLib( $lib, objs );
+            C.link( $lib, objs );
       }
 
       /// .c fájl generálása

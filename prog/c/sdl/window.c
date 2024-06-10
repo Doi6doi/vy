@@ -55,7 +55,7 @@ void vySdlInitWindow( VyContext ctx ) {
    vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyArgsType( args, "Sub", vyrView );
-   vyrWindow = vyRepr( sizeof(struct Window), vySetRef, vyDestroyWindow);
+   vyrWindow = vyRepr( "Window", sizeof(struct Window), vySetRef, vyDestroyWindow);
    vyArgsType( args, "Window", vyrWindow );
    vyArgsImpl( args, "createWindow", vyWindowCreateWindow );
    vyArgsImpl( args, "add", vyWindowAdd );

@@ -39,7 +39,7 @@ void vySdlInitGroup( VyContext ctx ) {
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
-   vyrGroup = vyRepr( sizeof(struct Group), vySetRef, vyDestroyGroup);
+   vyrGroup = vyRepr( "Group", sizeof(struct Group), vySetRef, vyDestroyGroup);
    vyArgsType( args, "Group", vyrGroup );
    vyArgsType( args, "Sub", vyrView );
    vyArgsImpl( args, "add", vyGroupAdd );

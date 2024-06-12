@@ -17,11 +17,11 @@ VyRepr vyrWindow;
 
 extern VyRepr vyrGroup;
 
-void vyDestroyWindow( VyPtr ) {
-   vyThrow("stub vyDestroyWindow");
+void vySdlDestroyWindow( VyPtr ) {
+   vyThrow("stub vySdlDestroyWindow");
 }
 
-static Window vyWindowCreateWindow() {
+static Window vySdlWindowCreateWindow() {
    Window ret = vyAlloc( vyrWindow );
    vySdlGroupInit( (Group)ret );
    ret->sdl = SDL_CreateWindow( "",
@@ -33,20 +33,16 @@ static Window vyWindowCreateWindow() {
    return ret;
 }
 
-static void vyWindowAdd( Window, View ) {
-   vyThrow("stub vyWindowAdd");
+static void vySdlWindowRemove( Window, View ) {
+   vyThrow("stub vySdlWindowRemove");
 }
 
-static void vyWindowRemove( Window, View ) {
-   vyThrow("stub vyWindowRemove");
+static float vySdlWindowCoord( Window, VyViewCoord ) {
+   vyThrow("stub vySdlWindowCoord");
 }
 
-static float vyWindowCoord( Window, VyViewCoord ) {
-   vyThrow("stub vyWindowCoord");
-}
-
-static void vyWindowSetCoord( Window, VyViewCoord, float ) {
-   vyThrow("stub vyWindowSetCoord");
+static void vySdlWindowSetCoord( Window, VyViewCoord, float ) {
+   vyThrow("stub vySdlWindowSetCoord");
 }
 
 void vySdlInitWindow( VyContext ctx ) {
@@ -55,13 +51,13 @@ void vySdlInitWindow( VyContext ctx ) {
    vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyArgsType( args, "Sub", vyrView );
-   vyrWindow = vyRepr( "Window", sizeof(struct Window), vySetRef, vyDestroyWindow);
+   vyrWindow = vyRepr( "Window", sizeof(struct Window), vySetRef, vySdlDestroyWindow);
    vyArgsType( args, "Window", vyrWindow );
-   vyArgsImpl( args, "createWindow", vyWindowCreateWindow );
-   vyArgsImpl( args, "add", vyWindowAdd );
-   vyArgsImpl( args, "remove", vyWindowRemove );
-   vyArgsImpl( args, "coord", vyWindowCoord );
-   vyArgsImpl( args, "setCoord", vyWindowSetCoord );
+   vyArgsImpl( args, "createWindow", vySdlWindowCreateWindow );
+   vyArgsImpl( args, "add", vySdlGroupAdd );
+   vyArgsImpl( args, "remove", vySdlWindowRemove );
+   vyArgsImpl( args, "coord", vySdlWindowCoord );
+   vyArgsImpl( args, "setCoord", vySdlWindowSetCoord );
    vyAddImplem( ctx, args );
 }
 

@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "vy.h"
+#include "vy_ui.h"
 #include "vy_vector.h"
 
 #define REALLOC( p, s ) realloc( p,s )
@@ -38,7 +39,14 @@ void vySdlInitGroup( VyContext );
 void vySdlInitWindow( VyContext );
 void vySdlInitSprite( VyContext );
 
+void vySdlInvalidate( View );
+void vySdlRemove( Group g, View v );
+
 void vySdlGroupInit( Group );
+void vySdlGroupAdd( Group, View );
+
 void vySdlViewInit( View );
+float vySdlViewCoord( View, VyViewCoord );
+void vySdlViewSetCoord( View, VyViewCoord, float );
 
 #endif // VYSDLH

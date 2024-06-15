@@ -26,7 +26,7 @@ static Window vySdlWindowCreateWindow() {
    vySdlGroupInit( (Group)ret );
    ret->sdl = SDL_CreateWindow( "",
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      vySdl.displayMode.w, vySdl.displayMode.h,
+      vySdl.width, vySdl.height,
       SDL_WINDOW_MAXIMIZED );
    if ( ! ret->sdl )
       vySdlError( "SDL Window create error" );

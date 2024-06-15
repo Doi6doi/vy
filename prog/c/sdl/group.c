@@ -10,9 +10,9 @@ VyRepr vyrGroup;
 extern VyRepr vyrView;
 
 static int vySdlFind( Vector v, VyAny a ) {
-   int n = vySdlVectors.length(v);
+   int n = vySdl.vectors.length(v);
    for ( int ret = 0; ret < n; ++ret ) {
-      if ( vySdlVectors.value(v,ret) == a )
+      if ( vySdl.vectors.value(v,ret) == a )
          return ret;
    }
    return -1;
@@ -21,7 +21,7 @@ static int vySdlFind( Vector v, VyAny a ) {
 
 void vySdlGroupInit( Group g ) {
    vySdlViewInit( (View)g );
-   g->items = vySdlVectors.createVector();
+   g->items = vySdl.vectors.createVector();
 }
 
 void vySdlDestroyGroup( VyPtr ) {
@@ -33,13 +33,14 @@ void vySdlGroupAdd( Group g, View v ) {
       return;
    if ( v->group == g )
       return;
+   VectorFun * vectors = & vySdl.vectors;
    if ( v->group ) {
       vySdlInvalidate( v );
       int i = vySdlFind( v->group->items, (VyAny)v );
-      vySdlVectors.remove( v->group->items, i );
+      vectors->remove( v->group->items, i );
    }
-   unsigned l = vySdlVectors.length( g->items );
-   vySdlVectors.insert( g->items, l, (VyAny)v );
+   unsigned l = vectors->length( g->items );
+   vectors->insert( g->items, l, (VyAny)v );
    v->group = g;
    vySdlInvalidate( v );
 }

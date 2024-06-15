@@ -211,7 +211,7 @@ bool vyMatchesImpl( VyArgs args, VyArgs other ) {
    if ( nt != other->types.count ) return false;
    for ( int i=0; i<nt; ++i) {
       VyRepr r = (VyRepr)args->types.ptrs[i];
-      VyRepr ro = vyGetRepr( other, args->types.strs[i] );
+      VyRepr ro = vyArgsRepr( other, args->types.strs[i] );
       if ( ! ro ) return false;
       if ( NULL != r && r != ro ) return false;
    }
@@ -227,7 +227,7 @@ bool vyMatchesImpl( VyArgs args, VyArgs other ) {
 void vyApplyImpl( VyArgs args, VyArgs dest, VyPtr * ptrs ) {
    for (unsigned i=0; i < dest->types.count; ++i) {
       if ( ! dest->types.ptrs[i] )
-         dest->types.ptrs[i] = vyGetRepr( args, dest->types.strs[i] );
+         dest->types.ptrs[i] = vyArgsRepr( args, dest->types.strs[i] );
    }
    unsigned nf = dest->funcs.count;
    for (unsigned i=0; i < nf; ++i)
@@ -261,7 +261,7 @@ VyRepr vyRepr( VyCStr name, size_t size, VySetter set, VyDestr destr ) {
 }
 
 
-VyRepr vyGetRepr( VyArgs ia, VyCStr type ) {
+VyRepr vyArgsRepr( VyArgs ia, VyCStr type ) {
    if ( ! ia ) vyThrow( NOIMPARGS );
    if ( ! type ) vyThrow( NOTYPE );
    int i = vySmFind( &ia->types, type );
@@ -362,7 +362,9 @@ void vyDumpRepr( VyRepr r ) {
    fflush(stdout);
 }
 
-
+VyRepr vyGetRepr( void * o ) {
+   return ((VyAny)o)->repr;
+}
 
 
 

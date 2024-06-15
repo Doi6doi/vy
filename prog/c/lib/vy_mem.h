@@ -9,6 +9,5 @@ typedef struct VyMem {
 void vyMemInit( VyMem mem, unsigned size );
 void vyMemResize( VyMem mem, unsigned size );
 
-
 #endif // VYMEMH
 

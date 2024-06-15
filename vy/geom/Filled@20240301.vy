@@ -12,6 +12,8 @@ interface vy.geom.Filled @20240301 {
 
    function {
       createFilled( Sub, Brush ): Filled;
+      shape( Filled ): Sub;
+      brush( Filled ): Brush;
    }
 
 }

@@ -1,5 +1,5 @@
-#include "vy.h"
-#include "vy_implem.h"
+#include <vy.h>
+#include <vy_implem.h>
 #include "vysdl.h"
 
 #include <SDL2/SDL.h>
@@ -19,9 +19,33 @@ void vySdlError( VyCStr msg ) {
 void vyModuleInit( VyContext ctx ) {
    if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ))
       vySdlError( "SDL init error" );
-   if ( SDL_GetCurrentDisplayMode( 0, &vySdl.displayMode ))
+   SDL_DisplayMode dm;
+   if ( SDL_GetCurrentDisplayMode( 0, & dm ) )
       vySdlError( "SDL displayMode error" );
-   VYIMPORTVECTOR( ctx, vySdlVectors );
+   vySdl.width = dm.w;
+   vySdl.height = dm.h;
+   float hdpi, vdpi;
+   if ( SDL_GetDisplayDPI( 0, NULL, & hdpi, & vdpi ))
+      vySdlError( "SDL dpi error" );
+   vySdl.aspect = vdpi ? hdpi / vdpi : 0;
+   VYVECTORARGS( ctx, vectorArgs );
+   vyFree( vyGetImplem( ctx, vectorArgs, & vySdl.vectors ) );
+
+   VYFILLEDARGS( ctx, filledArgs );
+   vyGetImplem( ctx, filledArgs, & vySdl.filleds );
+   vySdl.Filled = vyArgsRepr( filledArgs, "Filled" );
+   vyFree( filledArgs );
+
+   VYRECTARGS( ctx, rectArgs );
+   vyGetImplem( ctx, rectArgs, & vySdl.rects );
+   vySdl.Rect = vyArgsRepr( rectArgs, "Rect" );
+   vyFree( rectArgs );
+   
+   VYCIRCLEARGS( ctx, circleArgs );
+   vyGetImplem( ctx, circleArgs, & vySdl.circles );
+   vySdl.Circle = vyArgsRepr( circleArgs, "Circle" );
+   vyFree( circleArgs );
+   
    vySdlInitKey( ctx );
    vySdlInitView( ctx );
    vySdlInitGroup( ctx );

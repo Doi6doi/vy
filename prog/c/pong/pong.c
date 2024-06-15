@@ -127,7 +127,7 @@ void initScore( Side side ) {
    s->text = strings.constAscii("", VY_LEN);
    Caption c = captions.createCaption( s->text );
    s->sprite = sprites.createSprite( (Shape)c );
-   windows.add( pong.window, (View)s );
+   windows.add( pong.window, (View)s->sprite );
 }
 
 /// labda inicializálás

@@ -1,7 +1,7 @@
 #ifndef VYIMPLEMH
 #define VYIMPLEMH
 
-#include <vy.h>
+#include "vy.h"
 
 typedef struct VyAny {
    VyRepr repr;

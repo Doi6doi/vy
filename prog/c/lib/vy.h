@@ -43,7 +43,8 @@ VyRepr vyNative( VyContext, VyCStr );
 VyVer vyVer( unsigned );
 /// egy objektum megsemmisítése
 void vyFree( void * );
-
+/// egy objektum típusának lekérése
+VyRepr vyGetRepr( void * );
 /// értékadás (refcount, managed)
 void vySet( VyAny *, VyAny );
 
@@ -57,7 +58,7 @@ void vyArgsType( VyArgs, VyCStr, VyRepr );
 /// egy művelet nevének megadása
 void vyArgsFunc( VyArgs, VyCStr );
 /// reprezentáció lekérése
-VyRepr vyGetRepr( VyArgs, VyCStr );
+VyRepr vyArgsRepr( VyArgs, VyCStr );
 /// implementáció kérése
 VyArgs vyGetImplem( VyContext ctx, VyArgs args, void * dest );
 

@@ -1,4 +1,5 @@
 *.o
 *.so
+dvs_mini.c
 all.dep
 megsem

@@ -6,8 +6,6 @@
 #include <vy_geom.h>
 #include <vy_vector.h>
 #include <vy_filled.h>
-#include <vy_rect.h>
-#include <vy_circle.h>
 #include <vy_sprite.h>
 
 #define REALLOC( p, s ) realloc( p,s )
@@ -18,10 +16,8 @@ typedef struct VySdl {
    float aspect;
    VectorFun vectors;
    FilledFun filleds;
-   RectFun rects;
-   CircleFun circles;
    VyRepr Filled;
-   VyRepr Rect;  
+   VyRepr Square;
    VyRepr Circle;
 } VySdl;
 

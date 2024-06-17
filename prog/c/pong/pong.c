@@ -6,13 +6,17 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+#include <vy_implem.h>
 
 #include "vy_string.h"
 #include "vy_key.h"
 #include "vy_time.h"
 #include "vy_random.h"
-#include "vy_rect.h"
+#include "vy_square.h"
+#include "vy_transform.h"
+#include "vy_transformed.h"
 #include "vy_window.h"
+#include "vy_font.h"
 #include "vy_sprite.h"
 #include "vy_color.h"
 #include "vy_circle.h"
@@ -28,6 +32,8 @@
 #define BALLCOLOR "fff"
 #define PADWIDTH 0.08
 #define PADHEIGHT 0.2
+#define SCORETOP 0.05
+#define SCORESIDE 0.1
 #define LEFTUP "W"
 #define LEFTDOWN "S"
 #define LEFTCOLOR "0f0"
@@ -43,19 +49,20 @@ StringFun strings;
 KeyFun keys;
 TimeFun times;
 RandomFun randoms;
+FontFun fonts;
 WindowFun windows;
-RectFun rects;
+SquareFun squares;
 SpriteFun sprites;
 ColorFun colors;
 CircleFun circles;
 CaptionFun captions;
 FilledFun filleds;
+TransformFun transforms;
+TransformedFun transformeds;
 
 typedef enum Side { LEFT=0, RIGHT=1 } Side;
 
-/// pontszám szöveg
 typedef struct Score {
-   String text;
    Sprite sprite;
 } Score;
 
@@ -112,7 +119,7 @@ void initVy() {
    VYIMPORTKEY( ctx, keys );
    VYIMPORTTIME( ctx, times );
    VYIMPORTRANDOM( ctx, randoms );
-   VYIMPORTRECT( ctx, rects );
+   VYIMPORTSQUARE( ctx, squares );
    VYIMPORTWINDOW( ctx, windows );
    VYIMPORTSPRITE( ctx, sprites );
    VYIMPORTCOLOR( ctx, colors );
@@ -121,12 +128,21 @@ void initVy() {
    VYIMPORTFILLED( ctx, filleds );
 }
 
+/// oldalhoz tartozó szín
+VyColor sideColor( Side side ) {
+   return colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_LEN );
+}
+
 /// pontszám kijelzés inicializálás
 void initScore( Side side ) {
    Score * s = pong.scores + side;
-   s->text = strings.constAscii("", VY_LEN);
-   Caption c = captions.createCaption( s->text );
-   s->sprite = sprites.createSprite( (Shape)c );
+   String r = strings.constAscii("", VY_LEN);
+   Caption c = captions.createCaption( r, fonts.constDefault() );
+   Filled f = filleds.createFilled( (Shape)c, sideColor(side));
+   Transformed td = transformeds.createTransformed( (Shape)f );
+   Transform t = transformeds.transform(td);
+   transforms.move( t, (side?1:-1)*(1-SCORESIDE), -1+SCORETOP );
+   s->sprite = sprites.createSprite( (Shape)td );
    windows.add( pong.window, (View)s->sprite );
 }
 
@@ -135,19 +151,25 @@ void initBall() {
    Ball * b = &pong.ball;
    b->speed = BALLSPEED;
    b->dx = b->dy = 0;
-   Circle c = circles.createCircle( BALLSIZE );
+   Circle c = circles.constCircle();
    VyColor o = colors.constHex( BALLCOLOR, VY_LEN );
    Filled fc = filleds.createFilled( (Shape)c, o );
-   b->sprite = sprites.createSprite( (Shape)fc );
+   Transformed td = transformeds.createTransformed( (Shape)fc );
+   Transform t = transformeds.transform( td );
+   transforms.scale( t, BALLSIZE, BALLSIZE );
+   b->sprite = sprites.createSprite( (Shape)td );
    windows.add( pong.window, (View)b->sprite );
 }
 
 void initPad( Side side ) {
    Pad * p = pong.pads + side;
-   Rect r = rects.createRect( PADWIDTH, PADHEIGHT );
-   VyColor c = colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_LEN );
-   Filled fc = filleds.createFilled( (Shape)r, c );
-   p->sprite = sprites.createSprite( (Shape)fc );
+   Square s = squares.constSquare();
+   VyColor c = sideColor( side );
+   Filled fc = filleds.createFilled( (Shape)s, sideColor( side ) );
+   Transformed td = transformeds.createTransformed( (Shape)fc );
+   Transform t = transformeds.transform( td );
+   transforms.scale( t, PADWIDTH, PADHEIGHT );
+   p->sprite = sprites.createSprite( (Shape)td );
    p->score = 0;
    if ( LEFT == side ) {
       p->up = PONGKEY( LEFTUP );

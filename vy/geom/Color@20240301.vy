@@ -1,4 +1,4 @@
-interface vy.util.Color @20240301 {
+interface vy.geom.Color @20240301 {
 
    type Color;
 

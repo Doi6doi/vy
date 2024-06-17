@@ -3,22 +3,14 @@
 
 VyRepr vyrShape;
 
-#include <stdio.h>
-
-void vyShapeInit( Shape s ) {
-   vyRefInit( (VyRefCount)s );
-}
-
 void vyDestroyShape( VyPtr ) {
    vyThrow("stub vyDestroyShape");
 }
 
 void vyInitShape( VyContext ctx ) {
    VYSHAPEARGS( ctx, args );
-   vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyrShape = vyRepr( "Shape", sizeof(struct Shape), vySetRef, vyDestroyShape);
    vyArgsType( args, "Shape", vyrShape );
-   vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyAddImplem( ctx, args );
 }
 

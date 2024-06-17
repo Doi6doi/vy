@@ -9,22 +9,30 @@ class Arg
    const
       ARG = "arg";
 
+   const
+      VAR = "var",
+      OUT = "out";
+
    protected $owner;
    protected $name;
    protected $type;
+   protected $kind;
 
-   function __construct( ExprCtx $owner, $name=null, $type=null ) {
+   function __construct( ExprCtx $owner, $name=null, $type=null, $kind=null ) {
       $this->owner = $owner;
       $this->name = $name;
       $this->type = $type;
+      $this->kind = $kind;
    }
 
    function name() { return $this->name; }
 
    function type() { return $this->type; }
 
+   function kind() { return $this->kind; }
+
    function read( Stream $s, $typed ) {
-      $s->readWS();
+      $this->readKind( $s );
       $this->name = $s->readIdent();
       $s->readWS();
       if ( $typed ) {
@@ -51,8 +59,20 @@ class Arg
       return "<".$this->name.">";
    }
 
+   /// argumentum fajta olvasása
+   protected function readKind( $s) {
+      $s->readWS();
+      if ( $s->readIf( "&" ))
+         $this->kind = self::VAR;
+      else if ( $s->readIf("^"))
+         $this->kind = self::OUT;
+      $s->readWS();
+   }      
+
    protected function notComp( Arg $other, $reason ) {
       return new EVy("Not comaptible arg: ".$this->name().": ".$reason );
    }
+
+
 
 }

@@ -4,6 +4,7 @@
 #include <vy_group.h>
 
 #include "vysdl.h"
+#include <stdio.h>
 
 VyRepr vyrGroup;
 

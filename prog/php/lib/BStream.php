@@ -13,8 +13,12 @@ class BStream {
       $this->filename = $filename;
       $this->data = file_get_contents( $filename );
       if ( false === $this->data )
-        throw new Evy("Could not load file '$filename'");
+        throw new EVy("Could not load file '$filename'");
       $this->at=0;
+   }
+
+   function eos() {
+      return $this->at >= strlen( $this->data );
    }
 
    function readByte() {

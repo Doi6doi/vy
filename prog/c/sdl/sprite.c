@@ -40,10 +40,10 @@ static void vySdlSpriteSetShape( Sprite, Shape ) {
 
 static float vySdlShapeWidth( Shape s ) {
    VyRepr r = vyGetRepr( s );
-   if ( vySdl.Rect == r )
-      return vySdl.rects.width( (Rect)s );
+   if ( vySdl.Square == r )
+      return 1;
    else if ( vySdl.Circle == r )
-      return 2*vySdl.circles.radius( (Circle)s );
+      return 1;
    else if ( vySdl.Filled == r )
       return vySdlShapeWidth( vySdl.filleds.shape( (Filled)s ) );
    vyDumpRepr( r );
@@ -52,10 +52,10 @@ static float vySdlShapeWidth( Shape s ) {
 
 static float vySdlShapeHeight( Shape s ) {
    VyRepr r = vyGetRepr( s );
-   if ( vySdl.Rect == r )
-      return vySdl.rects.height( (Rect)s );
+   if ( vySdl.Square == r )
+      return 1;
    else if ( vySdl.Circle == r )
-      return 2*vySdl.circles.radius( (Circle)s );
+      return 1;
    else if ( vySdl.Filled == r )
       return vySdlShapeWidth( vySdl.filleds.shape( (Filled)s ) );
    vyDumpRepr( r );

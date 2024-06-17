@@ -7,6 +7,7 @@ make {
       build {
          init();
          genCodes();
+         genRess();
          genDep();
          genObjs();
          genLib();
@@ -15,6 +16,8 @@ make {
       clean {
          init();
          purge( [ $lib, "*"+C.objExt() ] );
+         foreach ( r | $ress )
+            purge( codeFile(r[0]) );
       }
 
       help {
@@ -41,6 +44,9 @@ make {
             [ "view", "vy.ui", "View", 20240301, "View=*" ],
             [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]
          ];
+         $ress := [
+            ["dvs_mini","dvs_mini.ttf"]
+         ];
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( ["../lib/Repr.vy", "Repr.vy"] );
@@ -57,6 +63,12 @@ make {
             genCode( findVy( i ) );
       }
       
+      /// erőforrás fájlok fordítása
+      genRess() {
+         foreach ( r | $ress )
+            genRes( r );
+      }
+
       /// depend fájl készítése
       genDep() {
          cs := [];
@@ -81,6 +93,12 @@ make {
             if ( older( of, deps[of] ))
                C.compile( of, codeFile(i) );
          }
+         foreach ( r | $ress ) {
+            cf := codeFile( r[0] );
+            of := objFile( r[0] );
+            if ( older( of, cf ))
+               C.compile( of, cf );
+         }
       }
       
       /// könyvtár fordítása
@@ -88,6 +106,8 @@ make {
          objs := [];
          foreach ( i | $parts + $items )
             objs += objFile(i);
+         foreach ( r | $ress )
+            objs += objFile( r[0] );
          if ( older( $lib, objs ))
             C.link( $lib, objs );
       }
@@ -104,6 +124,13 @@ make {
          Comp.compile( src, df );
       }
 
+      /// erőforrás fájl fordítása
+      genRes( r ) {
+         rf := codeFile( r[0] );
+         if ( ! older( rf, r[1] )) return;
+         C.sourceRes( rf, r[1], r[0] );
+      }
+
       /// egy elemhez tartozó .h fájl
       headFile( i ) { return format("%s.h", i); }
       
@@ -112,7 +139,7 @@ make {
       
       /// egy elemhez tartozó .c fájl
       codeFile( i ) { return format("%s.c", i ); } 
-      
+
       /// egy elemhez tartozó obj fájl
       objFile( i ) { return format("%s%s", i, C.objExt()); }
 

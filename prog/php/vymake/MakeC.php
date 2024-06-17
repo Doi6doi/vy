@@ -10,11 +10,12 @@ class MakeC extends MakeImport {
    protected $compiler;
 
    function __construct( $owner ) {
-	  parent::__construct( $owner, self::C );
-	  $this->setCompiler( null );
-	  $this->addFuncs( ["setCompiler","compile","depend",
-	     "libFile","link","loadDep","objExt","setDebug",
-	     "setIncDir","setLib","setLibDir","setLibMode","setShow"] );
+      parent::__construct( $owner, self::C );
+	   $this->setCompiler( null );
+	   $this->addFuncs( ["setCompiler","compile","depend",
+	      "libFile","link","loadDep","objExt",
+         "setDebug","setIncDir","setLib","setLibDir",
+         "setLibMode","setShow", "sourceRes"] );
    }
 
    /// fordítás
@@ -91,6 +92,12 @@ class MakeC extends MakeImport {
    /// fordító beállítása
    function setCompiler( $cmp ) {
 	  $this->compiler = CCompiler::create( $cmp );
+   }
+
+   /// erőforrás készítése
+   function sourceRes( $dst, $src, $name=null ) {
+      $this->log( Make::INFO, "Creating resource source -> $dst" );
+      return $this->compiler->sourceRes( $dst, $src, $name );
    }
 
 }

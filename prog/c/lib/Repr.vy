@@ -10,19 +10,21 @@ representation {
    Stamp: native VyStamp;
    Color: native VyColor;
    Coord: native float;
+   Font: refcount;
    Shape: public refcount;
-   Rect: inherit Shape {
-      width: Coord;
-      height: Coord;
-   }
-   Circle: inherit Shape {
-      radius: Coord;
-   }
+   Transform: refcount;
+   Square: inherit Shape;
+   Circle: inherit Shape;
    Caption: inherit Shape {
       text: String;
    }
+   Transformed: inherit Shape {
+      transform: Transform;
+      sub: Shape;
+   }
    Filled: inherit Shape {
       color: Color;
+      sub: Shape;
    }
 
    ViewCoord: native VyViewCoord;

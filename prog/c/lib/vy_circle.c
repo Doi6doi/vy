@@ -1,38 +1,29 @@
 #include <vy_implem.h>
 #include "vy_circle.h"
 
+#include "vy_shape.h"
+
 struct Circle {
-   VyRepr repr;
+   struct Shape shape;
 };
 
 VyRepr vyrCircle;
+
+extern VyRepr vyrShape;
 
 void vyDestroyCircle( VyPtr ) {
    vyThrow("stub vyDestroyCircle");
 }
 
-static void vyCircleSet( Circle *, Circle ) {
-   vyThrow("stub vyCircleSet");
-}
-
-Shape vyCircleCast( Circle ) {
-   vyThrow("stub vyCircleCast");
-}
-
-static Circle vyCircleCreateCircle( float radius ) {
-   vyThrow("stub vyCircleCreateCircle");
-}
-
-static float vyCircleRadius( Circle ) {
-   vyThrow("stub vyCircleRadius");
+static Circle vyCircleConstCircle(  ) {
+   vyThrow("stub vyCircleConstCircle");
 }
 
 void vyInitCircle( VyContext ctx ) {
    VYCIRCLEARGS( ctx, args );
-   vyrCircle = vyRepr( "Circle", sizeof(struct Circle), false, vyDestroyCircle);
+   vyrCircle = vyRepr( "Circle", sizeof(struct Circle), vySetRef, vyDestroyCircle);
    vyArgsType( args, "Circle", vyrCircle );
-   vyArgsImpl( args, "createCircle", vyCircleCreateCircle );
-   vyArgsImpl( args, "radius", vyCircleRadius );
+   vyArgsImpl( args, "constCircle", vyCircleConstCircle );
    vyAddImplem( ctx, args );
 }
 

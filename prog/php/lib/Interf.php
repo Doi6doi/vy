@@ -265,9 +265,12 @@ class Interf
       $name = $s->readIdent();
       $s->readWS();
       $path = [];
-      if ( ($alias = $s->readIf("="))
-            || $s->readIf("."))
+      if ( $alias = $s->readIf("=")) {
+         $s->readWS();
          $path = $s->readIdents(".");
+      } else if ( $s->readIf(".")) {
+         $path = $s->readIdents(".");
+      }
       if ( ! $alias ) {
          array_unshift( $path, $name );
          $name = $path[ count($path)-1 ];

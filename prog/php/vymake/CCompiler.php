@@ -60,6 +60,11 @@ abstract class CCompiler
    /// debug mód
    function setDebug( $value ) { $this->debug = $value; }
 
+   /// erőforrás forrássá alakítása
+   function sourceRes( $dst, $src, $name ) {
+      $this->writeSourceRes( $dst, $src, $name );
+   }
+
    /// object fájl készítése
    abstract function compile( $dst, $src );
 
@@ -98,5 +103,32 @@ abstract class CCompiler
          $ret .= " $pre$i";
       return $ret;
    }
+
+   /// erőforrásfájl kiírása
+   protected function writeSourceRes( $dst, $src, $name ) {
+      if ( ! $name )
+         $name = pathinfo( $dst, PATHINFO_FILENAME );
+      $bs = new BStream( $src );
+      $os = new OStream( $dst );
+      $n = 0;
+      $os->writef( "char * %s_data = \"", $name ); 
+      while ( ! $bs->eos() )
+         $this->writeResChar( $os, $bs->readByte(), $n );
+      $os->writef("\";\n");
+      $os->writel("unsigned %s_len = %d;", $name, $n );
+      $os->close();
+   }      
+
+   /// erőforrás karakter konvertálás
+   protected function writeResChar( $os, $b, & $n ) {
+      if ( 15 == $n % 16 )
+         $os->write("\"\n   \"");
+      if ( "\x20" <= $b && $b <= "\x7e" && "\\" != $b && "\"" != $b )
+         $os->write( $b );
+         else $os->writef( "\\%03o", ord($b) );
+      ++$n;
+   }
+
+
    
 }

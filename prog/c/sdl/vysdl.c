@@ -2,6 +2,8 @@
 #include <vy_implem.h>
 #include "vysdl.h"
 
+#include <vy_square.h>
+#include <vy_circle.h>
 #include <SDL2/SDL.h>
 
 #define BUFSIZE 2048
@@ -36,16 +38,18 @@ void vyModuleInit( VyContext ctx ) {
    vySdl.Filled = vyArgsRepr( filledArgs, "Filled" );
    vyFree( filledArgs );
 
-   VYRECTARGS( ctx, rectArgs );
-   vyGetImplem( ctx, rectArgs, & vySdl.rects );
-   vySdl.Rect = vyArgsRepr( rectArgs, "Rect" );
-   vyFree( rectArgs );
-   
+   VYSQUAREARGS( ctx, squareArgs );
+   SquareFun squares;
+   vyGetImplem( ctx, squareArgs, & squares );
+   vySdl.Square = vyArgsRepr( squareArgs, "Square" );
+   vyFree( squareArgs );
+
    VYCIRCLEARGS( ctx, circleArgs );
-   vyGetImplem( ctx, circleArgs, & vySdl.circles );
+   CircleFun circles;
+   vyGetImplem( ctx, circleArgs, & circles );
    vySdl.Circle = vyArgsRepr( circleArgs, "Circle" );
    vyFree( circleArgs );
-   
+
    vySdlInitKey( ctx );
    vySdlInitView( ctx );
    vySdlInitGroup( ctx );

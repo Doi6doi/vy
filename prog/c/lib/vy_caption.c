@@ -1,9 +1,11 @@
 #include <vy_implem.h>
-#include "vy_geom.h"
 #include "vy_caption.h"
+
 #include "vy_shape.h"
 
 extern VyRepr vyrString;
+
+extern VyRepr vyrFont;
 
 struct Caption {
    struct Shape shape;
@@ -18,13 +20,16 @@ void vyDestroyCaption( VyPtr ) {
    vyThrow("stub vyDestroyCaption");
 }
 
-Shape vyCaptionCast( Caption x ) { return (Shape)x; }
+static Caption vyCaptionCreateCaption( String text, Font font ) {
+   vyThrow("stub vyCaptionCreateCaption");
+}
 
-static Caption vyCaptionCreateCaption( String text ) {
-   Caption ret = vyAlloc( vyrCaption );
-   vyShapeInit( (Shape)ret );
-   ret->text = NULL;
-   vySet( (VyAny *)&ret->text, (VyAny)text );
+static String vyCaptionText( Caption ) {
+   vyThrow("stub vyCaptionText");
+}
+
+static Font vyCaptionFont( Caption ) {
+   vyThrow("stub vyCaptionFont");
 }
 
 void vyInitCaption( VyContext ctx ) {
@@ -32,11 +37,12 @@ void vyInitCaption( VyContext ctx ) {
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "Char", vyNative(ctx,"wchar_t") );
    vyArgsType( args, "String", vyrString );
-   vyArgsType( args, "Coord", vyNative(ctx,"float") );
+   vyArgsType( args, "Font", vyrFont );
    vyrCaption = vyRepr( "Caption", sizeof(struct Caption), vySetRef, vyDestroyCaption);
    vyArgsType( args, "Caption", vyrCaption );
-   vyArgsImpl( args, "cast", vyCaptionCast );
    vyArgsImpl( args, "createCaption", vyCaptionCreateCaption );
+   vyArgsImpl( args, "text", vyCaptionText );
+   vyArgsImpl( args, "font", vyCaptionFont );
    vyAddImplem( ctx, args );
 }
 

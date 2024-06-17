@@ -37,27 +37,31 @@ make {
          $libs := [];
          $vyh := "vy.h";
          $items := ["caption","circle","color","filled",
-            "random","rect","shape","string","time","vector"];
-         $hitems := ["group","key","sprite","view","window"];
-         $parts := ["implem","cont","core","geom","mem","sm","ui","util"];
+            "random","square","transform","transformed",
+            "shape","string","time","vector"];
+         $hitems := ["font","group","key","sprite","view","window"];
+         $parts := ["implem","cont","core","geom","geom2","mem","sm","ui","util"];
          case ( system() ) {
             "Windows": $parts += "windows";
             "Linux": $parts += "linux";
          }
          $vyroot := "../../..";
          $vys := [
-            [ "caption", "vy.geom", "Caption", 20240301, "Caption=*" ],
-            [ "circle", "vy.geom", "Circle", 20240301, "Circle=*" ],
+            [ "caption", "vy.geom2", "Caption", 20240301, "Caption=*" ],
+            [ "circle", "vy.geom2", "Circle", 20240301, "Circle=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
-            [ "filled", "vy.geom", "Filled", 20240301, "Sub=Shape;Brush=Color" ],
+            [ "font", "vy.geom2", "Font", 20240301, "Font=*" ],
+            [ "filled", "vy.geom", "Filled", 20240301, "Filled=*;Sub=Shape;Brush=Color" ],
             [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
-            [ "rect", "vy.geom", "Rect", 20240301, "Rect=*" ],
+            [ "square", "vy.geom2", "Square", 20240301, "Square=*" ],
             [ "shape", "vy.geom", "Shape", 20240301, "Shape=*" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
             [ "string", "vy.char", "String", 20240301, "String=*" ],
             [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
+            [ "transform", "vy.geom2", "Transform", 20240301, "Number=Float" ],
+            [ "transformed", "vy.geom2", "Transformed", 20240301, "Transformed=*;Number=Float;Sub=Shape" ],
             [ "vector", "vy.cont", "Vector", 20240301, "Vector=*;Value=Any" ],
             [ "view", "vy.ui", "View", 20240301, "View=*" ],
             [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]

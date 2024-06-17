@@ -19,4 +19,6 @@ vy_string.h
 vy_vector.h
 vy_font.h
 vy_square.h
+vy_transform.h
+vy_transformed.h
 all.dep

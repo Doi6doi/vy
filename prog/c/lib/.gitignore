@@ -18,4 +18,5 @@ vy_sprite.h
 vy_string.h
 vy_vector.h
 vy_font.h
+vy_square.h
 all.dep

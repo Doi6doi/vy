@@ -40,18 +40,7 @@ static void vySdlSpriteSetShape( Sprite, Shape ) {
    vyThrow("stub vySpriteSetShape");
 }
 
-static float vySdlShapeWidth( Shape s ) {
-   VyRepr r = vyGetRepr( s );
-   if ( vySdl.Square == r )
-      return 1;
-   else if ( vySdl.Circle == r )
-      return 1;
-   else if ( vySdl.Filled == r )
-      return vySdlShapeWidth( vySdl.filleds.shape( (Filled)s ) );
-   vyDumpRepr( r );
-   vyThrow("Unknown shape width");
-}
-
+static float vySdlShapeWidth( Shape s );
 static float vySdlShapeHeight( Shape s );
 
 static float vySdlTransformedCoord( Transformed td, bool height ) {
@@ -62,12 +51,25 @@ static float vySdlTransformedCoord( Transformed td, bool height ) {
    float ret = height ? w*t->ry + h*t->sy : w*t->sx + h*t->rx;
    return fabs( ret );
 }
-   
+
+static float vySdlShapeWidth( Shape s ) {
+   VyRepr r = vyGetRepr( s );
+   if ( vySdl.Transformed == r )
+      return vySdlTransformedCoord( (Transformed)s, false );
+   else if ( vySdl.Square == r )
+      return 1;
+   else if ( vySdl.Circle == r )
+      return 1;
+   else if ( vySdl.Filled == r )
+      return vySdlShapeWidth( vySdl.filleds.shape( (Filled)s ) );
+   vyDumpRepr( r );
+   vyThrow("Unknown shape width");
+}
 
 static float vySdlShapeHeight( Shape s ) {
    VyRepr r = vyGetRepr( s );
    if ( vySdl.Transformed == r )
-      return vySdlTransformedCoord( (Transformed)r, true );
+      return vySdlTransformedCoord( (Transformed)s, true );
    else if ( vySdl.Square == r )
       return 1;
    else if ( vySdl.Circle == r )

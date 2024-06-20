@@ -27,8 +27,8 @@ static Filled vyFilledCreateFilled( Shape sub, VyColor color) {
    return ret;
 }
 
-static Shape vyFilledShape( Filled ) {
-   vyThrow("stub vyFilledShape");
+static Shape vyFilledShape( Filled f ) {
+   return f->sub;
 }
 
 static VyColor vyFilledBrush( Filled ) {

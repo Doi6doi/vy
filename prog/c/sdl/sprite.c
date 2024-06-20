@@ -4,12 +4,14 @@
 #include <vy_ui.h>
 #include <vy_sprite.h>
 #include <vy_view.h>
+#include <vy_caption.h>
 #include <vy_transform.h>
 #include <vy_transformed.h>
 #include <stdio.h>
 #include <math.h>
 
 extern VyRepr vyrShape;
+extern VyRepr vyrCaption;
 
 struct Sprite {
    struct View view;
@@ -40,44 +42,39 @@ static void vySdlSpriteSetShape( Sprite, Shape ) {
    vyThrow("stub vySpriteSetShape");
 }
 
-static float vySdlShapeWidth( Shape s );
-static float vySdlShapeHeight( Shape s );
+static float vySdlShapeDim( Shape s, bool height );
 
-static float vySdlTransformedCoord( Transformed td, bool height ) {
+static float vySdlTransformedDim( Transformed td, bool height ) {
    Shape sub = vySdl.transformeds.sub(td);
    Transform t = vySdl.transformeds.transform(td);
-   float h = vySdlShapeHeight( sub );
-   float w = vySdlShapeWidth( sub );
+   float w = vySdlShapeDim( sub, false );
+   float h = vySdlShapeDim( sub, true );
    float ret = height ? w*t->ry + h*t->sy : w*t->sx + h*t->rx;
    return fabs( ret );
 }
 
-static float vySdlShapeWidth( Shape s ) {
-   VyRepr r = vyGetRepr( s );
-   if ( vySdl.Transformed == r )
-      return vySdlTransformedCoord( (Transformed)s, false );
-   else if ( vySdl.Square == r )
-      return 1;
-   else if ( vySdl.Circle == r )
-      return 1;
-   else if ( vySdl.Filled == r )
-      return vySdlShapeWidth( vySdl.filleds.shape( (Filled)s ) );
-   vyDumpRepr( r );
-   vyThrow("Unknown shape width");
+static float vySdlCaptionDim( Caption c, bool height ) {
+   Font f = vySdlCaptionFont( c );
+   if ( height )
+      return vySdlFontHeight( f );
+   String s = vySdlCaptionText( c );
+   return vySdlFontWidth( f, s );
 }
 
-static float vySdlShapeHeight( Shape s ) {
+static float vySdlShapeDim( Shape s, bool height ) {
    VyRepr r = vyGetRepr( s );
    if ( vySdl.Transformed == r )
-      return vySdlTransformedCoord( (Transformed)s, true );
+      return vySdlTransformedDim( (Transformed)s, height );
    else if ( vySdl.Square == r )
       return 1;
    else if ( vySdl.Circle == r )
       return 1;
+   else if ( vyrCaption == r )
+      return vySdlCaptionDim( (Caption)s, height );
    else if ( vySdl.Filled == r )
-      return vySdlShapeWidth( vySdl.filleds.shape( (Filled)s ) );
+      return vySdlShapeDim( vySdl.filleds.shape( (Filled)s ), height );
    vyDumpRepr( r );
-   vyThrow("Unknown shape height");
+   vyThrow("Unknown shape dim");
 }
 
 float vySdlSpriteCoord( Sprite s, VyViewCoord c ) {
@@ -86,10 +83,10 @@ float vySdlSpriteCoord( Sprite s, VyViewCoord c ) {
       case VC_CENTERX: return s->view.x;
       case VC_CENTERY: return s->view.y;
       case VC_LEFT: case VC_RIGHT: case VC_WIDTH:
-         f = vySdlShapeWidth( s->shape );
+         f = vySdlShapeDim( s->shape, false );
       break;
       case VC_TOP: case VC_BOTTOM: case VC_HEIGHT:
-         f = vySdlShapeHeight( s->shape );
+         f = vySdlShapeDim( s->shape, true );
       break;
       default:
          vyThrow("Unknown coordinate");

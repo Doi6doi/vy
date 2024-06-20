@@ -6,6 +6,7 @@
 #include <vy_geom.h>
 #include <vy_vector.h>
 #include <vy_filled.h>
+#include <vy_caption.h>
 #include <vy_sprite.h>
 #include <vy_transformed.h>
 
@@ -69,6 +70,12 @@ extern void vySdlInvalidate( View );
 extern void vySdlInvalidateGroup( Group, VySdlArea );
 extern VySdlArea vySdlViewArea( View );
 extern void vySdlRemove( Group g, View v );
+
+extern float vySdlFontHeight( Font );
+extern float vySdlFontWidth( Font, String );
+
+extern Font vySdlCaptionFont( Caption );
+extern String vySdlCaptionText( Caption );
 
 extern void vySdlGroupInit( Group );
 extern void vySdlGroupAdd( Group, View );

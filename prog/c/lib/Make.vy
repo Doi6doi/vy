@@ -130,6 +130,8 @@ make {
          Comp.setMap( v[4] );
          Comp.setForce( true );
          Comp.compile( src, df );
+         if ( "string" = v[0] )
+            insertFile( df, "wchar_t * vyStringPtr( String );" );
       }
 
       /// .c fájl generálása
@@ -160,6 +162,13 @@ make {
                return $vys[i];
          }
          throw "Unkown item: "+x;
+      }
+      
+      /// fájlba beszúrás
+      insertFile( f, line ) {
+         s := loadFile( f );
+         s := replace( s, "#endif", line+"\n\n#endif" );
+         saveFile( f, s );
       }
    } 
 

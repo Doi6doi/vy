@@ -2,6 +2,7 @@
 #include <vy_geom.h>
 #include <vy_caption.h>
 #include <vy_shape.h>
+#include <stdio.h>
 
 extern VyRepr vyrString;
 
@@ -29,15 +30,16 @@ static Caption vySdlCaptionCreateCaption( String text, Font font ) {
    return ret;
 }
 
-static String vySdlCaptionText( Caption ) {
-   vyThrow("stub vySdlCaptionText");
+String vySdlCaptionText( Caption c ) {
+   return c->text;
 }
 
-static Font vySdlCaptionFont( Caption ) {
-   vyThrow("stub vySdlCaptionFont");
+Font vySdlCaptionFont( Caption c ) {
+   return c->font;
 }
 
 void vySdlInitCaption( VyContext ctx ) {
+printf("initcaption\n");   
    VYCAPTIONARGS( ctx, args );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "Char", vyNative(ctx,"wchar_t") );

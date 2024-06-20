@@ -42,6 +42,11 @@ class Tools {
       return $ret;
    }
 
+   static function saveFile( $fname, $data ) {
+      if ( false === file_put_contents( $fname, $data ))
+         throw new EVy("Could not save file: $fname");
+   }
+
    static function jsonDecode( $data ) {
       $ret = json_decode( $data, true );
       self::checkJson();

@@ -15,7 +15,8 @@ class MakeCore
 	  parent::__construct( $owner, self::CORE );
 	  $this->rules = [];
 	  $this->addFuncs(["echo","exec","exeExt","format","getEnv",
-	     "level","older","purge","replace","setEnv", "system"]);
+	     "level","loadFile", "older","purge","replace",
+        "saveFile", "setEnv", "system"]);
    }
 	  
    /// környezeti változó lekérése
@@ -86,6 +87,17 @@ class MakeCore
 	  return str_replace( $src, $dst, $s );
    } 
 
+   /// fájl mentése
+   function saveFile( $f, $data ) {
+      return Tools::saveFile( $f, $data );
+   }
+
+   /// fájl betöltése
+   function loadFile( $f ) {
+      return Tools::loadFile( $f );
+   }
+
+   /// rendszer neve
    function system() {
 	  return Tools::system();
    } 

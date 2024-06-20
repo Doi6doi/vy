@@ -56,6 +56,14 @@ static bool vyStringNoteq(String, String ) {
    vyThrow("stub StringNoteq");
 }
 
+static unsigned vyStringLength(String) {
+   vyThrow("stub StringLength");
+}
+
+static wchar_t vyStringCharAt(String, unsigned) {
+   vyThrow("stub StringCharAt");
+}
+
 void vyInitString( VyContext ctx ) {
    VYSTRINGARGS( ctx, args );
    vyrString = vyRepr( "String", sizeof(struct String), vySetRef, destroyString);
@@ -68,6 +76,8 @@ void vyInitString( VyContext ctx ) {
    vyArgsImpl( args, "greatereq", vyStringGreatereq );
    vyArgsImpl( args, "equal", vyStringEqual );
    vyArgsImpl( args, "noteq", vyStringNoteq );
+   vyArgsImpl( args, "length", vyStringLength );
+   vyArgsImpl( args, "charAt", vyStringCharAt );
    vyAddImplem( ctx, args );
 }
 

@@ -6,6 +6,9 @@
 
 #define NODEFFONT "Cannot open default font"
 #define NOINIT "Cannot initialize SDL fonts"
+
+#define DEFSIZE 100
+
 #define BUFSIZE 2048
 static char buf[BUFSIZE];
 
@@ -34,7 +37,7 @@ static Font vySdlFontConstDefault() {
       Font ret = vyAlloc( vyrFont );
       vyRefInit( (VyRefCount)ret );
       SDL_RWops * rw = SDL_RWFromMem( dvs_mini_data, dvs_mini_len );
-      if ( ! ( ret->ttf = TTF_OpenFontRW( rw, true, 12 ) ))
+      if ( ! ( ret->ttf = TTF_OpenFontRW( rw, true, DEFSIZE ) ))
          vySdlFontError( NODEFFONT );
       vySdlDefaultFont = ret;
    }

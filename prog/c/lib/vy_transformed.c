@@ -1,6 +1,5 @@
 #include <vy_implem.h>
 #include "vy_transformed.h"
-
 #include "vy_shape.h"
 
 extern VyRepr vyrTransform;
@@ -13,7 +12,7 @@ struct Transformed {
 
 VyRepr vyrTransformed;
 
-extern VyRepr vyrShape;
+extern Transform vyTransformConstIdent();
 
 extern VyRepr vyrShape;
 
@@ -21,12 +20,20 @@ void vyDestroyTransformed( VyPtr ) {
    vyThrow("stub vyDestroyTransformed");
 }
 
-static Transformed vyTransformedCreateTransformed( Shape ) {
-   vyThrow("stub vyTransformedCreateTransformed");
+static Transformed vyTransformedCreateTransformed( Shape sub ) {
+   Transformed ret = vyAllocClear( vyrTransformed );
+   vyShapeInit( (Shape)ret );
+   vySet( (VyAny *)&ret->sub, sub );
+   vySet( (VyAny *)&ret->transform, vyTransformConstIdent() );
+   return ret;
 }
 
-static Transform vyTransformedTransform( Transformed ) {
-   vyThrow("stub vyTransformedTransform");
+static Transform vyTransformedTransform( Transformed td ) {
+   return td->transform;
+}
+
+static Shape vyTransformedSub( Transformed td ) {
+   return td->sub;
 }
 
 void vyInitTransformed( VyContext ctx ) {
@@ -39,6 +46,7 @@ void vyInitTransformed( VyContext ctx ) {
    vyArgsType( args, "Sub", vyrShape );
    vyArgsImpl( args, "createTransformed", vyTransformedCreateTransformed );
    vyArgsImpl( args, "transform", vyTransformedTransform );
+   vyArgsImpl( args, "sub", vyTransformedSub );
    vyAddImplem( ctx, args );
 }
 

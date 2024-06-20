@@ -29,17 +29,18 @@
 #define TICK 0.05
 #define BALLSPEED 0.05
 #define BALLSIZE 0.02
-#define BALLCOLOR "fff"
+#define BALLCOLOR "\xff\xff\xff"
 #define PADWIDTH 0.08
 #define PADHEIGHT 0.2
 #define SCORETOP 0.05
 #define SCORESIDE 0.1
+#define SCORESIZE 0.2
 #define LEFTUP "W"
 #define LEFTDOWN "S"
-#define LEFTCOLOR "0f0"
+#define LEFTCOLOR "\x00\xff\x00"
 #define RIGHTUP "Up"
 #define RIGHTDOWN "Down"
-#define RIGHTCOLOR "00f"
+#define RIGHTCOLOR "\x00\x00\xff"
 
 #define PONGKEY( x ) keys.constUtf( x, VY_LEN )
 
@@ -116,6 +117,7 @@ void initVy() {
    vy = vyInit();
    VyContext ctx = vyContext( vy );
    VYIMPORTSTRING( ctx, strings );
+   VYIMPORTFONT( ctx, fonts );
    VYIMPORTKEY( ctx, keys );
    VYIMPORTTIME( ctx, times );
    VYIMPORTRANDOM( ctx, randoms );
@@ -126,11 +128,14 @@ void initVy() {
    VYIMPORTCIRCLE( ctx, circles );
    VYIMPORTCAPTION( ctx, captions );
    VYIMPORTFILLED( ctx, filleds );
+   VYIMPORTTRANSFORM( ctx, transforms );
+   VYIMPORTTRANSFORMED( ctx, transformeds );
+   
 }
 
 /// oldalhoz tartozó szín
 VyColor sideColor( Side side ) {
-   return colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, VY_LEN );
+   return colors.constHex( LEFT == side ? LEFTCOLOR : RIGHTCOLOR, 3 );
 }
 
 /// pontszám kijelzés inicializálás
@@ -141,7 +146,7 @@ void initScore( Side side ) {
    Filled f = filleds.createFilled( (Shape)c, sideColor(side));
    Transformed td = transformeds.createTransformed( (Shape)f );
    Transform t = transformeds.transform(td);
-   transforms.move( t, (side?1:-1)*(1-SCORESIDE), -1+SCORETOP );
+   transforms.scale( t, SCORESIZE, SCORESIZE );
    s->sprite = sprites.createSprite( (Shape)td );
    windows.add( pong.window, (View)s->sprite );
 }
@@ -152,7 +157,7 @@ void initBall() {
    b->speed = BALLSPEED;
    b->dx = b->dy = 0;
    Circle c = circles.constCircle();
-   VyColor o = colors.constHex( BALLCOLOR, VY_LEN );
+   VyColor o = colors.constHex( BALLCOLOR, 3 );
    Filled fc = filleds.createFilled( (Shape)c, o );
    Transformed td = transformeds.createTransformed( (Shape)fc );
    Transform t = transformeds.transform( td );

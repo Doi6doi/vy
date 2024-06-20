@@ -7,6 +7,7 @@
 #include <vy_vector.h>
 #include <vy_filled.h>
 #include <vy_sprite.h>
+#include <vy_transformed.h>
 
 #define REALLOC( p, s ) realloc( p,s )
 
@@ -16,9 +17,11 @@ typedef struct VySdl {
    float aspect;
    VectorFun vectors;
    FilledFun filleds;
+   TransformedFun transformeds;
    VyRepr Filled;
    VyRepr Square;
    VyRepr Circle;
+   VyRepr Transformed;
 } VySdl;
 
 typedef struct View * View;
@@ -42,6 +45,9 @@ typedef struct VySdlArea {
    float top, left, width, height;
 } * VySdlArea;
 
+extern char * dvs_mini_data;
+extern unsigned dvs_mini_len;
+
 extern VySdlArea vySdlArea( float top, float left, float width, float height );
 
 extern VySdl vySdl;
@@ -50,6 +56,9 @@ extern void vySdlDirty( View );
 
 extern void vySdlError( VyCStr );
 
+extern void vySdlInitCaption( VyContext );
+extern void vySdlInitColor( VyContext );
+extern void vySdlInitFont( VyContext );
 extern void vySdlInitKey( VyContext );
 extern void vySdlInitView( VyContext );
 extern void vySdlInitGroup( VyContext );

@@ -38,6 +38,11 @@ void vyModuleInit( VyContext ctx ) {
    vySdl.Filled = vyArgsRepr( filledArgs, "Filled" );
    vyFree( filledArgs );
 
+   VYTRANSFORMEDARGS( ctx, transformedArgs );
+   vyGetImplem( ctx, transformedArgs, & vySdl.transformeds );
+   vySdl.Transformed = vyArgsRepr( transformedArgs, "Transformed" );
+   vyFree( transformedArgs );
+
    VYSQUAREARGS( ctx, squareArgs );
    SquareFun squares;
    vyGetImplem( ctx, squareArgs, & squares );
@@ -50,6 +55,9 @@ void vyModuleInit( VyContext ctx ) {
    vySdl.Circle = vyArgsRepr( circleArgs, "Circle" );
    vyFree( circleArgs );
 
+   vySdlInitColor( ctx );
+   vySdlInitFont( ctx );
+   vySdlInitCaption( ctx );
    vySdlInitKey( ctx );
    vySdlInitView( ctx );
    vySdlInitGroup( ctx );

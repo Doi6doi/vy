@@ -21,6 +21,9 @@ typedef struct Vy * Vy;
 /// verzió
 typedef unsigned VyVer;
 
+/// mutató
+typedef void * VyPtr;
+
 /// reprezentáció
 typedef struct VyRepr * VyRepr;
 
@@ -45,8 +48,8 @@ VyVer vyVer( unsigned );
 void vyFree( void * );
 /// egy objektum típusának lekérése
 VyRepr vyGetRepr( void * );
-/// értékadás (refcount, managed)
-void vySet( VyAny *, VyAny );
+/// értékadás (refcount, managed) (mindkét mutató VyAny)
+void vySet( VyAny *, VyPtr );
 
 /// kivétel
 void vyThrow( VyCStr );

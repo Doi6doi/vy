@@ -6,11 +6,6 @@
 
 typedef uint32_t VyColor;
 
-typedef struct VyPoint2f {
-   float x;
-   float y;
-} VyPoint2f;
-
 void vyInitGeom( VyContext );
 
 typedef struct Shape * Shape;

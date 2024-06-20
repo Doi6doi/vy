@@ -7,5 +7,7 @@ interface vy.num.BinInt @20240117 {
 
    type I = Int.I = Bits.D;
 
+   const &hex: BinInt;
+
 }
 

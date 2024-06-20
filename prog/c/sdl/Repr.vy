@@ -1,5 +1,10 @@
 representation {
 
+   Caption: inherit Shape {
+      text: String;
+      font: Font;
+   }
+   Font: refcount;
    View: public refcount {
       group: Group;
    }

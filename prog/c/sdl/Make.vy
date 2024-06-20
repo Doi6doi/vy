@@ -34,10 +34,13 @@ make {
    function {
       init() {
          $lib := C.libFile( "vysdl" );
-         $items := ["group","key","sprite","view","window"];
+         $items := ["caption","color","font","group","key","sprite","view","window"];
          $parts := ["vysdl"];
          $vyroot := "../../..";
          $vys := [
+            [ "caption", "vy.geom2", "Caption", 20240301, "Caption=*" ],
+            [ "color", "vy.geom", "Color", 20240301, "" ],
+            [ "font", "vy.geom2", "Font", 20240301, "Font=*" ],
             [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
@@ -53,7 +56,7 @@ make {
          C.setShow(true);
          C.setDebug(true);
          C.setLibMode(true);
-         C.setLib(["SDL2"]);
+         C.setLib(["SDL2","SDL2_ttf"]);
          C.setIncDir([".","../lib"]);
       }
 

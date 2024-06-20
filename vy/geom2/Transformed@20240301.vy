@@ -15,6 +15,7 @@ interface vy.geom2.Transformed @20240301 {
    function {
       createTransformed( Sub ): Transformed;
       transform( Transformed ): Transform;
+      sub( Transformed ): Sub;
    }
 
 }

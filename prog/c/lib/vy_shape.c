@@ -3,6 +3,10 @@
 
 VyRepr vyrShape;
 
+void vyShapeInit( Shape s ) {
+   vyRefInit( (VyRefCount)s );
+}
+
 void vyDestroyShape( VyPtr ) {
    vyThrow("stub vyDestroyShape");
 }

@@ -36,10 +36,10 @@ make {
          $lib := C.libFile( "vy" );
          $libs := [];
          $vyh := "vy.h";
-         $items := ["caption","circle","color","filled",
+         $items := ["circle","filled",
             "random","square","transform","transformed",
             "shape","string","time","vector"];
-         $hitems := ["font","group","key","sprite","view","window"];
+         $hitems := ["caption","color","font","group","key","sprite","view","window"];
          $parts := ["implem","cont","core","geom","geom2","mem","sm","ui","util"];
          case ( system() ) {
             "Windows": $parts += "windows";
@@ -60,7 +60,7 @@ make {
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
             [ "string", "vy.char", "String", 20240301, "String=*" ],
             [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
-            [ "transform", "vy.geom2", "Transform", 20240301, "Number=Float" ],
+            [ "transform", "vy.geom2", "Transform", 20240301, "Transform=*;Number=Float" ],
             [ "transformed", "vy.geom2", "Transformed", 20240301, "Transformed=*;Number=Float;Sub=Shape" ],
             [ "vector", "vy.cont", "Vector", 20240301, "Vector=*;Value=Any" ],
             [ "view", "vy.ui", "View", 20240301, "View=*" ],

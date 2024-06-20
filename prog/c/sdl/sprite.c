@@ -1,11 +1,13 @@
 #include <vy_implem.h>
 #include "vysdl.h"
-#include "vy_geom.h"
-#include "vy_ui.h"
-#include "vy_sprite.h"
-#include "vy_view.h"
-
+#include <vy_geom.h>
+#include <vy_ui.h>
+#include <vy_sprite.h>
+#include <vy_view.h>
+#include <vy_transform.h>
+#include <vy_transformed.h>
 #include <stdio.h>
+#include <math.h>
 
 extern VyRepr vyrShape;
 
@@ -26,7 +28,7 @@ static Sprite vySdlSpriteCreateSprite( Shape shape ) {
    Sprite ret = vyAlloc( vyrSprite );
    vyShapeInit( (Shape)ret );
    ret->shape = NULL;
-   vySet( (VyAny *)&ret->shape, (VyAny)shape );
+   vySet( (VyAny *)&ret->shape, shape );
    return ret;
 }
 
@@ -50,9 +52,23 @@ static float vySdlShapeWidth( Shape s ) {
    vyThrow("Unknown shape width");
 }
 
+static float vySdlShapeHeight( Shape s );
+
+static float vySdlTransformedCoord( Transformed td, bool height ) {
+   Shape sub = vySdl.transformeds.sub(td);
+   Transform t = vySdl.transformeds.transform(td);
+   float h = vySdlShapeHeight( sub );
+   float w = vySdlShapeWidth( sub );
+   float ret = height ? w*t->ry + h*t->sy : w*t->sx + h*t->rx;
+   return fabs( ret );
+}
+   
+
 static float vySdlShapeHeight( Shape s ) {
    VyRepr r = vyGetRepr( s );
-   if ( vySdl.Square == r )
+   if ( vySdl.Transformed == r )
+      return vySdlTransformedCoord( (Transformed)r, true );
+   else if ( vySdl.Square == r )
       return 1;
    else if ( vySdl.Circle == r )
       return 1;

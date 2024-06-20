@@ -4,5 +4,7 @@ interface vy.num.BinUint @20240117 {
 
    type U = Uint.U = Bits.D;
 
+   const &hex: BinUint;
+
 }
 

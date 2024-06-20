@@ -12,12 +12,17 @@ representation {
    Coord: native float;
    Font: refcount;
    Shape: public refcount;
-   Transform: refcount;
+   Transform: public refcount {
+      sx: Coord;
+      rx: Coord;
+      mx: Coord;
+      ry: Coord;
+      sy: Coord;
+      my: Coord;
+   }
    Square: inherit Shape;
    Circle: inherit Shape;
-   Caption: inherit Shape {
-      text: String;
-   }
+   Caption: custom;
    Transformed: inherit Shape {
       transform: Transform;
       sub: Shape;

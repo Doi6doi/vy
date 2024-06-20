@@ -129,6 +129,13 @@ VyPtr vyAlloc( VyRepr r ) {
    return ret;
 }
 
+VyPtr vyAllocClear( VyRepr r ) {
+   VyAny ret = REALLOC( NULL, r->size );
+   memset( ret, 0, r->size );
+   ret->repr = r;
+   return ret;
+}
+
 void vyRefInit( VyRefCount r ) {
    r->ref = 0;
 }
@@ -159,6 +166,7 @@ Vy vyInit() {
    vyInitCont( ctx );
    vyInitUtil( ctx );
    vyInitGeom( ctx );
+   vyInitGeom2( ctx );
    vyInitUi( ctx );
    vyLoadModule( ctx, "vysdl" );
    return ret;
@@ -337,9 +345,9 @@ VyRepr vyAddNative( VyContext ctx, VyCStr name, size_t size ) {
    return ret;
 }
 
-void vySetRef( VyAny * dest, VyAny val ) {
+void vySetRef( VyAny * dest, VyPtr val ) {
    VyRefCount old = *(VyRefCount *)dest;
-   if ( (VyAny)old == val )
+   if ( old == val )
       return;
    if ( NULL != old ) {
       if ( 0 >= -- old->ref )
@@ -350,11 +358,11 @@ void vySetRef( VyAny * dest, VyAny val ) {
       ++ ((VyRefCount)val)->ref;
 }
 
-void vySet( VyAny * dst, VyAny src ) {
+void vySet( VyAny * dst, VyPtr src ) {
    if ( *dst )   
       (*dst)->repr->set( dst, src );
    else if ( src )
-      src->repr->set( dst, src );
+      ((VyAny)src)->repr->set( dst, src );
 }
 
 void vyDumpRepr( VyRepr r ) {

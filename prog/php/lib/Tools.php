@@ -170,5 +170,10 @@ class Tools {
          get_class($e), basename( $e->getFile() ),
             $e->getLine(), $e->getMessage() );
    }
+
+   static function chdir( $dir ) {
+      if ( ! chdir( $dir ))
+         throw new EVy("Cannot change directory to $dir");
+   }
    
 }

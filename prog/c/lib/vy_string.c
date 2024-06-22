@@ -64,6 +64,10 @@ static wchar_t vyStringCharAt(String, unsigned) {
    vyThrow("stub StringCharAt");
 }
 
+wchar_t * vyStringPtr( String s ) {
+   return (wchar_t *)s->mem.data;
+}
+
 void vyInitString( VyContext ctx ) {
    VYSTRINGARGS( ctx, args );
    vyrString = vyRepr( "String", sizeof(struct String), vySetRef, destroyString);

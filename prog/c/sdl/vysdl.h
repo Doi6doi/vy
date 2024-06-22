@@ -9,6 +9,7 @@
 #include <vy_caption.h>
 #include <vy_sprite.h>
 #include <vy_transformed.h>
+#include <vy_vec.h>
 
 #define REALLOC( p, s ) realloc( p,s )
 
@@ -39,17 +40,19 @@ struct View {
 struct Group {
    View view;
    Vector items;
+   struct VyVec dirty;
 };
 
 typedef struct VySdlArea {
-   VyRefCount ref;
    float top, left, width, height;
 } * VySdlArea;
 
 extern char * dvs_mini_data;
 extern unsigned dvs_mini_len;
 
-extern VySdlArea vySdlArea( float top, float left, float width, float height );
+extern void vySdlSetArea( VySdlArea area, float top, float left, float width, float height );
+extern bool vySdlOverlaps( VySdlArea a, VySdlArea b, float percent );
+extern void vySdlJoin( VySdlArea a, VySdlArea other );
 
 extern VySdl vySdl;
 
@@ -66,9 +69,9 @@ extern void vySdlInitGroup( VyContext );
 extern void vySdlInitWindow( VyContext );
 extern void vySdlInitSprite( VyContext );
 
+extern struct VySdlArea vySdlViewArea( View );
 extern void vySdlInvalidate( View );
-extern void vySdlInvalidateGroup( Group, VySdlArea );
-extern VySdlArea vySdlViewArea( View );
+extern void vySdlInvalidateGroup( Group, struct VySdlArea );
 extern void vySdlRemove( Group g, View v );
 
 extern float vySdlFontHeight( Font );

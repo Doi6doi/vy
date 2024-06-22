@@ -65,3 +65,11 @@ void vyModuleInit( VyContext ctx ) {
    vySdlInitSprite( ctx );
 }
 
+void vySdlSetArea( VySdlArea a, float top, float left, float width, float height ) {
+   a->top = top;
+   a->left = left;
+   a->width = width;
+   a->height = height;
+}
+
+

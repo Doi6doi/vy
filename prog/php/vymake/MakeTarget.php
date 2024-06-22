@@ -5,6 +5,7 @@ namespace vy;
 /// egy make cél
 class MakeTarget 
    extends Block
+   implements Expr
 {
 	
    /// cél neve
@@ -36,5 +37,7 @@ class MakeTarget
 	  $this->name = $s->readIdent();
 	  parent::read( $s );
    }	
+
+   function __toString() { return "<".$this->name().">"; }
 
 }

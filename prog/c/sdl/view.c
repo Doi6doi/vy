@@ -11,24 +11,29 @@ VyRepr vyrView;
 extern VyRepr vyrSprite;
 
 void vySdlViewInit( View v ) {
+printf( "viewInit %p\n", v );
    vyRefInit( (VyRefCount)v );   
    v->group = NULL;
+printf( "viewInit2 %p %p\n", v, v->group );
    v->x = 0;
    v->y = 0;
 }
 
 void vySdlInvalidate( View v ) {
    if ( ! v->group ) return;
+printf("vySdlInvalidate %p %p\n", v, v->group );   
    vySdlInvalidateGroup( v->group, vySdlViewArea( v ));
 }
 
-VySdlArea vySdlViewArea( View v ) {
-   return vySdlArea( 
+struct VySdlArea vySdlViewArea( View v ) {
+   struct VySdlArea ret;
+   vySdlSetArea( & ret, 
       vySdlViewCoord( v, VC_LEFT ),
       vySdlViewCoord( v, VC_TOP ),
       vySdlViewCoord( v, VC_WIDTH ),
       vySdlViewCoord( v, VC_HEIGHT )
    );
+   return ret;
 }
 
 static void vySdlDestroyView( VyPtr ) {

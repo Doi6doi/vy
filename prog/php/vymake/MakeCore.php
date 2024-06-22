@@ -15,7 +15,7 @@ class MakeCore
 	  parent::__construct( $owner, self::CORE );
 	  $this->rules = [];
 	  $this->addFuncs(["echo","exec","exeExt","format","getEnv",
-	     "level","loadFile", "older","purge","replace",
+	     "level","loadFile","make","older","purge","replace",
         "saveFile", "setEnv", "system"]);
    }
 	  
@@ -75,11 +75,22 @@ class MakeCore
 			unlink( $x );
 	  }
    }
+
+   /// make futtatása másik könyvtárban
+   function make( $dir, $target = [] ) {
+      $this->owner->log( Make::INFO, "Changing directory -> $dir");
+      $save = getcwd();
+      Tools::chdir( $dir );
+      if ( ! is_array( $target ))
+         $target = [null,$target];
+      (new \VyMake())->run( $target );
+      Tools::chdir( $save );
+   }
    
    /// naplózási szint
    function level( $v ) {
       $this->owner->log( Make::INFO, "Log level: $v");
-	  $this->owner->setLevel( $v );
+      $this->owner->setLevel( $v );
    }
 
    /// string csere
@@ -128,8 +139,6 @@ class MakeCore
 		   return false;
       }
       $ft = $this->modified( $f );
-// $ret = ( ! $ft || $ft > $at ) ? "+" : "-";
-// Tools::debug("newerThan $at $f $ft $ret");
       return $ft && $ft > $at;
    }
    

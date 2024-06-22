@@ -39,8 +39,10 @@ make {
          $items := ["circle","filled",
             "random","square","transform","transformed",
             "shape","string","time","vector"];
-         $hitems := ["caption","color","font","group","key","sprite","view","window"];
-         $parts := ["implem","cont","core","geom","geom2","mem","sm","ui","util"];
+         $hitems := ["caption","color","font","group","key","sprite","view",
+            "window"];
+         $parts := ["implem","cont","core","geom","geom2","mem","sm","ui",
+            "util","vec"];
          case ( system() ) {
             "Windows": $parts += "windows";
             "Linux": $parts += "linux";

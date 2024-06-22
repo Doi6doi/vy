@@ -39,7 +39,6 @@ Font vySdlCaptionFont( Caption c ) {
 }
 
 void vySdlInitCaption( VyContext ctx ) {
-printf("initcaption\n");   
    VYCAPTIONARGS( ctx, args );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "Char", vyNative(ctx,"wchar_t") );

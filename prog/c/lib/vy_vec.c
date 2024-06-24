@@ -7,8 +7,6 @@ void vyVecInit( VyVec v, unsigned isize, unsigned step ) {
    v->isize = isize;
    v->step = step;
    v->count = 0;
-printf("vyVecInit %p %p\n", v, & v->mem );
-fflush( stdout );
 }   
    
 VyPtr vyVecGet( VyVec v, unsigned i ) {

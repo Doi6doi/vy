@@ -10,10 +10,8 @@ VyRepr vyrView;
 extern VyRepr vyrSprite;
 
 void vySdlViewInit( View v ) {
-printf( "viewInit %p\n", v );
    vyRefInit( (VyRefCount)v );   
    v->group = NULL;
-printf( "viewInit2 %p %p\n", v, v->group );
    v->x = 0;
    v->y = 0;
 }

@@ -26,8 +26,6 @@ void vySdlGroupInit( Group g ) {
    vySdlViewInit( (View)g );
    g->items = vySdl.vectors.createVector();
    vyVecInit( & g->dirty, sizeof( struct VySdlArea ), 8 );
-printf("groupinit %p %p\n", g, & g->dirty );
-fflush( stdout );
 }
 
 void vySdlDestroyGroup( VyPtr ) {
@@ -37,22 +35,17 @@ void vySdlDestroyGroup( VyPtr ) {
 void vySdlGroupAdd( Group g, View v ) {
    if ( ! v )
       return;
-printf( "groupadd %p\n", v );   
-printf( "groupadd %p\n", v->group );   
    if ( v->group == g )
       return;
    VectorFun * vectors = & vySdl.vectors;
    if ( v->group ) {
-// printf( "groupadd2 %p %p %p\n", g, v, v->group );   
       vySdlInvalidate( v );
       int i = vySdlFind( v->group->items, (VyAny)v );
       vectors->remove( v->group->items, i );
    }
    unsigned l = vectors->length( g->items );
-// printf( "groupadd3 %p %p %p\n", g, v, v->group );   
    vectors->insert( g->items, l, (VyAny)v );
    v->group = g;
-printf( "groupadd4 %p %p %p\n", g, v, v->group );   
    vySdlInvalidate( v );
 }
 
@@ -78,12 +71,8 @@ void vySdlInitGroup( VyContext ctx ) {
 void vySdlInvalidateGroup( Group g, VySdlArea a ) {
    float aa = vySdlAreaArea( a );
    struct VySdlArea u;
-printf( "dirty: %p\n", & g->dirty );
-fflush( stdout );
    for (int i=0; i < g->dirty.count; ++i) {
       VySdlArea di = (VySdlArea)vyVecGet( & g->dirty, i );
-vySdlAreaDump( di );
-vySdlAreaDump( a );
       vySdlUnion( di, a, & u );
       if ( vySdlAreaArea( & u ) <= aa + vySdlAreaArea( di )) {
          (*di) = u;

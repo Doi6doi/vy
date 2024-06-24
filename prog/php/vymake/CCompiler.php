@@ -41,6 +41,8 @@ abstract class CCompiler
    protected $libDir;
    /// használt könyvtárak
    protected $lib;
+   /// figyelmeztetések
+   protected $warn;
 
    function __construct() {
       $this->incDir = [];
@@ -56,6 +58,9 @@ abstract class CCompiler
 
    /// könyvtár mód 
    function setLibMode( $value ) { $this->libMode = $value; }
+   
+   /// könyvtár mód 
+   function setWarning( $value ) { $this->warn = $value; }
    
    /// debug mód
    function setDebug( $value ) { $this->debug = $value; }

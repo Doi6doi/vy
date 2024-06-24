@@ -112,6 +112,7 @@ class CItem {
            }
            $s->indent( false );
            $s->writel("};\n");
+           $s->writel("void vy%sInit( %s );\n", $r->str(), $r->str() );
         }
      }
      if ( $impl ) {

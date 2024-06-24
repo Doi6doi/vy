@@ -6,6 +6,7 @@
 #include "vy_cont.h"
 #include "vy_util.h"
 #include "vy_geom.h"
+#include "vy_geom2.h"
 #include "vy_ui.h"
 #include "vy_arch.h"
 
@@ -14,7 +15,6 @@
 #include <string.h>
 
 #define REALLOC(p,s) realloc( p, s)
-#define VYALLOC(t,r) (t *)vyAlloc( r )
 
 #define BUFSIZE 512
 
@@ -53,8 +53,8 @@ struct VyArgs {
    VyRepr repr;
    VyCStr intf;
    VyVer ver;
-   VySm types;
-   VySm funcs;
+   struct VySm types;
+   struct VySm funcs;
 };
 
 struct VyContext {
@@ -62,13 +62,13 @@ struct VyContext {
    Vy vy;
    int nimpls;
    VyArgs * impls;
-   VySm natvs;
+   struct VySm natvs;
 };
 
 struct Vy {
    VyRepr repr;
    VyContext context;
-   VySm modules;
+   struct VySm modules;
 };
 
 void vyDestroyContext( VyContext ctx ) {
@@ -76,7 +76,7 @@ void vyDestroyContext( VyContext ctx ) {
    vySmClear( &ctx->natvs );
 }
 
-void vyNoSet( VyAny * dest, VyAny val ) {
+void vyNoSet( VyAny * dest, VyPtr val ) {
    vyThrow( NOSET );
 }
 
@@ -86,12 +86,14 @@ void vyDestroyVy( Vy vy ) {
 }
 
 struct VyRepr vyrVy = {
+   .name = "Vy",
    .size = sizeof(struct Vy),
    .set = vyNoSet,
    .destr = (VyDestr)vyDestroyVy
 };
 
 struct VyRepr vyrContext = {
+   .name = "Context",
    .size = sizeof(struct VyContext),
    .set = vyNoSet,
    .destr = (VyDestr)vyDestroyContext
@@ -113,6 +115,7 @@ void vyDestroyArgs( VyArgs ia ) {
 }
 
 struct VyRepr vyrVyArgs = {
+   .name = "Args",
    .size = sizeof(struct VyArgs),
    .set = vyNoSet,
    .destr = (VyDestr)vyDestroyArgs
@@ -152,12 +155,16 @@ void vyFree( void * obj ) {
 }
 
 VyContext vyContextCreate( Vy vy ) {
-   VyContext ret = VYALLOC( struct VyContext, & vyrContext );
+   VyContext ret = vyAlloc( & vyrContext );
    ret->vy = vy;
+   ret->nimpls = 0;
+   ret->impls = NULL;
+   vySmInit( & ret->natvs );
+   return ret;
 }
 
 Vy vyInit() {
-   Vy ret = VYALLOC( struct Vy, & vyrVy );
+   Vy ret = vyAlloc( & vyrVy );
    if ( ! ret ) vyThrow( VYNOMEM );
    vySmInit( & ret->modules );
    VyContext ctx = ret->context = vyContextCreate( ret );
@@ -173,7 +180,7 @@ Vy vyInit() {
 }
 
 void vyLoadModule( VyContext ctx, VyCStr name ) {
-   VySm * mods = & ctx->vy->modules;
+   VySm mods = & ctx->vy->modules;
    if ( 0 <= vySmFind( mods, name ))
       return;
    void * mod = vyaLoadLibrary( name );
@@ -282,7 +289,7 @@ VyRepr vyArgsRepr( VyArgs ia, VyCStr type ) {
 VyArgs vyArgs( VyCStr intf, VyVer ver ) {
    if ( ! intf ) vyThrow( NOINTF );
    if ( ! ver ) vyThrow( NOVER );
-   VyArgs ret = VYALLOC( struct VyArgs, & vyrVyArgs );
+   VyArgs ret = vyAlloc( & vyrVyArgs );
    if ( ! ret ) vyThrow( VYNOMEM );
    ret->intf = intf;
    ret->ver = ver;

@@ -39,6 +39,7 @@ static void vySdlWindowRemove( Window, View ) {
 
 static float vySdlWindowCoord( Window, VyViewCoord ) {
    vyThrow("stub vySdlWindowCoord");
+   return 0;
 }
 
 static void vySdlWindowSetCoord( Window, VyViewCoord, float ) {

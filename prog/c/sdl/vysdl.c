@@ -65,11 +65,30 @@ void vyModuleInit( VyContext ctx ) {
    vySdlInitSprite( ctx );
 }
 
-void vySdlSetArea( VySdlArea a, float top, float left, float width, float height ) {
-   a->top = top;
-   a->left = left;
-   a->width = width;
-   a->height = height;
+static void vySdlUnionCoord( float am, float as, float bm, float bs,
+   float * rm, float *rs ) 
+{
+   float ar = am + as;
+   float br = bm + bs;
+   *rm = ( am < bm ? am : bm );
+   *rs = ( ar < br ? br : ar )-*rm;
 }
+
+void vySdlUnion( VySdlArea a, VySdlArea b, VySdlArea u ) {
+   vySdlUnionCoord( a->left, a->width, b->left, b->width, &u->left, &u->width );
+   vySdlUnionCoord( a->top, a->height, b->top, b->height, &u->top, &u->height );
+}
+
+float vySdlAreaArea( VySdlArea a ) {
+   return a->width * a->height;
+}
+
+void vySdlAreaDump( VySdlArea a ) {
+   printf( "[%.4g %.4g %.4g %.4g]\n", a->left, a->top, a->width, a->height );
+}
+
+
+
+
 
 

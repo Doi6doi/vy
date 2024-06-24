@@ -12,18 +12,18 @@ typedef struct VySm {
    unsigned count;
    VyCStr * strs;
    VyPtr * ptrs;
-} VySm;
+} * VySm;
 
 /// map inicializálás
-void vySmInit( VySm * map );
+void vySmInit( VySm map );
 
 /// map hozzadás
-unsigned vySmAdd( VySm * map, VyCStr str, VyPtr ptr );
+unsigned vySmAdd( VySm map, VyCStr str, VyPtr ptr );
 
 /// map keresés
-int vySmFind( VySm * map, VyCStr str );
+int vySmFind( VySm map, VyCStr str );
 
 /// map kiürítés
-void vySmClear( VySm * map );
+void vySmClear( VySm map );
 	
 #endif // VYSTRMAPH

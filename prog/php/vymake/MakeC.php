@@ -15,7 +15,7 @@ class MakeC extends MakeImport {
 	   $this->addFuncs( ["setCompiler","compile","depend",
 	      "libFile","link","loadDep","objExt",
          "setDebug","setIncDir","setLib","setLibDir",
-         "setLibMode","setShow", "sourceRes"] );
+         "setLibMode","setShow","setWarning","sourceRes"] );
    }
 
    /// fordítás
@@ -87,6 +87,11 @@ class MakeC extends MakeImport {
    /// include könyvtár beállítása
    function setShow( $x ) {
 	  return $this->compiler->setShow( $x );
+   }
+
+   /// warningok beállítása
+   function setWarning( $x ) {
+	  return $this->compiler->setWarning( $x );
    }
 
    /// fordító beállítása

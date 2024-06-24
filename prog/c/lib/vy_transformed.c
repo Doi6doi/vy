@@ -1,6 +1,7 @@
 #include <vy_implem.h>
 #include "vy_transformed.h"
 #include "vy_shape.h"
+#include "vy_shape.h"
 
 extern VyRepr vyrTransform;
 

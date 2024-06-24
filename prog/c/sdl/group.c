@@ -8,6 +8,8 @@
 
 VyRepr vyrGroup;
 
+#define AREA( a ) ((a)->width * (a)->height)
+
 extern VyRepr vyrView;
 
 static int vySdlFind( Vector v, VyAny a ) {
@@ -35,10 +37,11 @@ void vySdlDestroyGroup( VyPtr ) {
 void vySdlGroupAdd( Group g, View v ) {
    if ( ! v )
       return;
+printf( "groupadd %p\n", v );   
+printf( "groupadd %p\n", v->group );   
    if ( v->group == g )
       return;
    VectorFun * vectors = & vySdl.vectors;
-printf( "groupadd %p %p %p\n", g, v, v->group );   
    if ( v->group ) {
 // printf( "groupadd2 %p %p %p\n", g, v, v->group );   
       vySdlInvalidate( v );
@@ -72,23 +75,21 @@ void vySdlInitGroup( VyContext ctx ) {
    vyAddImplem( ctx, args );
 }
 
-void vySdlInvalidateGroup( Group g, struct VySdlArea a ) {
-   struct VySdlArea aa = a;
-printf("invalGroup %p %p\n", g, &a );
+void vySdlInvalidateGroup( Group g, VySdlArea a ) {
+   float aa = vySdlAreaArea( a );
+   struct VySdlArea u;
+printf( "dirty: %p\n", & g->dirty );
 fflush( stdout );
    for (int i=0; i < g->dirty.count; ++i) {
-printf("i: %d\n", i );
-fflush( stdout );
       VySdlArea di = (VySdlArea)vyVecGet( & g->dirty, i );
-printf("di: %p %p\n", di, &aa );
-fflush( stdout );
-      if ( vySdlOverlaps( di, & aa, 1 )) {
-         vySdlJoin( di, &a );
+vySdlAreaDump( di );
+vySdlAreaDump( a );
+      vySdlUnion( di, a, & u );
+      if ( vySdlAreaArea( & u ) <= aa + vySdlAreaArea( di )) {
+         (*di) = u;
          return;
       }
    }
-printf("add\n" );
-fflush( stdout );
-   vyVecAdd( & g->dirty, &a );
+   vyVecAdd( & g->dirty, a );
 }
 

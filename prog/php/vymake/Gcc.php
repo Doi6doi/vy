@@ -12,14 +12,15 @@ class Gcc extends CCompiler {
    }
    
    function link( $dst, $src ) {
-      $this->run( "%s -o %s %s %s %s", $this->modeLinkArg(), $this->esc($dst), 
-         $this->esc($src), $this->libDirArg(), $this->libArg() );
+      $this->run( "%s -o %s %s %s %s", $this->modeLinkArg(), 
+         $this->esc($dst), $this->esc($src), $this->libDirArg(), 
+         $this->libArg() );
    }
  
    function compile( $dst, $src ) {
-      $this->run( "%s %s -c %s -o %s %s", $this->debugArg(),
-         $this->modeCompArg(), $this->incDirArg(), $this->esc($dst), 
-         $this->esc($src)
+      $this->run( "%s %s %s -c %s -o %s %s", $this->warnArg(), 
+         $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 
+         $this->esc($dst), $this->esc($src)
       );
    }
    
@@ -31,6 +32,11 @@ class Gcc extends CCompiler {
    /// debug argumentum
    function debugArg() {
       return $this->debug ? "-g": "";
+   }
+   
+   /// warning argumentum
+   function warnArg() {
+      return $this->warn ? "-Wall": "";
    }
    
    /// mód argumentum fordításnál

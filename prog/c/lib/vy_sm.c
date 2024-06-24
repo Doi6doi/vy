@@ -5,13 +5,13 @@
 
 #define NOSTR "Missing string for map"
 
-void vySmInit( VySm * map ) {
+void vySmInit( VySm map ) {
    map->count = 0;
    map->strs = NULL;
    map->ptrs = NULL;
 }
 
-unsigned vySmAdd( VySm * map, VyCStr str, VyPtr ptr ) {
+unsigned vySmAdd( VySm map, VyCStr str, VyPtr ptr ) {
    if ( ! str )
       vyThrow( NOSTR ); 
    unsigned n = map->count+1;
@@ -27,13 +27,13 @@ unsigned vySmAdd( VySm * map, VyCStr str, VyPtr ptr ) {
    return n-1;
 }
 
-void vySmClear( VySm * map ) {
+void vySmClear( VySm map ) {
    map->strs = REALLOC( map->strs, 0 );
    map->ptrs = REALLOC( map->ptrs, 0 );
    map->count = 0;
 }
 
-int vySmFind( VySm * map, VyCStr str ) {
+int vySmFind( VySm map, VyCStr str ) {
    if ( ! str ) return VY_NOTFOUND;
    for (int i=0; i<map->count; ++i) {
       if ( 0 == strcmp( str, map->strs[i] ))

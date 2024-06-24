@@ -46,6 +46,7 @@ make {
          $prg := "pong"+exeExt();
          C.setShow(true);
          C.setDebug(true);
+         C.setWarning(true);
          C.setIncDir(["../lib"]);
          C.setLibDir(["../lib","../sdl"]);
          C.setLib(["m","vy","vysdl","SDL2"]);

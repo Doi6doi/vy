@@ -169,7 +169,6 @@ void initBall() {
 void initPad( Side side ) {
    Pad * p = pong.pads + side;
    Square s = squares.constSquare();
-   VyColor c = sideColor( side );
    Filled fc = filleds.createFilled( (Shape)s, sideColor( side ) );
    Transformed td = transformeds.createTransformed( (Shape)fc );
    Transform t = transformeds.transform( td );

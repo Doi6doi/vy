@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 
-
 VyRepr vyrView;
 
 extern VyRepr vyrSprite;
@@ -21,19 +20,16 @@ printf( "viewInit2 %p %p\n", v, v->group );
 
 void vySdlInvalidate( View v ) {
    if ( ! v->group ) return;
-printf("vySdlInvalidate %p %p\n", v, v->group );   
-   vySdlInvalidateGroup( v->group, vySdlViewArea( v ));
+   struct VySdlArea a;
+   vySdlViewArea( v, &a );
+   vySdlInvalidateGroup( v->group, &a );
 }
 
-struct VySdlArea vySdlViewArea( View v ) {
-   struct VySdlArea ret;
-   vySdlSetArea( & ret, 
-      vySdlViewCoord( v, VC_LEFT ),
-      vySdlViewCoord( v, VC_TOP ),
-      vySdlViewCoord( v, VC_WIDTH ),
-      vySdlViewCoord( v, VC_HEIGHT )
-   );
-   return ret;
+void vySdlViewArea( View v, VySdlArea ret ) {
+   ret->left = vySdlViewCoord( v, VC_LEFT );
+   ret->top = vySdlViewCoord( v, VC_TOP );
+   ret->width = vySdlViewCoord( v, VC_WIDTH );
+   ret->height = vySdlViewCoord( v, VC_HEIGHT );
 }
 
 static void vySdlDestroyView( VyPtr ) {
@@ -44,6 +40,7 @@ float vySdlViewCoord( View v, VyViewCoord c ) {
    if ( vyGetRepr( v ) == vyrSprite )
       return vySdlSpriteCoord( (Sprite)v, c );
    vyThrow( "Unknown view coord" );
+   return 0;
 }
 
 void vySdlViewSetCoord( View, VyViewCoord, float ) {

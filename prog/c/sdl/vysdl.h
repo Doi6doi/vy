@@ -50,9 +50,9 @@ typedef struct VySdlArea {
 extern char * dvs_mini_data;
 extern unsigned dvs_mini_len;
 
-extern void vySdlSetArea( VySdlArea area, float top, float left, float width, float height );
-extern bool vySdlOverlaps( VySdlArea a, VySdlArea b, float percent );
-extern void vySdlJoin( VySdlArea a, VySdlArea other );
+extern void vySdlUnion( VySdlArea a, VySdlArea b, VySdlArea u );
+extern float vySdlAreaArea( VySdlArea );
+extern void vySdlAreaDump( VySdlArea );
 
 extern VySdl vySdl;
 
@@ -69,9 +69,8 @@ extern void vySdlInitGroup( VyContext );
 extern void vySdlInitWindow( VyContext );
 extern void vySdlInitSprite( VyContext );
 
-extern struct VySdlArea vySdlViewArea( View );
 extern void vySdlInvalidate( View );
-extern void vySdlInvalidateGroup( Group, struct VySdlArea );
+extern void vySdlInvalidateGroup( Group, VySdlArea );
 extern void vySdlRemove( Group g, View v );
 
 extern float vySdlFontHeight( Font );
@@ -84,6 +83,7 @@ extern void vySdlGroupInit( Group );
 extern void vySdlGroupAdd( Group, View );
 
 extern void vySdlViewInit( View );
+extern void vySdlViewArea( View, VySdlArea );
 extern float vySdlViewCoord( View, VyViewCoord );
 extern void vySdlViewSetCoord( View, VyViewCoord, float );
 

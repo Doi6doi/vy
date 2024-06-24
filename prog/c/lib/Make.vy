@@ -71,7 +71,7 @@ make {
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( "Repr.vy" );
-//         C.setShow(true);
+         C.setShow(true);
          C.setDebug( true );
          C.setLibMode( true );
          C.setIncDir(".");

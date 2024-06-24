@@ -4,18 +4,22 @@
 
 static VyKey vyKeyConstUtf(VyCStr, VySize ) {
    vyThrow("stub KeyConstUtf");
+   return 0;
 }
 
 static bool vyKeyPressed(VyKey ) {
    vyThrow("stub KeyPressed");
+   return false;
 }
 
 static bool vyKeyEqual(VyKey, VyKey ) {
    vyThrow("stub KeyEqual");
+   return false;
 }
 
 static bool vyKeyNoteq(VyKey, VyKey ) {
    vyThrow("stub KeyNoteq");
+   return false;
 }
 
 void vySdlInitKey( VyContext ctx ) {

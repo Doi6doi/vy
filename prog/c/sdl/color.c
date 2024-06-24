@@ -20,6 +20,7 @@ static VyColor vySdlColorConstHex( VyCStr s, VySize l ) {
       default:
          vyThrow( UNCOL );
    }
+   return 0;
 }
 
 void vySdlInitColor( VyContext ctx ) {

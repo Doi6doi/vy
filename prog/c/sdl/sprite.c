@@ -2,6 +2,7 @@
 #include "vysdl.h"
 #include <vy_geom.h>
 #include <vy_ui.h>
+#include <vy_shape.h>
 #include <vy_sprite.h>
 #include <vy_view.h>
 #include <vy_caption.h>
@@ -28,7 +29,7 @@ void vyDestroySprite( VyPtr ) {
 
 static Sprite vySdlSpriteCreateSprite( Shape shape ) {
    Sprite ret = vyAlloc( vyrSprite );
-   vyShapeInit( (Shape)ret );
+   vySdlViewInit( (View)ret );
    ret->shape = NULL;
    vySet( (VyAny *)&ret->shape, shape );
    return ret;
@@ -75,6 +76,7 @@ static float vySdlShapeDim( Shape s, bool height ) {
       return vySdlShapeDim( vySdl.filleds.shape( (Filled)s ), height );
    vyDumpRepr( r );
    vyThrow("Unknown shape dim");
+   return 0;
 }
 
 float vySdlSpriteCoord( Sprite s, VyViewCoord c ) {
@@ -101,6 +103,7 @@ float vySdlSpriteCoord( Sprite s, VyViewCoord c ) {
       default:
          vyThrow("Unknown coordinate");
    }
+   return 0;
 }      
 
 static void vySdlSpriteSetCoord( Sprite, VyViewCoord, float ) {

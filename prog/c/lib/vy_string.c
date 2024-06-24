@@ -21,10 +21,11 @@ static String vyStringConstAscii(VyCStr data, VySize len ) {
       len = strlen( data ) ;
    String ret = vyAlloc( vyrString );
    vyRefInit( (VyRefCount)ret );
-   vyMemInit( & ret->mem, len * CHS );
+   vyMemInit( & ret->mem, (len+1) * CHS );
    wchar_t * dest = (wchar_t *) ret->mem.data;
    for ( unsigned i=0; i<len; ++i )
       (*(dest++)) = (wchar_t)data[i];
+   *dest = 0;
    return ret;
 }
 

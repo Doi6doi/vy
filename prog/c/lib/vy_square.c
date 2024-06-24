@@ -9,6 +9,8 @@ struct Square {
 
 VyRepr vyrSquare;
 
+Square vycSquare = NULL;
+
 extern VyRepr vyrShape;
 
 void vyDestroySquare( VyPtr ) {
@@ -16,7 +18,12 @@ void vyDestroySquare( VyPtr ) {
 }
 
 static Square vySquareConstSquare(  ) {
-   vyThrow("stub vySquareConstSquare");
+   if ( ! vycSquare ) {
+      Square ret = vyAlloc( vyrSquare );
+      vyShapeInit( (Shape)ret );
+      vySet( (VyAny *) & vycSquare, ret );
+   }
+   return vycSquare;
 }
 
 void vyInitSquare( VyContext ctx ) {

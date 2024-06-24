@@ -56,6 +56,7 @@ make {
          C.setShow(true);
          C.setDebug(true);
          C.setLibMode(true);
+         C.setWarning(true);
          C.setLib(["SDL2","SDL2_ttf"]);
          C.setIncDir([".","../lib"]);
       }

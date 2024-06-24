@@ -8,8 +8,4 @@ typedef uint32_t VyColor;
 
 void vyInitGeom( VyContext );
 
-typedef struct Shape * Shape;
-
-void vyShapeInit( Shape );
-
 #endif // VY_GEOMH

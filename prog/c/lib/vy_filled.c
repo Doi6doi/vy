@@ -21,7 +21,7 @@ void vyDestroyFilled( VyPtr ) {
 
 static Filled vyFilledCreateFilled( Shape sub, VyColor color) {
    Filled ret = vyAllocClear( vyrFilled );
-   vyShapeInit( ret );
+   vyShapeInit( (Shape)ret );
    vySet( (VyAny *)&ret->sub, sub );
    ret->color = color;
    return ret;

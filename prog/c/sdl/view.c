@@ -9,7 +9,7 @@ VyRepr vyrView;
 extern VyRepr vyrSprite;
 
 void vySdlViewInit( View v ) {
-   vyRefInit( (VyRefCount)v );   
+   vyRefInit( (VyRefCount)v );
    v->group = NULL;
    v->x = 0;
    v->y = 0;

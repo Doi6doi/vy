@@ -375,6 +375,10 @@ VyRepr vyGetRepr( void * o ) {
    return ((VyAny)o)->repr;
 }
 
+void vyDestroyCustom( VyPtr p ) {
+   REALLOC( p, 0 );
+}
+
 
 
 

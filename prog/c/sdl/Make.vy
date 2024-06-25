@@ -34,7 +34,7 @@ make {
    function {
       init() {
          $lib := C.libFile( "vysdl" );
-         $items := ["caption","color","event","keyevent",
+         $items := ["caption","color","event","eventqueue","keyevent",
             "font","group","key","sprite","view","window"];
          $parts := ["vysdl"];
          $vyroot := "../../..";
@@ -57,7 +57,7 @@ make {
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( ["../lib/Repr.vy", "Repr.vy"] );
-         C.setShow(true);
+//         C.setShow(true);
          C.setDebug(true);
          C.setLibMode(true);
          C.setWarning(true);

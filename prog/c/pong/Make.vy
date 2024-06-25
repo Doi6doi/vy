@@ -44,7 +44,7 @@ make {
          $src := "pong.c";
          $obj := "pong"+C.objExt();
          $prg := "pong"+exeExt();
-         C.setShow(true);
+//         C.setShow(true);
          C.setDebug(true);
          C.setWarning(true);
          C.setIncDir(["../lib"]);

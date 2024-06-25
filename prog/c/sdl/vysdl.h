@@ -4,6 +4,7 @@
 #include <vy.h>
 #include <SDL2/SDL_events.h>
 #include <vy_vector.h>
+#include <vy_event.h>
 #include <vy_filled.h>
 #include <vy_caption.h>
 #include <vy_view.h>
@@ -79,6 +80,8 @@ extern void vySdlInitSprite( VyContext );
 extern void vySdlInvalidate( View );
 extern void vySdlInvalidateGroup( Group, VySdlArea );
 extern void vySdlRemove( Group g, View v );
+
+extern VyEventKind vySdlEventKind( Event );
 
 extern float vySdlFontHeight( Font );
 extern float vySdlFontWidth( Font, String );

@@ -58,6 +58,7 @@ void vyModuleInit( VyContext ctx ) {
    vySdlInitCaption( ctx );
    vySdlInitKey( ctx );
    vySdlInitEvent( ctx );
+   vySdlInitEventQueue( ctx );
    vySdlInitKeyEvent( ctx );
    vySdlInitView( ctx );
    vySdlInitGroup( ctx );

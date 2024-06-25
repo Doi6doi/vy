@@ -41,12 +41,12 @@ make {
          $vys := [
             [ "caption", "vy.geom2", "Caption", 20240301, "Caption=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
-            [ "event", "vy.ui","Event", 20240301, "" ],
+            [ "event", "vy.ui","Event", 20240301, "Event=*" ],
             [ "eventqueue", "vy.ui","EventQueue", 20240301, "" ],
             [ "font", "vy.geom2", "Font", 20240301, "Font=*" ],
             [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
-            [ "keyevent", "vy.ui", "KeyEvent", 20240301, "" ],
+            [ "keyevent", "vy.ui", "KeyEvent", 20240301, "KeyEvent=*" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
             [ "view", "vy.ui", "View", 20240301, "View=*" ],
             [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]

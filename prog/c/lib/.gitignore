@@ -4,6 +4,9 @@ Makefile
 libvy.geany
 megsem
 vy_caption.h
+vy_event.h
+vy_eventqueue.h
+vy_keyevent.h
 vy_rect.h
 vy_view.h
 vy_window.h

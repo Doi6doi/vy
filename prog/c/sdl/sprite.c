@@ -21,8 +21,8 @@ VyRepr vyrSprite;
 
 extern VyRepr vyrView;
 
-void vyDestroySprite( VyPtr ) {
-   vyThrow("stub vyDestroySprite");
+void vySdlDestroySprite( VyPtr ) {
+   vyThrow("stub vySdlDestroySprite");
 }
 
 static Sprite vySdlSpriteCreateSprite( Shape shape ) {
@@ -102,10 +102,29 @@ float vySdlSpriteCoord( Sprite s, VyViewCoord c ) {
          vyThrow("Unknown coordinate");
    }
    return 0;
-}      
+}
 
-static void vySdlSpriteSetCoord( Sprite, VyViewCoord, float ) {
-   vyThrow("stub vySpriteSetCoord");
+static void vySdlSpriteSetCoord( Sprite s, VyViewCoord c, float v ) {
+   float f;
+   switch ( c ) {
+      case VC_CENTERX: case VC_CENTERY: break;
+      case VC_LEFT: case VC_RIGHT:
+         f = vySdlShapeDim( s->shape, false );
+      break;
+      case VC_TOP: case VC_BOTTOM:
+         f = vySdlShapeDim( s->shape, false );
+      break;
+      default:
+         vyThrow("Unknown coordinate");
+   }
+   switch ( c ) {
+      case VC_CENTERX: s->view.x = v; break;
+      case VC_LEFT: s->view.x = v - f/2; break;
+      case VC_RIGHT: s->view.x = v + f/2; break;
+      case VC_CENTERY: s->view.y = v; break;
+      case VC_TOP: s->view.y = v - f/2; break;
+      case VC_BOTTOM: s->view.y = v + f/2; break;
+   }
 }
 
 void vySdlInitSprite( VyContext ctx ) {
@@ -113,7 +132,7 @@ void vySdlInitSprite( VyContext ctx ) {
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );
    vyArgsType( args, "Coord", vyNative(ctx,"float") );
    vyArgsType( args, "ViewCoord", vyNative(ctx,"VyViewCoord") );
-   vyrSprite = vyRepr( "Sprite", sizeof(struct Sprite), vySetRef, vyDestroySprite);
+   vyrSprite = vyRepr( "Sprite", sizeof(struct Sprite), vySetRef, vySdlDestroySprite);
    vyArgsType( args, "Shape", vyrShape );
    vyArgsType( args, "Sprite", vyrSprite );
    vyArgsImpl( args, "createSprite", vySdlSpriteCreateSprite );

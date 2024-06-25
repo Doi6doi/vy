@@ -1,27 +1,26 @@
 #include <vy.h>
-#include <vy_geom.h>
-#include <vy_util.h>
-#include <vy_ui.h>
 
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include <vy_implem.h>
 
-#include "vy_string.h"
-#include "vy_key.h"
-#include "vy_time.h"
-#include "vy_random.h"
-#include "vy_square.h"
-#include "vy_transform.h"
-#include "vy_transformed.h"
-#include "vy_window.h"
-#include "vy_font.h"
-#include "vy_sprite.h"
-#include "vy_color.h"
-#include "vy_circle.h"
-#include "vy_caption.h"
-#include "vy_filled.h"
+#include <vy_string.h>
+#include <vy_event.h>
+#include <vy_eventqueue.h>
+#include <vy_key.h>
+#include <vy_keyevent.h>
+#include <vy_time.h>
+#include <vy_random.h>
+#include <vy_square.h>
+#include <vy_transform.h>
+#include <vy_transformed.h>
+#include <vy_window.h>
+#include <vy_font.h>
+#include <vy_sprite.h>
+#include <vy_color.h>
+#include <vy_circle.h>
+#include <vy_caption.h>
+#include <vy_filled.h>
 
 #include <math.h>
 
@@ -35,11 +34,11 @@
 #define SCORETOP 0.05
 #define SCORESIDE 0.1
 #define SCORESIZE 0.2
-#define LEFTUP "W"
-#define LEFTDOWN "S"
+#define LEFTUP "w"
+#define LEFTDOWN "s"
 #define LEFTCOLOR "\x00\xff\x00"
-#define RIGHTUP "Up"
-#define RIGHTDOWN "Down"
+#define RIGHTUP "up"
+#define RIGHTDOWN "down"
 #define RIGHTCOLOR "\x00\x00\xff"
 
 #define PONGKEY( x ) keys.constUtf( x, VY_LEN )
@@ -48,6 +47,9 @@ Vy vy;
 // implementációk
 StringFun strings;
 KeyFun keys;
+EventFun events;
+EventQueueFun eventQueues;
+KeyEventFun keyEvents;
 TimeFun times;
 RandomFun randoms;
 FontFun fonts;
@@ -79,6 +81,7 @@ typedef struct Ball {
 typedef struct Pad {
    Sprite sprite;
    int score;
+   int dir;
    VyKey up;
    VyKey down;
 } Pad;
@@ -117,6 +120,9 @@ void initVy() {
    vy = vyInit();
    VyContext ctx = vyContext( vy );
    VYIMPORTSTRING( ctx, strings );
+   VYIMPORTEVENT( ctx, events );
+   VYIMPORTEVENTQUEUE( ctx, eventQueues );
+   VYIMPORTKEYEVENT( ctx, keyEvents );
    VYIMPORTFONT( ctx, fonts );
    VYIMPORTKEY( ctx, keys );
    VYIMPORTTIME( ctx, times );
@@ -277,13 +283,15 @@ void moveBall( ) {
 void movePad( Side side ) {
    Pad * p = pong.pads+side;
    float py = sprites.coord( p->sprite, VC_CENTERY );
-   if ( keys.pressed( p->up ) ) {
-      py -= pong.padSpeed;
-      if ( py < -1 ) py = -1;
-   }
-   if ( keys.pressed( p->down ) ) {
-      py += pong.padSpeed;
-      if ( 1 < py ) py = 1;
+   switch ( p->dir ) {
+      case -1:
+         py -= pong.padSpeed;
+         if ( py < -1 ) py = -1;
+      break;
+      case 1:
+         py += pong.padSpeed;
+         if ( 1 < py ) py = 1;
+      break;
    }
    sprites.setCoord( p->sprite, VC_CENTERY, py );
 }
@@ -295,8 +303,42 @@ void tick() {
    pong.last = next;
 }
 
+/// billentyű esemény hattatás egy oldalra
+void handleKeySide( Side side, VyKeyEventKind ek, VyKey k ) {
+   Pad * p = pong.pads+side;
+   if ( p->up == k ) {
+      if ( VKK_DOWN == ek )
+         p->dir = -1;
+      else if ( VKK_UP == ek && -1 == p->dir )
+         p->dir = 0;
+   } else if ( p->down == k ) {
+      if ( VKK_DOWN == ek )
+         p->dir = 1;
+      else if ( VKK_UP == ek && 1 == p->dir )
+         p->dir = 0;
+   }
+}
+
+/// billentyű esemény feldolgozás
+void handleKey( KeyEvent e ) {
+   VyKeyEventKind ek = keyEvents.keyKind( e );
+   VyKey k = keyEvents.key( e );
+   handleKeySide( LEFT, ek, k );
+   handleKeySide( RIGHT, ek, k );
+}
+
+/// esemény feldolgozás
+void handleEvents() {
+   while ( ! eventQueues.empty() ) {
+      Event e = eventQueues.poll();
+      if ( VE_KEY == events.kind( e ) )
+         handleKey( (KeyEvent)e );
+   }
+}
+
 /// lépés
 void step() {
+   handleEvents();
    movePad( LEFT );
    movePad( RIGHT );
    moveBall();

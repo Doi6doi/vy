@@ -3,7 +3,7 @@
 
 #include "vy.h"
 #include "vy_implem.h"
-#include "vy_util.h"
+#include "vy_time.h"
 
 /// dynamic library
 void * vyaLoadLibrary( VyCStr name );

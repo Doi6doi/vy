@@ -1,17 +1,30 @@
 representation {
 
+   Any: native VyAny;
    Bool: native bool;
-   Unsigned: native unsigned;
-   Index: native unsigned;
+   Caption: custom;
    Char: native wchar_t;
-   String: refcount;
-   Key: native VyKey;
-   Float: native float;
-   Stamp: native VyStamp;
+   Circle: inherit Shape;
    Color: native VyColor;
    Coord: native float;
+   Event: custom;
+   EventKind: native VyEventKind;
+   Filled: inherit Shape {
+      color: Color;
+      sub: Shape;
+   }
+   Float: native float;
    Font: refcount;
+   Group: custom;
+   Index: native unsigned;
+   Key: native VyKey;
+   KeyEvent: custom;
+   KeyEventKind: native VyKeyEventKind;
    Shape: public refcount;
+   Sprite: custom;
+   Stamp: native VyStamp;
+   String: refcount;
+   Square: inherit Shape;
    Transform: public refcount {
       sx: Coord;
       rx: Coord;
@@ -20,25 +33,14 @@ representation {
       sy: Coord;
       my: Coord;
    }
-   Square: inherit Shape;
-   Circle: inherit Shape;
-   Caption: custom;
    Transformed: inherit Shape {
       transform: Transform;
       sub: Shape;
    }
-   Filled: inherit Shape {
-      color: Color;
-      sub: Shape;
-   }
-
-   ViewCoord: native VyViewCoord;
-   View: custom;
-   Sprite: custom;
-   Group: custom;
-   Window: custom;
-
+   Unsigned: native unsigned;
    Vector: refcount;
-   Any: native VyAny;
+   View: custom;
+   ViewCoord: native VyViewCoord;
+   Window: custom;
    
 }

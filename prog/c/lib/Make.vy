@@ -39,8 +39,8 @@ make {
          $items := ["circle","filled",
             "random","square","transform","transformed",
             "shape","string","time","vector"];
-         $hitems := ["caption","color","font","group","key","sprite","view",
-            "window"];
+         $hitems := ["caption","color","event","eventqueue",
+            "font","group","key","keyevent", "sprite","view","window"];
          $parts := ["implem","cont","core","geom","geom2","mem","sm","ui",
             "util","vec"];
          case ( system() ) {
@@ -52,10 +52,13 @@ make {
             [ "caption", "vy.geom2", "Caption", 20240301, "Caption=*" ],
             [ "circle", "vy.geom2", "Circle", 20240301, "Circle=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
+            [ "event", "vy.ui", "Event", 20240301, "" ],
+            [ "eventqueue", "vy.ui", "EventQueue", 20240301, "" ],
             [ "font", "vy.geom2", "Font", 20240301, "Font=*" ],
             [ "filled", "vy.geom", "Filled", 20240301, "Filled=*;Sub=Shape;Brush=Color" ],
             [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
+            [ "keyevent", "vy.ui", "KeyEvent", 20240301, "" ],
             [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
             [ "square", "vy.geom2", "Square", 20240301, "Square=*" ],
             [ "shape", "vy.geom", "Shape", 20240301, "Shape=*" ],
@@ -72,6 +75,7 @@ make {
          Comp.setRepo( $vyroot );
          Comp.setReprs( "Repr.vy" );
          C.setShow(true);
+         C.setWarning(true);
          C.setDebug( true );
          C.setLibMode( true );
          C.setIncDir(".");
@@ -132,8 +136,30 @@ make {
          Comp.setMap( v[4] );
          Comp.setForce( true );
          Comp.compile( src, df );
-         if ( "string" = v[0] )
-            insertFile( df, "wchar_t * vyStringPtr( String );" );
+         case ( v[0] ) {
+            "color": addHead( df, "#include <stdint.h>\n\ntypedef uint32_t VyColor;" );
+            "event": addHead( df, "typedef enum VyEventKind {\n"
+               +"   VE_NONE, VE_KEY, VE_MOUSE\n"
+               +"} VyEventKind;" );
+            "filled": addHead( df, "#include \"vy_color.h\"" );
+            "key": addHead( df, "#include <stdint.h>\n\n"
+               +"typedef uint32_t VyKey;" 
+            );
+            "keyevent": addHead( df, "#include \"vy_key.h\"\n"
+               +"#include \"vy_event.h\"\n\n"
+               +"typedef enum VyKeyEventKind {\n"
+               +"   VKK_NONE, VKK_DOWN, VKK_UP, VKK_PRESS\n"
+               +"} VyKeyEventKind;" 
+            );
+            "string": addTail( df, "wchar_t * vyStringPtr( String );" );
+            "time": addHead( df, "typedef double VyStamp;" );
+            "view": addHead( df, "typedef enum VyViewCoord {\n"
+               +"   VC_NONE, VC_LEFT, VC_TOP, VC_WIDTH, VC_HEIGHT,\n"
+               +"   VC_RIGHT, VC_BOTTOM, VC_CENTERX, VC_CENTERY\n"
+               +"} VyViewCoord;"
+            );
+            "window": addHead( df, "#include \"vy_view.h\"" );
+         }
       }
 
       /// .c fájl generálása
@@ -166,12 +192,20 @@ make {
          throw "Unkown item: "+x;
       }
       
-      /// fájlba beszúrás
-      insertFile( f, line ) {
+      /// fájlba beszúrás előre
+      addHead( f, r ) {
          s := loadFile( f );
-         s := replace( s, "#endif", line+"\n\n#endif" );
+         s := replace( s, "#include <vy.h>", "#include <vy.h>\n\n"+r );
          saveFile( f, s );
       }
+
+      /// fájlba beszúrás hátra
+      addTail( f, r ) {
+         s := loadFile( f );
+         s := replace( s, "#endif", r+"\n\n#endif" );
+         saveFile( f, s );
+      }
+      
    } 
 
 }

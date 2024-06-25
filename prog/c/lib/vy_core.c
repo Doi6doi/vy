@@ -1,7 +1,5 @@
-#include "vy_core.h"
 #include "vy_implem.h"
 #include "vy_string.h"
-#include "vy_util.h"
 #include "vy_time.h"
 
 void vyInitCore( VyContext ctx ) {

@@ -17,7 +17,7 @@ void vyDestroySquare( VyPtr ) {
    vyThrow("stub vyDestroySquare");
 }
 
-static Square vySquareConstSquare(  ) {
+static Square vySquareConstSquare() {
    if ( ! vycSquare ) {
       Square ret = vyAlloc( vyrSquare );
       vyShapeInit( (Shape)ret );

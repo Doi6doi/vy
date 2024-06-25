@@ -9,15 +9,23 @@ struct Circle {
 
 VyRepr vyrCircle;
 
+Circle vycCircle = NULL;
+
 extern VyRepr vyrShape;
 
 void vyDestroyCircle( VyPtr ) {
    vyThrow("stub vyDestroyCircle");
 }
 
-static Circle vyCircleConstCircle(  ) {
-   vyThrow("stub vyCircleConstCircle");
+static Circle vyCircleConstCircle() {
+   if ( ! vycCircle ) {
+      Circle ret = vyAlloc( vyrCircle );
+      vyShapeInit( (Shape)ret );
+      vySet( (VyAny *) & vycCircle, ret );
+   }
+   return vycCircle;
 }
+
 
 void vyInitCircle( VyContext ctx ) {
    VYCIRCLEARGS( ctx, args );

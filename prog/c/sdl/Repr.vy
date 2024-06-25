@@ -4,6 +4,8 @@ representation {
       text: String;
       font: Font;
    }
+   Event: public refcount;
+   KeyEvent: inherit Event;
    Font: refcount;
    View: public refcount {
       group: Group;

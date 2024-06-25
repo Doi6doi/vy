@@ -8,8 +8,4 @@ interface vy.ui.Key @20240301 {
    
    const &utf: Key;
 
-   function {
-      pressed( Key ): Bool;
-   }
-
 }

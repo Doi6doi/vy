@@ -1,5 +1,4 @@
 #include <vy_implem.h>
-#include "vy_util.h"
 #include "vy_time.h"
 #include "vy_arch.h"
 

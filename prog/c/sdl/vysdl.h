@@ -2,16 +2,16 @@
 #define VYSDLH
 
 #include <vy.h>
-#include <vy_ui.h>
-#include <vy_geom.h>
+#include <SDL2/SDL_events.h>
 #include <vy_vector.h>
 #include <vy_filled.h>
 #include <vy_caption.h>
+#include <vy_view.h>
 #include <vy_sprite.h>
 #include <vy_transformed.h>
 #include <vy_vec.h>
 
-#define REALLOC( p, s ) realloc( p,s )
+#define VYSDLBUFSIZE 4096
 
 typedef struct VySdl {
    int width;
@@ -43,9 +43,16 @@ struct Group {
    struct VyVec dirty;
 };
 
+struct Event {
+   struct VyRefCount ref;
+   SDL_Event sdl;
+};
+
 typedef struct VySdlArea {
    float top, left, width, height;
 } * VySdlArea;
+
+extern char vySdlBuf[VYSDLBUFSIZE] ;
 
 extern char * dvs_mini_data;
 extern unsigned dvs_mini_len;

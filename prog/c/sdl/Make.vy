@@ -34,15 +34,19 @@ make {
    function {
       init() {
          $lib := C.libFile( "vysdl" );
-         $items := ["caption","color","font","group","key","sprite","view","window"];
+         $items := ["caption","color","event","keyevent",
+            "font","group","key","sprite","view","window"];
          $parts := ["vysdl"];
          $vyroot := "../../..";
          $vys := [
             [ "caption", "vy.geom2", "Caption", 20240301, "Caption=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
+            [ "event", "vy.ui","Event", 20240301, "" ],
+            [ "eventqueue", "vy.ui","EventQueue", 20240301, "" ],
             [ "font", "vy.geom2", "Font", 20240301, "Font=*" ],
             [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
             [ "key", "vy.ui", "Key", 20240301, "" ],
+            [ "keyevent", "vy.ui", "KeyEvent", 20240301, "" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
             [ "view", "vy.ui", "View", 20240301, "View=*" ],
             [ "window", "vy.ui", "Window", 20240301, "Window=*;Sub=View" ]

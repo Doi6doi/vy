@@ -1,4 +1,3 @@
-#include "vy_geom.h"
 #include "vy_color.h"
 #include "vy_shape.h"
 #include "vy_filled.h"

@@ -1,5 +1,4 @@
 #include <vy_implem.h>
-#include <vy_geom.h>
 #include <vy_color.h>
 
 #include <SDL2/SDL.h>

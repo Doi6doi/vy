@@ -36,7 +36,7 @@ class Gcc extends CCompiler {
    
    /// warning argumentum
    function warnArg() {
-      return $this->warn ? "-Wall": "";
+      return $this->warn ? "-w -Werror": "";
    }
    
    /// mód argumentum fordításnál

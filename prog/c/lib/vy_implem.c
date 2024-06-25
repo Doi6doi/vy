@@ -2,12 +2,6 @@
 #include "vy_implem.h"
 #include "vy_sm.h"
 
-#include "vy_core.h"
-#include "vy_cont.h"
-#include "vy_util.h"
-#include "vy_geom.h"
-#include "vy_geom2.h"
-#include "vy_ui.h"
 #include "vy_arch.h"
 
 #include <stdlib.h>

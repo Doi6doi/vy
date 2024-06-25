@@ -1,7 +1,5 @@
 #include <vy_implem.h>
 #include "vysdl.h"
-#include <vy_geom.h>
-#include <vy_ui.h>
 #include <vy_shape.h>
 #include <vy_sprite.h>
 #include <vy_view.h>

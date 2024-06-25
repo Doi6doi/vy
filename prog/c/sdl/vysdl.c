@@ -6,16 +6,14 @@
 #include <vy_circle.h>
 #include <SDL2/SDL.h>
 
-#define BUFSIZE 2048
-
 VySdl vySdl;
 VectorFun vySdlVectors;
 
-static char buf[BUFSIZE];
+char vySdlBuf[VYSDLBUFSIZE];
 
 void vySdlError( VyCStr msg ) {
-   snprintf( buf, BUFSIZE, "%s: %s", msg, SDL_GetError() );
-   vyThrow( buf );
+   snprintf( vySdlBuf, VYSDLBUFSIZE, "%s: %s", msg, SDL_GetError() );
+   vyThrow( vySdlBuf );
 }
 
 void vyModuleInit( VyContext ctx ) {
@@ -59,6 +57,8 @@ void vyModuleInit( VyContext ctx ) {
    vySdlInitFont( ctx );
    vySdlInitCaption( ctx );
    vySdlInitKey( ctx );
+   vySdlInitEvent( ctx );
+   vySdlInitKeyEvent( ctx );
    vySdlInitView( ctx );
    vySdlInitGroup( ctx );
    vySdlInitWindow( ctx );
@@ -66,7 +66,7 @@ void vyModuleInit( VyContext ctx ) {
 }
 
 static void vySdlUnionCoord( float am, float as, float bm, float bs,
-   float * rm, float *rs ) 
+   float * rm, float *rs )
 {
    float ar = am + as;
    float br = bm + bs;

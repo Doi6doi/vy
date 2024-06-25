@@ -1,33 +1,45 @@
 #include <vy_implem.h>
-#include "vy_ui.h"
-#include "vy_key.h"
+#include <vy_key.h>
+#include "vysdl.h"
+#include <string.h>
+#include <stdio.h>
+#include <SDL2/SDL_keycode.h>
 
-static VyKey vyKeyConstUtf(VyCStr, VySize ) {
-   vyThrow("stub KeyConstUtf");
+#define NOKEY "Missing key"
+#define UNKEY "Unknown key: %.*s"
+
+static VyKey vySdlKeyConstUtf( VyCStr s, VySize l ) {
+   if ( VY_LEN == l )
+      l = strlen( s );
+   switch ( l ) {
+      case 0: vyThrow( NOKEY );
+      case 1:
+         switch ( *s ) {
+            case 's': return SDLK_s;
+            case 'w': return SDLK_w;
+         }
+      break;
+      case 2:
+         if ( 0 == strncmp( "up", s, l )) return SDLK_UP;
+      break;
+      case 4:
+         if ( 0 == strncmp( "down", s, l )) return SDLK_DOWN;
+      break;
+   }
+   snprintf( vySdlBuf, VYSDLBUFSIZE, UNKEY, (int)l, s );
+   vyThrow( vySdlBuf );
    return 0;
 }
 
-static bool vyKeyPressed(VyKey ) {
-   vyThrow("stub KeyPressed");
-   return false;
-}
+static bool vySdlKeyEqual(VyKey a, VyKey b) { return a == b; }
 
-static bool vyKeyEqual(VyKey, VyKey ) {
-   vyThrow("stub KeyEqual");
-   return false;
-}
-
-static bool vyKeyNoteq(VyKey, VyKey ) {
-   vyThrow("stub KeyNoteq");
-   return false;
-}
+static bool vySdlKeyNoteq(VyKey a, VyKey b) { return a != b; }
 
 void vySdlInitKey( VyContext ctx ) {
    VYKEYARGS( ctx, args );
-   vyArgsImpl( args, "constUtf", vyKeyConstUtf );
-   vyArgsImpl( args, "pressed", vyKeyPressed );
-   vyArgsImpl( args, "equal", vyKeyEqual );
-   vyArgsImpl( args, "noteq", vyKeyNoteq );
+   vyArgsImpl( args, "constUtf", vySdlKeyConstUtf );
+   vyArgsImpl( args, "equal", vySdlKeyEqual );
+   vyArgsImpl( args, "noteq", vySdlKeyNoteq );
    vyAddImplem( ctx, args );
 }
 

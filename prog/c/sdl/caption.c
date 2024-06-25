@@ -1,5 +1,4 @@
 #include <vy_implem.h>
-#include <vy_geom.h>
 #include <vy_caption.h>
 #include <vy_shape.h>
 #include <stdio.h>

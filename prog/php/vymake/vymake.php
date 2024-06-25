@@ -20,11 +20,9 @@ class VyMake {
       $this->targets = [];
    }
 
-   function run( $argv ) {
+   function runCli( $argv ) {
       try {
-         $this->getParams( $argv );
-         $make = vy\Make::load( $this->file );
-         $make->run( $this->targets );
+         $this->run( $argv );
       } catch ( Throwable $e ) {
          if ( $this->fullStack )
             print( vy\Tools::shortTrace( $e ));
@@ -32,6 +30,12 @@ class VyMake {
             get_class($e), basename( $e->getFile() ),
             $e->getLine(), $e->getMessage() ));
       }         
+   }
+
+   function run( $argv ) {
+      $this->getParams( $argv );
+      $make = vy\Make::load( $this->file );
+      $make->run( $this->targets );
    }
 
    /// paraméterek olvasása
@@ -82,4 +86,4 @@ class VyMake {
 
 }
 
-(new VyMake())->run( $argv );
+(new VyMake())->runCli( $argv );

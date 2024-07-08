@@ -16,6 +16,11 @@ VyEventKind vySdlEventKind( Event e ) {
    }
 }
 
+void vySdlEventInit( Event e ) {
+   vyRefInit( (VyRefCount)e );
+   memset( & e->sdl, 0, sizeof( SDL_Event ));
+}
+
 void vySdlInitEvent( VyContext ctx ) {
    VYEVENTARGS( ctx, args );
    vyArgsType( args, "Bool", vyNative(ctx,"bool") );

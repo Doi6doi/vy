@@ -10,6 +10,10 @@ struct KeyEvent {
    struct Event event;
 };
 
+void vySdlKeyEventInit( KeyEvent e ) {
+   vySdlEventInit( (Event)e );
+}
+
 static VyKeyEventKind vySdlKeyEventKeyKind( KeyEvent e ) {
    switch ( e->event.sdl.type ) {
       case SDL_KEYDOWN: return VKK_DOWN;

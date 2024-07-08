@@ -20,10 +20,12 @@ static VyKey vySdlKeyConstUtf( VyCStr s, VySize l ) {
          }
       break;
       case 2:
-         if ( 0 == strncmp( "up", s, l )) return SDLK_UP;
+         if ( 0 == strncmp( "up", s, 2 )) return SDLK_UP;
       break;
+      case 3:
+         if ( 0 == strncmp( "esc", s, 3 )) return SDLK_ESCAPE;
       case 4:
-         if ( 0 == strncmp( "down", s, l )) return SDLK_DOWN;
+         if ( 0 == strncmp( "down", s, 4 )) return SDLK_DOWN;
       break;
    }
    snprintf( vySdlBuf, VYSDLBUFSIZE, UNKEY, (int)l, s );

@@ -40,6 +40,7 @@
 #define RIGHTUP "up"
 #define RIGHTDOWN "down"
 #define RIGHTCOLOR "\x00\x00\xff"
+#define ESCAPE "esc"
 
 #define PONGKEY( x ) keys.constUtf( x, VY_LEN )
 
@@ -98,6 +99,7 @@ typedef struct Pong {
    Score scores[2];
    Ball ball;
    Pad pads[2];
+   VyKey esc;
 } Pong;
 
 Pong pong;
@@ -136,7 +138,6 @@ void initVy() {
    VYIMPORTFILLED( ctx, filleds );
    VYIMPORTTRANSFORM( ctx, transforms );
    VYIMPORTTRANSFORMED( ctx, transformeds );
-   
 }
 
 /// oldalhoz tartozó szín
@@ -198,6 +199,7 @@ void initPong() {
    pong.over = false;
    pong.last = times.stamp();
    pong.window = windows.createWindow();
+   pong.esc = PONGKEY(ESCAPE);
    initScore( LEFT );
    initScore( RIGHT );
    initPad( LEFT );
@@ -323,6 +325,8 @@ void handleKeySide( Side side, VyKeyEventKind ek, VyKey k ) {
 void handleKey( KeyEvent e ) {
    VyKeyEventKind ek = keyEvents.keyKind( e );
    VyKey k = keyEvents.key( e );
+   if ( VKK_DOWN == ek && pong.esc == k )
+      pong.over = true;
    handleKeySide( LEFT, ek, k );
    handleKeySide( RIGHT, ek, k );
 }

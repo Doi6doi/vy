@@ -19,7 +19,7 @@ VyStamp vyaTimeStamp() {
 }
 
 VyStamp vyaTimeAddSecond( VyStamp stamp, float delta ) {
-   return stamp + delta * DAYSEC;
+   return stamp + delta / DAYSEC;
 }
 
 bool vyaTimeWaitUntil( VyStamp stamp ) {

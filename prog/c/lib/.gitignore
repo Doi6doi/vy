@@ -2,6 +2,7 @@ Makefile
 *.so
 *.o
 *.obj
+*.dll
 libvy.geany
 megsem
 vy_caption.h

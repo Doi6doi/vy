@@ -17,7 +17,8 @@ extern Transform vyTransformConstIdent();
 
 extern VyRepr vyrShape;
 
-void vyDestroyTransformed( VyPtr ) {
+void vyDestroyTransformed( VyPtr p ) {
+   p = p;
    vyThrow("stub vyDestroyTransformed");
 }
 

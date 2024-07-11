@@ -3,7 +3,8 @@
 
 VyRepr vyrTransform;
 
-void vyDestroyTransform( VyPtr ) {
+void vyDestroyTransform( VyPtr p ) {
+   p = p;
    vyThrow("stub vyDestroyTransform");
 }
 
@@ -14,11 +15,11 @@ Transform vyTransformConstIdent() {
    return ret;
 }
 
-static float vyTransformConstRotFull(  ) {
+static float vyTransformConstRotFull() {
    vyThrow("stub vyTransformConstRotFull");
 }
 
-static Transform vyTransformCreateIdent(  ) {
+static Transform vyTransformCreateIdent() {
    vyThrow("stub vyTransformCreateIdent");
 }
 
@@ -27,7 +28,8 @@ static void vyTransformScale( Transform t, float sx, float sy) {
    t->sy *= sy;
 }
 
-static void vyTransformRotate( Transform, float ) {
+static void vyTransformRotate( Transform t , float r ) {
+   t = t; r = r;
    vyThrow("stub vyTransformRotate");
 }
 

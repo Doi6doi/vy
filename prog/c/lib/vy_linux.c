@@ -31,8 +31,6 @@ bool vyaTimeWaitUntil( VyStamp stamp ) {
 }
 
 
-
-
 VyPtr vyaLoadLibrary( VyCStr name ) {
    static char buf[BUFSIZE];
    snprintf( buf, BUFSIZE, "lib%s.so", name );

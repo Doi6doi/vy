@@ -1,6 +1,7 @@
 #include "vy_implem.h"
 #include "vy_mem.h"
 #include "vy_vector.h"
+#include "vy_vec.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -10,52 +11,58 @@
 
 struct Vector {
    struct VyRefCount ref;
-   struct VyMem mem;
-   unsigned size;
+   struct VyVec vec;
 };
 
 VyRepr vyrVector;
 
-void vyDestroyVector( VyPtr ) {
-   vyThrow("stub vyDestroyVector");
+static VyAny vyVectorValue( Vector v, unsigned i ) {
+   return *(VyAny *)vyVecAt( &v->vec, i );
 }
+
+void vyDestroyVector( VyPtr p ) {
+   VyVec vv = &((Vector)p)->vec;
+   for ( unsigned i=0; i< vv->count; ++i )
+      vySet( (VyAny *)vyVecAt( vv, i ), NULL );
+   vyVecResize( vv, 0, true );
+}
+
 
 static Vector vyVectorCreateVector() {
    Vector ret = vyAlloc( vyrVector );
    vyRefInit( (VyRefCount)ret );
-   vyMemInit( & ret->mem, STEP * PTRS );
-   ret->size = 0;
+   vyVecInit( &ret->vec, PTRS, STEP ); 
    return ret;
 }
 
-static void vyVectorInsert( Vector v, unsigned at , VyAny x ) {
-   if ( v->size < at )
-     vyThrow( "Insert after size" );
-   if ( v->mem.size < PTRS * (v->size+1) )
-      vyMemResize( & v->mem, v->mem.size + STEP*PTRS );
-   void *d = v->mem.data;
-   memmove( d + PTRS * at+1, d + PTRS*at, PTRS * (v->size - at));
-   VyAny * a = ((VyAny *)d)+at;
-   (*a) = NULL;
+static void vyVectorInsert( Vector v, unsigned i, VyAny x ) {
+   VyVec vv = &v->vec;
+   unsigned n = vv->count;
+   vyVecResize( vv, n+1, false );
+   vyVecMove( vv, i, i+1, n-i );
+   VyAny * a = (VyAny *)vyVecAt( vv, i );
+   *a = NULL;
    vySet( a, x );
-   ++ (v->size);
 }
 
-static void vyVectorRemove( Vector, unsigned ) {
-   vyThrow("stub vyVectorRemove");
+static void vyVectorRemove( Vector v, unsigned i ) {
+   VyVec vv = &v->vec;
+   unsigned n = vv->count;
+   VyAny * a = (VyAny *)vyVecAt( vv, i );
+   vySet( a, NULL );
+   vyVecMove( vv, i+1, i, n-i-1 );
+   vyVecResize( vv, n-1, false );
 }
 
 static unsigned vyVectorLength( Vector v ) {
-   return v->size;
+   return v->vec.count;
 }
 
-static void vyVectorSetValue( Vector, unsigned, VyAny ) {
-   vyThrow("stub vyVectorSetValue");
+static void vyVectorSetValue( Vector v, unsigned i, VyAny x ) {
+   VyAny * a = (VyAny *)vyVecAt( & v->vec, i );
+   vySet( a, x );	
 }
 
-static VyAny vyVectorValue( Vector, unsigned ) {
-   vyThrow("stub vyVectorValue");
-}
 
 void vyInitVector( VyContext ctx ) {
    VYVECTORARGS( ctx, args );

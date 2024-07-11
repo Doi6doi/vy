@@ -10,13 +10,13 @@ class CItem {
 	   CONS = "cons",
 	   FUNC = "func";
 	
-   protected $writer;
+    protected $writer;
 	protected $kind;
 	protected $obj;
 	protected $only;
 	
 	function __construct( CWriter $writer, $kind, $obj ) {
-      $this->writer = $writer;
+       $this->writer = $writer;
 	   $this->kind = $kind;
 	   $this->obj = $obj;
 	}
@@ -25,6 +25,8 @@ class CItem {
    function own() {
       return $this->writer->own( $this->obj->name() );
    }
+ 
+   function kind() { return $this->kind; }
 
    function extra() { return $this->extra; }
 
@@ -275,7 +277,7 @@ class CItem {
          break;
          case self::CONS:
          case self::FUNC:
-            $s->writel( 'vyArgsImpl( args, "%s", %s );', 
+            $s->writel( 'vyArgsImpl( args, "%s", (VyPtr)%s );', 
                $this->shortName(), $this->longName() );
          break;
          default: throw $this->unKind();

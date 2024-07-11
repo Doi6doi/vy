@@ -86,7 +86,6 @@ class Stream {
 	  $this->at = 0; 
 	  $this->data = "";
    }
-   
 
    function nextKind() {
       if ( $this->eos() )

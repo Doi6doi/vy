@@ -13,7 +13,6 @@ class MakeCore
 
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
-	  $this->rules = [];
 	  $this->addFuncs(["echo","exec","exeExt","format","getEnv",
 	     "level","loadFile","make","older","purge","replace",
         "saveFile", "setEnv", "system"]);

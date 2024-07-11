@@ -13,7 +13,8 @@ Square vycSquare = NULL;
 
 extern VyRepr vyrShape;
 
-void vyDestroySquare( VyPtr ) {
+void vyDestroySquare( VyPtr p ) {
+   p = p;
    vyThrow("stub vyDestroySquare");
 }
 
@@ -30,7 +31,7 @@ void vyInitSquare( VyContext ctx ) {
    VYSQUAREARGS( ctx, args );
    vyrSquare = vyRepr( "Square", sizeof(struct Square), vySetRef, vyDestroySquare);
    vyArgsType( args, "Square", vyrSquare );
-   vyArgsImpl( args, "constSquare", vySquareConstSquare );
+   vyArgsImpl( args, "constSquare", (VyPtr)vySquareConstSquare );
    vyAddImplem( ctx, args );
 }
 

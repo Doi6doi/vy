@@ -1,13 +1,15 @@
 #ifndef VYMEMH
 #define VYMEMH
 
+#include "vy.h"
+
 typedef struct VyMem {
-   unsigned size;
+   VySize size;
    void * data;
 } * VyMem;
 
-void vyMemInit( VyMem mem, unsigned size );
-void vyMemResize( VyMem mem, unsigned size );
+void vyMemInit( VyMem mem, VySize size );
+void vyMemResize( VyMem mem, VySize size );
 
 #endif // VYMEMH
 

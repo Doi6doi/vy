@@ -12,8 +12,9 @@ typedef struct VyVec {
 } * VyVec;
 
 void vyVecInit( VyVec vec, unsigned isize, unsigned step );
-VyPtr vyVecGet( VyVec vec, unsigned i );
-void vyVecAdd( VyVec vec, VyPtr item );
+VyPtr vyVecAt( VyVec vec, unsigned i );
+void vyVecMove( VyVec vec, unsigned src, unsigned dst, unsigned n );
+void vyVecResize( VyVec vec, unsigned n, bool resizeMem );
 
 #endif // VYVECH
 

@@ -23,7 +23,6 @@ class StmCase
    /// if olvasása
    function read( ExprStream $s ) {
       $s->readWS();
-      $this->position = $s->position();
       $s->readToken( self::CASE );
       $s->readWS();
       $s->readToken("(");

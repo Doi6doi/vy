@@ -52,6 +52,12 @@ class Tools {
       self::checkJson();
       return $ret;
    }
+   
+   static function jsonEncode( $data, $pretty=false ) {
+	  $ret = json_encode( $data, $pretty ? JSON_PRETTY_PRINT : 0 );
+	  self::checkJson();
+	  return $ret;
+   }
 
    static function checkJson() {
       if ( JSON_ERROR_NONE != json_last_error() )
@@ -90,6 +96,14 @@ class Tools {
       if ( preg_match('#(\.[^./]*)$#', $path, $m ))
          return $m[1];
       return null;
+   }
+
+   /// fájl kiterjesztés megváltoztatása
+   static function changeExt( $fname, $ext ) {
+      if ( preg_match('#^(.*)\.[^./]*$#', $fname, $m ))
+         return $m[1].$ext;
+      else
+         return $fname.$ext;
    }
 
    /// első betű nagybetű

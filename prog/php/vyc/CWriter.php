@@ -88,7 +88,7 @@ class CWriter {
    
    /// egy típus reprezentációja
    function repr( $name ) {
-      $t = Tools::g( $this->map, $name );
+      $t = "".Tools::g( $this->map, $name );
       if ( "*" == substr( $t, 0, 1 ))
          $t = substr( $t, 1 );
       if ( ! $t )
@@ -183,8 +183,12 @@ class CWriter {
                else $s->writel( "#include <vy.h>\n" );
          break;
          case self::STRUCT:
-            $s->writel( "typedef struct %sFun {", $intf->name() );
-            $s->indent(true);
+            if ( 0 < $this->itemCount( CItem::FUNC ) 
+               + $this->itemCount( CItem::CONS )
+            ) {
+               $s->writel( "typedef struct %sFun {", $intf->name() );
+               $s->indent(true);
+            }
          break;
          case self::ARGS:
             $un = strtoupper( $intf->name() );
@@ -223,8 +227,12 @@ class CWriter {
 	  $intf = $this->intf;
 	  switch ( $phase ) {
 		 case self::STRUCT:
-		    $s->indent( false );
-            $s->writel( "} %sFun;\n", $intf->name() );
+            if ( 0 < $this->itemCount( CItem::FUNC ) 
+               + $this->itemCount( CItem::CONS )
+            ) {
+  	           $s->indent( false );
+               $s->writel( "} %sFun;\n", $intf->name() );
+            }
          break;
          case self::ARGS:
             $s->indent(false);
@@ -246,6 +254,16 @@ class CWriter {
                return true;
       }
       return false;
+   }
+
+   /// bizonyos típusú elemek száma
+   protected function itemCount( $kind ) {
+	  $ret = 0;
+	  foreach ( $this->items as $i ) {
+	     if ( $kind == $i->kind() )
+	        ++$ret;
+	  }
+	  return $ret;
    }
       
 		 

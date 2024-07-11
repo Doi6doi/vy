@@ -18,7 +18,7 @@ class Indexed
     function run( RunCtx $ctx ) {
 	   $val = $this->base->run( $ctx );
 	   $idx = $this->index->run( $ctx );
-	   if ( is_array( $val ))
+	   if ( is_array( $val ) ) 
 	      return $val[ $idx ];
 	   else
 	      throw new EVy("Unknown index: $val[$idx]" );

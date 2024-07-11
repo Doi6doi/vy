@@ -14,7 +14,8 @@ extern VyRepr vyrShape;
 
 extern VyRepr vyrShape;
 
-void vyDestroyFilled( VyPtr ) {
+void vyDestroyFilled( VyPtr p ) {
+   p = p;
    vyThrow("stub vyDestroyFilled");
 }
 
@@ -30,8 +31,10 @@ static Shape vyFilledShape( Filled f ) {
    return f->sub;
 }
 
-static VyColor vyFilledBrush( Filled ) {
+static VyColor vyFilledBrush( Filled f ) {
+   f = f;
    vyThrow("stub vyFilledBrush");
+   return 0;
 }
 
 void vyInitFilled( VyContext ctx ) {
@@ -40,9 +43,9 @@ void vyInitFilled( VyContext ctx ) {
    vyArgsType( args, "Filled", vyrFilled );
    vyArgsType( args, "Sub", vyrShape );
    vyArgsType( args, "Brush", vyNative(ctx,"VyColor") );
-   vyArgsImpl( args, "createFilled", vyFilledCreateFilled );
-   vyArgsImpl( args, "shape", vyFilledShape );
-   vyArgsImpl( args, "brush", vyFilledBrush );
+   vyArgsImpl( args, "createFilled", (VyPtr)vyFilledCreateFilled );
+   vyArgsImpl( args, "shape", (VyPtr)vyFilledShape );
+   vyArgsImpl( args, "brush", (VyPtr)vyFilledBrush );
    vyAddImplem( ctx, args );
 }
 

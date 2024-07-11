@@ -4,6 +4,8 @@
 #include <string.h>
 
 #define CHS sizeof(wchar_t)
+#define MIN(a,b) ((a)<=(b)?(a):(b))
+
 
 struct String {
    struct VyRefCount ref;
@@ -12,8 +14,8 @@ struct String {
 
 VyRepr vyrString;
 
-void destroyString( VyPtr ) {
-   vyThrow("stub destroyString");
+void destroyString( VyPtr p ) {
+   vyMemResize( &((String)p)->mem, 0 );
 }
 
 static String vyStringConstAscii(VyCStr data, VySize len ) {
@@ -29,40 +31,49 @@ static String vyStringConstAscii(VyCStr data, VySize len ) {
    return ret;
 }
 
-static String vyStringConstUtf(VyCStr, VySize ) {
+static String vyStringConstUtf(VyCStr s, VySize l ) {
+   s = s; l = l;
    vyThrow("stub StringStringConstUtf");
 }
 
-static bool vyStringLess(String, String ) {
-   vyThrow("stub StringLess");
+static int vyStringCmp( String a, String b ) {
+   VySize n = MIN( a->mem.size, b->mem.size ) / CHS;
+   int ret = wcsncmp( vyStringPtr(a), vyStringPtr(b), n );
+   if ( 0 == ret )
+      return (int)(a->mem.size)-(int)(b->mem.size);
+      else return ret;
+}    
+
+static bool vyStringLess(String a, String b) {
+   return 0 > vyStringCmp( a, b );
 }
 
-static bool vyStringGreater(String, String ) {
-   vyThrow("stub StringGreater");
+static bool vyStringGreater(String a, String b) {
+   return 0 < vyStringCmp( a, b );
 }
 
-static bool vyStringLesseq(String, String ) {
-   vyThrow("stub StringLesseq");
+static bool vyStringLesseq(String a, String b) {
+   return 0 >= vyStringCmp( a, b );
 }
 
-static bool vyStringGreatereq(String, String ) {
-   vyThrow("stub StringGreatereq");
+static bool vyStringGreatereq(String a, String b) {
+   return 0 <= vyStringCmp( a, b );
 }
 
-static bool vyStringEqual(String, String ) {
-   vyThrow("stub StringEqual");
+static bool vyStringEqual(String a, String b) {
+   return 0 == vyStringCmp( a, b );
 }
 
-static bool vyStringNoteq(String, String ) {
-   vyThrow("stub StringNoteq");
+static bool vyStringNoteq(String a, String b) {
+   return 0 != vyStringCmp( a, b );
 }
 
-static unsigned vyStringLength(String) {
-   vyThrow("stub StringLength");
+static unsigned vyStringLength(String s) {
+   return (unsigned)(s->mem.size / CHS);
 }
 
-static wchar_t vyStringCharAt(String, unsigned) {
-   vyThrow("stub StringCharAt");
+static wchar_t vyStringCharAt(String s, unsigned i) {
+   return vyStringPtr(s)[i];
 }
 
 wchar_t * vyStringPtr( String s ) {
@@ -73,16 +84,16 @@ void vyInitString( VyContext ctx ) {
    VYSTRINGARGS( ctx, args );
    vyrString = vyRepr( "String", sizeof(struct String), vySetRef, destroyString);
    vyArgsType( args, "String", vyrString );
-   vyArgsImpl( args, "constAscii", vyStringConstAscii );
-   vyArgsImpl( args, "constUtf", vyStringConstUtf );
-   vyArgsImpl( args, "less", vyStringLess );
-   vyArgsImpl( args, "greater", vyStringGreater );
-   vyArgsImpl( args, "lesseq", vyStringLesseq );
-   vyArgsImpl( args, "greatereq", vyStringGreatereq );
-   vyArgsImpl( args, "equal", vyStringEqual );
-   vyArgsImpl( args, "noteq", vyStringNoteq );
-   vyArgsImpl( args, "length", vyStringLength );
-   vyArgsImpl( args, "charAt", vyStringCharAt );
+   vyArgsImpl( args, "constAscii", (VyPtr)vyStringConstAscii );
+   vyArgsImpl( args, "constUtf", (VyPtr)vyStringConstUtf );
+   vyArgsImpl( args, "less", (VyPtr)vyStringLess );
+   vyArgsImpl( args, "greater", (VyPtr)vyStringGreater );
+   vyArgsImpl( args, "lesseq", (VyPtr)vyStringLesseq );
+   vyArgsImpl( args, "greatereq", (VyPtr)vyStringGreatereq );
+   vyArgsImpl( args, "equal", (VyPtr)vyStringEqual );
+   vyArgsImpl( args, "noteq", (VyPtr)vyStringNoteq );
+   vyArgsImpl( args, "length", (VyPtr)vyStringLength );
+   vyArgsImpl( args, "charAt", (VyPtr)vyStringCharAt );
    vyAddImplem( ctx, args );
 }
 

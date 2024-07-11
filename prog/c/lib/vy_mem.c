@@ -4,12 +4,12 @@
 
 #define REALLOC(p,s) realloc( p, s )
 
-void vyMemInit( VyMem mem, unsigned size ) {
+void vyMemInit( VyMem mem, VySize size ) {
    mem->data = REALLOC( NULL, size );
    mem->size  = size;
 }
 
-void vyMemResize( VyMem mem, unsigned size ) {
+void vyMemResize( VyMem mem, VySize size ) {
    void * ndata = REALLOC( mem->data, size );
    if ( size && ! ndata )
       vyThrow( VYNOMEM );

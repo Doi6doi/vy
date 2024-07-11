@@ -7,7 +7,8 @@ void vyShapeInit( Shape s ) {
    vyRefInit( (VyRefCount)s );
 }
 
-void vyDestroyShape( VyPtr ) {
+void vyDestroyShape( VyPtr p ) {
+   p = p;
    vyThrow("stub vyDestroyShape");
 }
 

@@ -19,6 +19,7 @@ abstract class CCompiler
          $kind = self::defaultKind();
       switch ($kind) {
          case self::GCC: return new Gcc();
+         case self::MSVC: return new Msvc();
          default: throw new EVy("Unknown compiler: $kind");
       }
    }

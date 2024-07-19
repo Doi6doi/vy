@@ -33,24 +33,24 @@ abstract class Repo {
    }
 
    /// tartalmazza-e a repo a csomagot
-   function contains( $x, $ver ) {
+   function contains( $x, Version $ver ) {
       return null != $this->findObj( $x, $ver );
    }
 
    /// csomag kikérése
-   function force( $x, $ver ) {
+   function force( $x, Version $ver ) {
       if ( $ret = $this->findObj( $x, $ver ))
          return $ret;
       return $this->read( $x, $ver );
    }
 
    /// keresés a tárban
-   function findObj( $x, $ver ) {
-      return Tools::g( $this->objs, $x.$ver );
+   function findObj( $x, Version $ver ) {
+      return Tools::g( $this->objs, $x.$ver->day() );
    }
 
    /// csomag beolvasása
-   protected function read( $x, $ver ) {
+   protected function read( $x, Version $ver ) {
       throw new EVy("Not implemented: ".get_class($this).".read");
    }
 

@@ -74,23 +74,6 @@ class Tools {
       return str_replace( "/",".",$x);
    }
 
-   /// változat feltétel teljesül-e
-   static function verCond( $cond, $ver ) {
-      if ( ! preg_match('#^@[0-9]{8}$#', $ver ))
-         throw new EVy("Unknown version: $ver");
-      if ( ! $cond )
-         return true;
-      if ( ! preg_match('#^@([<=>]*)([0-9]{8})$#', $cond, $m ))
-         throw new EVy("Unknown condition: $cond");
-      $cv = "@".$m[2];
-      switch ( $cr = $m[1] ) {
-         case "=": return $ver == $cv;
-         case "<=": return $ver <= $cv;
-         case ">=": return $ver >= $cv;
-         default: throw new EVy("Unknown condition rel: $cr");
-      }
-   }
-
    /// fájl kiterjesztése
    static function extension($path) {
       if ( preg_match('#(\.[^./]*)$#', $path, $m ))

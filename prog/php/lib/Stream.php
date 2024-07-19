@@ -274,22 +274,7 @@ class Stream {
    function readPathVerCond() {
       $ret = $this->readIdents(".");
       if ( "@" == $this->next() )
-         $ret .= $this->readVerCond();
-      return $ret;
-   }
-
-   /// verzió olvasása
-   function readVer() {
-      $this->readToken("@");
-      return "@".$this->readNat();
-   }
-
-   /// verzió feltétel olvasása
-   function readVerCond() {
-      $ret = $this->readToken("@");
-      while ( in_array( $this->next(), ["<","=",">"] ))
-         $ret .= $this->read();
-      $ret .= $this->readNat();
+         $ret .= Version::read( $this, true );
       return $ret;
    }
 

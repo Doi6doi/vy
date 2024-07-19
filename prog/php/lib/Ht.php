@@ -1,5 +1,7 @@
 <?php
 
+namespace vy;
+
 /// html készítő osztály
 class Ht {
 

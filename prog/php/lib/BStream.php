@@ -58,7 +58,7 @@ class BStream {
 
    function readVer() {
       $this->readToken("\x40");
-      return "@".$this->readIntN(3);
+      return new Version( $this->readIntN(3) );
    }
 
    function readString() {

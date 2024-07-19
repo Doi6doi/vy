@@ -12,7 +12,7 @@ class RepoDir extends Repo {
       $this->root = $root;
    }
 
-   function contains( $x, $ver ) {
+   function contains( $x, Version $ver ) {
       return parent::contains( $x, $ver )
          || null != $this->find( $x, $ver );
    }
@@ -35,7 +35,7 @@ class RepoDir extends Repo {
    }
 
    /// legjobb fájl megkeresése
-   function find( $x, $ver ) {
+   function find( $x, Version $cond ) {
       if ( ! preg_match('#^(.+)\.([^.]+)$#', $x, $m ))
          return false;
       $path = $m[1];
@@ -46,9 +46,11 @@ class RepoDir extends Repo {
          return false;
       $best = null;
       foreach ( glob("$dir/$name@*.vy") as $f ) {
-         if ( preg_match('#^.+(@\d{8})\.vy$#', $f, $n)) {
+         if ( preg_match('#^.+(@\d+)\.vy$#', $f, $n)) {
             $v = $n[1];
-            if ( Tools::verCond( $ver, $v )) {
+            if ( $c = Version::parse( $n[1], false )
+               && $c->matches( $cond ))
+            {
                if ( ! $best || $best <= $v )
                   $best = $v;
             }

@@ -40,7 +40,8 @@ make {
             "random","square","transform","transformed",
             "shape","string","time","vector"];
          $hitems := ["caption","color","event","eventqueue",
-            "font","group","key","keyevent", "sprite","view","window"];
+            "font","group","key","keyevent", 
+            "redraw","sprite","view","window"];
          $parts := ["implem","cont","core","geom","geom2","mem","sm","ui",
             "util","vec"];
          case ( system() ) {
@@ -60,6 +61,7 @@ make {
             [ "key", "vy.ui", "Key", 20240301, "" ],
             [ "keyevent", "vy.ui", "KeyEvent", 20240301, "" ],
             [ "random", "vy.util", "Random", 20240301, "Number=Unsigned" ],
+            [ "redraw", "vy.ui", "Redraw", 24, "Redraw=*" ],
             [ "square", "vy.geom2", "Square", 20240301, "Square=*" ],
             [ "shape", "vy.geom", "Shape", 20240301, "Shape=*" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],

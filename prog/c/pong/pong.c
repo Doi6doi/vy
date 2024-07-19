@@ -21,6 +21,7 @@
 #include <vy_circle.h>
 #include <vy_caption.h>
 #include <vy_filled.h>
+#include <vy_redrawable.h>
 
 #include <math.h>
 

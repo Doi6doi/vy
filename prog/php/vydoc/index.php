@@ -1,7 +1,9 @@
 <?php
 
+namespace vy;
+
 require_once("../lib/autoload.php");
 
 Tools::allErrors();
 
-(new VyDoc())->run( $_REQUEST );
+(new Doc())->run( $_REQUEST );

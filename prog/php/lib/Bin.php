@@ -1,7 +1,9 @@
 <?php
 
+namespace vy;
+
 /// vy bináris osztály
-class VyBin {
+class Bin {
 
    protected $filename;
    protected $pool;
@@ -16,7 +18,7 @@ class VyBin {
       fclose( $fh );
    }
 
-   function run( VyContext $ctx ) {
+   function run( Context $ctx ) {
       if ( ! $e = $this->info()->entry() )
          throw new EVy("Missing entry point");
       $this->method( $e )->execute();
@@ -24,18 +26,18 @@ class VyBin {
    }
 
    function clear() {
-      $this->pool = new VyPool();
+      $this->pool = new Pool();
       $this->items = [];
    }
 
-   function loadStream( VyBStream $s ) {
+   function loadStream( BStream $s ) {
       $this->clear();
       $this->loadMagic( $s );
       $this->pool->load( $s );
       $this->items = $s->readList();
    }
 
-   function loadMagic( VyBStream $s ) {
+   function loadMagic( BStream $s ) {
       $s->readToken( "\x7d" );
       $t = $s->readString();
       if ( "vyb.Bin" != $t )

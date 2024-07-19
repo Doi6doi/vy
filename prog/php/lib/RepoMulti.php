@@ -24,7 +24,7 @@ class RepoMulti extends Repo {
       $this->choices [] = $repo;
    }
 
-   function force( $x, $ver ) {
+   function force( $x, Version $ver ) {
       foreach ( $this->choices as $c ) {
          if ( $c->contains($x, $ver))
             return $c->force($x, $ver);
@@ -32,7 +32,7 @@ class RepoMulti extends Repo {
       throw new EVy("Item not found: $x$ver");
    }
 
-   function contains( $x, $ver ) {
+   function contains( $x, Version $ver ) {
       foreach ( $this->choices as $c ) {
          if ( $c->contains( $i, $ver ))
             return true;

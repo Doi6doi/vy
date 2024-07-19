@@ -178,7 +178,7 @@ class Interf
       $this->name = array_pop( $path );
       $this->pkg = implode(".",$path);
       $s->readWS();
-      $this->ver = $s->readVer();
+      $this->ver = Version::read( $s );
       $this->repo->addObj( $this->fullName(), $this );
       $s->readWS();
       $s->readToken("{");
@@ -279,8 +279,8 @@ class Interf
          $path = sprintf( "%s.%s", $this->pkg, $path[0] );
          else $path = implode(".",$path);
       if ( "@" == $s->next() )
-         $ver = $s->readVerCond();
-         else $ver = "@<=".substr($this->ver,1);
+         $ver = Version::read( $s, true );
+         else $ver = new Version( $this->ver->num(), "<=" );
    }
 
    /// import elem olvasása

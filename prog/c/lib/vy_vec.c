@@ -24,6 +24,7 @@ VyPtr vyVecAt( VyVec v, unsigned i ) {
 }
 
 void vyVecMove( VyVec v, unsigned src, unsigned dst, unsigned n ) {
+   if ( !n ) return;
    if ( v->count < src+n || v->count < dst+n )
       vyThrow( MOVEOUT );
    memmove( vyVecAt( v, dst ), vyVecAt( v, src ), n * v->isize );

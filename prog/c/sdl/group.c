@@ -69,15 +69,17 @@ void vySdlInitGroup( VyContext ctx ) {
 
 void vySdlInvalidateGroup( Group g, VySdlArea a ) {
    float aa = vySdlAreaArea( a );
+   VyVec dirty = & g->dirty;
    struct VySdlArea u;
-   for (int i=0; i < g->dirty.count; ++i) {
-      VySdlArea di = (VySdlArea)vyVecGet( & g->dirty, i );
+   for (int i=0; i < dirty->count; ++i) {
+      VySdlArea di = (VySdlArea)vyVecAt( dirty, i );
       vySdlUnion( di, a, & u );
       if ( vySdlAreaArea( & u ) <= aa + vySdlAreaArea( di )) {
          (*di) = u;
          return;
       }
    }
-   vyVecAdd( & g->dirty, a );
+   vyVecResize( dirty, dirty->count+1, false );
+   *(VySdlArea)vyVecAt( dirty, dirty->count-1 ) = *a;
 }
 

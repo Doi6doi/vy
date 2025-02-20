@@ -2,8 +2,8 @@
 
 namespace vy;
 
-class Gcc extends CCompiler {
- 
+class Gcc extends CppCompiler {
+
    function executable() { return "gcc"; }
    
    function depend( $dst, $src ) {

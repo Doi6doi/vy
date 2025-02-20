@@ -15,7 +15,7 @@ typedef struct GroupFun {
 } GroupFun;
 
 #define VYGROUPARGS( ctx, name ) \
-   VyArgs name = vyArgs( "vy.ui.Group", vyVer(20240301)); \
+   VyArgs name = vyArgs( "vy.ui.Group", vyVer(24)); \
    vyArgsType( name, "Bool", vyNative( ctx, "bool" ) ); \
    vyArgsType( name, "ViewCoord", vyNative( ctx, "VyViewCoord" ) ); \
    vyArgsType( name, "Coord", vyNative( ctx, "float" ) ); \

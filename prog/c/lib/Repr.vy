@@ -20,6 +20,7 @@ representation {
    Key: native VyKey;
    KeyEvent: custom;
    KeyEventKind: native VyKeyEventKind;
+   Redraw: custom;
    Shape: public refcount;
    Sprite: custom;
    Stamp: native VyStamp;

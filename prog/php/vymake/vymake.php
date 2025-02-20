@@ -13,11 +13,13 @@ class VyMake {
       MAKEVY = "Make.vy";
 
    protected $fullStack;
+   protected $help;
    protected $file;
    protected $targets;
 
    function __construct() {
       $this->targets = [];
+      $this->urls = [];
    }
 
    function runCli( $argv ) {
@@ -29,11 +31,12 @@ class VyMake {
          print( sprintf( "%s (%s:%s): %s\n",
             get_class($e), basename( $e->getFile() ),
             $e->getLine(), $e->getMessage() ));
-      }         
+      }
    }
 
    function run( $argv ) {
       $this->getParams( $argv );
+      if ( $this->help ) $this->usage();
       $make = vy\Make::load( $this->file );
       $make->run( $this->targets );
    }
@@ -56,10 +59,18 @@ class VyMake {
       if ( $i >= count($argv))
          return false;
       switch ($a = $argv[$i]) {
+         case "-h": case "-?": case "--help":
+            $this->help = true;
+         break;
+         case "-f":
+            if ( $this->file )
+               throw new Exception("Only one file possible (-f)");
+            $this->file = vy\Tools::g( $argv, ++$i );
+         break;
          case "-x":
             $this->fullStack = true;
          break;
-         default: 
+         default:
             $this->targets [] = $a;
       }
       ++ $i;
@@ -67,12 +78,17 @@ class VyMake {
    }
 
    /// használat
-   function usage( $msg ) {
+   function usage( $msg=null ) {
       $ret = [
          "",
          "Usage: php vymake.php <options> [<target>..]",
          "",
+         "vymake is a build system which can be used for different",
+         "programming languages on many architectures.",
+         "",
          "Options:",
+         "   -h, --help, -?: show this message",
+         "   -f: load makefile from file or url",
          "   -x: show full exception stack",
          "",
          ""

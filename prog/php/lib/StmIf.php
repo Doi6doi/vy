@@ -32,9 +32,10 @@ class StmIf
       $s->readToken(")");
       $this->bif = new StmBranch( $this );
       $this->bif->read( $s );
+      $s->readWS();
       if ( $s->readIf( self::ELSE )) {
-		 $this->belse = new StmBranch( $this );
-		 $this->belse->read( $s );
+         $this->belse = new StmBranch( $this );
+         $this->belse->read( $s );
       }
    }
 
@@ -43,6 +44,13 @@ class StmIf
 		 return $this->bif->run( $ctx );
       else if ( $this->belse )
          return $this->belse->run( $ctx );
+   }
+
+   function __toString() {
+      $ret = sprintf( "if (%s) %s", $this->cond, $this->bif );
+      if ( $this->belse )
+         $ret .= "\nelse ".$this->belse;
+      return $ret;
    }
 
 }

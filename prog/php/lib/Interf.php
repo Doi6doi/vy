@@ -65,7 +65,7 @@ class Interf
 
    /// teljes név útvonallal és verzióval
    function fullName() {
-      return sprintf( "%s.%s%s", $this->pkg, $this->name, $this->ver );
+      return sprintf( "%s.%s@%s", $this->pkg, $this->name, $this->ver->day() );
    }
 
    /// fájl beolvasása

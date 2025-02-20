@@ -59,6 +59,13 @@ class Block
 		 throw new EVy( $this->position.": ".$e->getMessage(), $e->getCode(), $e );
       }
    }
+
+   function __toString() {
+      $ret = "";
+      foreach ($this->stms as $s)
+         $ret .= "$s\n";
+      return $ret;
+   }
    
    /// egy elem olvasása
    protected function addStm( ExprStream $s ) {

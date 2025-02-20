@@ -27,6 +27,7 @@ abstract class Repo {
 
    /// hozzadás a tárhoz
    function addObj( $full, $obj ) {
+// Tools::debug("addObj",$full,":",$this->objs);      
       if ( array_key_exists($full, $this->objs))
          throw new EVy("Duplicate name: $full");
       $this->objs[$full] = $obj;
@@ -46,7 +47,7 @@ abstract class Repo {
 
    /// keresés a tárban
    function findObj( $x, Version $ver ) {
-      return Tools::g( $this->objs, $x.$ver->day() );
+      return Tools::g( $this->objs, $x."@".$ver->day() );
    }
 
    /// csomag beolvasása

@@ -13,28 +13,30 @@ class MakeCore
 
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
-	  $this->addFuncs(["echo","exec","exeExt","format","getEnv",
-	     "level","loadFile","make","older","purge","replace",
+	  $this->addFuncs(["changeExt",
+        "echo","exec","exeExt","exists",
+        "format","getEnv", "level","loadFile",
+        "make","older","purge","replace",
         "saveFile", "setEnv", "system"]);
    }
-	  
+
    /// környezeti változó lekérése
    function getEnv( $name ) {
       $ret = getenv( $name );
       return false === $ret ? "" : $ret;
    }
-     
+
    /// környezeti változó beállítása
    function setEnv( $name, $val ) {
       putenv( "$name=$val" );
    }
-     
+
    /// shell parancs futtatás
-   function exec( $cmd ) {  
+   function exec( $cmd ) {
       passthru( $cmd, $rv );
       return $rv;
    }
-     
+
    /// egy fájl módosítási dátuma
    protected function modified( $fname ) {
 	  if ( ! file_exists( $fname ))
@@ -49,6 +51,17 @@ class MakeCore
      $ret = $this->newerThan( $ot, $src );
 //Tools::debug("older $dst", $src, $ret ? "+":"-");      
 	  return $ret;
+   }
+
+   /// létezik-e az összes
+   function exists( $f ) {
+      if ( ! is_array($f) )
+         $f = [$f];
+      foreach ( $f as $i ) {
+         if ( ! file_exists($i))
+            return false;
+      }
+      return true;
    }
 
    /// kiírás
@@ -85,7 +98,7 @@ class MakeCore
       (new \VyMake())->run( $target );
       Tools::chdir( $save );
    }
-   
+
    /// naplózási szint
    function level( $v ) {
       $this->owner->log( Make::INFO, "Log level: $v");
@@ -96,6 +109,15 @@ class MakeCore
    function replace( $s, $src, $dst ) {
 	  return str_replace( $src, $dst, $s );
    } 
+
+   /// kiterjesztés változtatás
+  function changeExt( $fname, $ext ) {
+     if ( $ext && "." != substr( $ext, 0, 1 ))
+        $ext = ".$ext";
+     if ( preg_match('#^(.*)\.[^.]?$#', $fname, $m ))
+        return $m[1].$ext;
+        else return $fname.$ext;
+  }
 
    /// fájl mentése
    function saveFile( $f, $data ) {

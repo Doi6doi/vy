@@ -22,8 +22,9 @@ class RepoDir extends Repo {
          return $ret;
       if ( ! $fname = $this->find( $x, $ver ))
          throw new EVy("Cannot find: $x$ver");
-      if ( preg_match('#^(.*)(@\d{8})\.vy$#', $fname, $m )) {
-         if ( $ret = $this->findObj( Tools::dirPkg($m[1]), $m[2] ))
+      if ( preg_match('#^(.*)(@\d+)\.vy$#', $fname, $m )) {
+         $v = Version::parse( $m[2], true );
+         if ( $ret = $this->findObj( Tools::dirPkg($m[1]), $v ))
             return $ret;
       }
       $fname = $this->root."/".$fname;
@@ -47,16 +48,15 @@ class RepoDir extends Repo {
       $best = null;
       foreach ( glob("$dir/$name@*.vy") as $f ) {
          if ( preg_match('#^.+(@\d+)\.vy$#', $f, $n)) {
-            $v = $n[1];
-            if ( $c = Version::parse( $n[1], false )
+            if ( ($c = Version::parse( $n[1], false ))
                && $c->matches( $cond ))
             {
-               if ( ! $best || $best <= $v )
-                  $best = $v;
+               if ( ! $best || $best->day() <= $c->day() )
+                  $best = $c;
             }
          }
       }
-      return $best ? "$pdir/$name$best.vy" : null;
+      return $best ? "$pdir/$name@".$best->num().".vy" : null;
    }
 
 

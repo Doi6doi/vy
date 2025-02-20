@@ -249,9 +249,12 @@ class CWriter {
    /// van-e saját típus
    protected function hasOwnPublic() {
       foreach ($this->map as $k=>$v) {
-         if ( "*" == substr( $v, 0, 1 ))
-            if ( $this->repr( $k )->public() )
+         if ( "*" == substr( $v, 0, 1 )) {
+            if ( ! $r = $this->repr( $k ))
+               throw new EVy("Unknown repr: $k");
+            if ( $r->public() )
                return true;
+         }
       }
       return false;
    }

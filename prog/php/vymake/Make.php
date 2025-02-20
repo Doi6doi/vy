@@ -99,7 +99,6 @@ class Make
    protected function read( Stream $s ) {
       try {
          $s->readWS();
-         $s->readWS();
 	      $s->readToken( self::MAKE );
 	      $s->readWS();
 	      $s->readToken("{");
@@ -115,7 +114,7 @@ class Make
    protected function readPart( $s ) {
       $s->readWS();
       switch ( $n = $s->next() ) {
-		 case self::IMPORT: $meth = "readImport"; break;
+		   case self::IMPORT: $meth = "readImport"; break;
          case self::TARGET: $meth = "readTarget"; break;
          case self::FUNCTION: $meth = "readFunction"; break;
          case "}": return false;

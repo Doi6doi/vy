@@ -122,10 +122,12 @@ class Compiler {
 
    /// egy bemenet olvasása
    function forceInput( $i ) {
-      if ( preg_match('#^(.+)(@.+)$#',$i,$m))
-         $o = $this->repo->force( $m[1], $m[2] );
-         else $o = $this->repo->force( $i, null );
-      $this->objs[ $i ] = $o;
+      if ( ! preg_match('#^(.+)(@.+)$#',$i,$m)) 
+         throw new EVy("Unkown versioned name: $i");
+      $n = $m[1];
+      $v = Version::parse( $m[2], true );
+      $o = $this->repo->force( $n, $v );
+      $this->objs[ $n.$v ] = $o;
    }
 
    /// c író

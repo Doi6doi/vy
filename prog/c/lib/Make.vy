@@ -41,7 +41,7 @@ make {
             "shape","string","time","vector"];
          $hitems := ["caption","color","event","eventqueue",
             "font","group","key","keyevent", 
-            "redraw","sprite","view","window"];
+            "redraw","sprite","spriteui","view","window"];
          $parts := ["implem","cont","core","geom","geom2","mem","sm","ui",
             "util","vec"];
          case ( system() ) {
@@ -54,7 +54,7 @@ make {
             [ "circle", "vy.geom2", "Circle", 20240301, "Circle=*" ],
             [ "color", "vy.geom", "Color", 20240301, "" ],
             [ "event", "vy.ui", "Event", 20240301, "" ],
-            [ "eventqueue", "vy.ui", "EventQueue", 20240301, "" ],
+            [ "eventqueue", "vy.ui", "EventQueue", 24, "" ],
             [ "font", "vy.geom2", "Font", 20240301, "Font=*" ],
             [ "filled", "vy.geom", "Filled", 20240301, "Filled=*;Sub=Shape;Brush=Color" ],
             [ "group", "vy.ui", "Group", 20240301, "Group=*;Sub=View" ],
@@ -65,6 +65,7 @@ make {
             [ "square", "vy.geom2", "Square", 20240301, "Square=*" ],
             [ "shape", "vy.geom", "Shape", 20240301, "Shape=*" ],
             [ "sprite", "vy.ui", "Sprite", 20240301, "Sprite=*" ],
+            [ "spriteui", "vy.ui", "SpriteUI", 24, "Sprite=*" ],
             [ "string", "vy.char", "String", 20240301, "String=*" ],
             [ "time", "vy.util", "Time", 20240301, "Number=Float" ],
             [ "transform", "vy.geom2", "Transform", 20240301, "Transform=*;Number=Float" ],

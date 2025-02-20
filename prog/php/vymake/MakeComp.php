@@ -2,6 +2,7 @@
 
 namespace vy;
 
+/// vy compiler
 class MakeComp 
    extends MakeImport
 {

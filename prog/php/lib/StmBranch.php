@@ -19,18 +19,23 @@ class StmBranch
    }
 
    function read( ExprStream $s ) {
-	  $this->position = $s->position();
+     $this->position = $s->position();
 	  switch ( $this->bkind ) {
 		 case self::IF: break;
 		 case self::CASE: $this->readCase( $s ); break;
 		 default: throw $this->unBKind();
       }
-	  $this->readPart( $s );
+	   $this->readPart( $s );
    }
 
    /// illeszkedik-e az ág erre az értékre
    function matches( $val ) {
 	  return $this->matchExpr( $this->cond, $val );
+   }
+
+   function __toString() {
+      return sprintf( "(%s)%s", 
+         $this->cond, parent::__toString() );
    }
 
    /// illeszkedik-e a kifejezés erre az értékre
@@ -103,5 +108,5 @@ class StmBranch
 	     return $l->value();
 	     else throw new EVy("Literal expected instead of $l");
    }
-	
+   
 }

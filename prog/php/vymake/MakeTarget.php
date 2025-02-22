@@ -12,7 +12,7 @@ class MakeTarget
    protected $name;	
 	
    function __construct( Make $owner ) {
-	  parent::__construct( $owner );
+      parent::__construct( $owner );
    }	
 	
    function run( RunCtx $ctx ) {

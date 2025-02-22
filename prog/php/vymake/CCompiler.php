@@ -4,7 +4,7 @@ namespace vy;
 
 /// C fordító
 abstract class CCompiler 
-   extends Compiler
+   extends BaseCompiler
 {
    
    /// fordító gyártása

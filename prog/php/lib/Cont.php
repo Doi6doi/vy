@@ -3,7 +3,6 @@
 namespace vy;
 
 /// speciális visszatérési érték (return, break, continue, exception
-
 class Cont {
 	
 	const

@@ -4,7 +4,9 @@ namespace vy;
 
 class Gcc extends CppCompiler {
 
-   function executable() { return "gcc"; }
+   function executable() { 
+      return $this->pp ? "g++" : "gcc";
+   }
    
    function depend( $dst, $src ) {
       $this->run( "%s -MM %s > %s", $this->incDirArg(),
@@ -17,6 +19,14 @@ class Gcc extends CppCompiler {
          $this->libArg() );
    }
  
+   function build( $dst, $src ) {
+      $this->run( "%s %s %s %s %s -o %s %s %s %s", $this->warnArg(), 
+         $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 
+         $this->modeLinkArg(), $this->esc($dst), $this->esc($src),
+         $this->libDirArg(), $this->libArg()
+      );
+   }
+   
    function compile( $dst, $src ) {
       $this->run( "%s %s %s -c %s -o %s %s", $this->warnArg(), 
          $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 

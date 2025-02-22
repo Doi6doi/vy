@@ -14,6 +14,7 @@ class MakeImport
 		  case MakeC::C: return new MakeC( $owner );
         case MakeCpp::CPP: return new MakeCpp( $owner );
 		  case MakeComp::COMP: return new MakeComp( $owner );
+        case MakeDox::DOX: return new MakeDox( $owner );
         case MakeGit::GIT: return new MakeGit( $owner );
         case MakeDebug::DEBUG: return new MakeDebug( $owner );
 		  default: throw new EVy("Unknown import: $name");

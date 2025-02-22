@@ -14,6 +14,7 @@ class Make
    const
       FUNCTION = "function",
       IMPORT = "import",
+      INIT = "init",
       MAKE = "make",
       TARGET = "target";
 
@@ -25,6 +26,8 @@ class Make
 	  return $ret;
    }	
 
+   /// inicializáló
+   protected $init;
    /// célok
    protected $targets;
    /// egyéb nevek
@@ -49,8 +52,15 @@ class Make
    function run( $target ) {
 	  $target = $this->refineTarget( $target );
 	  $this->runCtx = new RunCtx();
+     $this->runInit();
 	  foreach ( $target as $t )
 	     $this->runTarget( $t );
+   }
+
+   /// inicializáló futtatása
+   function runInit() {
+      if ( ! $this->init ) return;
+      $this->init->run( $this->runCtx );
    }
 
    /// egy cél futtatása
@@ -114,6 +124,7 @@ class Make
    protected function readPart( $s ) {
       $s->readWS();
       switch ( $n = $s->next() ) {
+         case self::INIT: return $this->readInit($s);
 		   case self::IMPORT: $meth = "readImport"; break;
          case self::TARGET: $meth = "readTarget"; break;
          case self::FUNCTION: $meth = "readFunction"; break;
@@ -154,6 +165,15 @@ class Make
 	  $t->read( $s );
 	  $this->add( $this->targets, $t->name(), $t );
      $this->addFunc( $t );
+   }
+
+   /// init rész beolvasása
+   protected function readInit( $s ) {
+      if ( $this->init )
+         throw new EVy("Multiple init blocks");
+      $this->init = new MakeTarget( $this );
+      $this->init->read( $s );
+      return true;
    }
 
    /// import rész beolvasása

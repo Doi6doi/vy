@@ -34,7 +34,7 @@ abstract class CmdTool {
          $outs = implode("\n",$out);
       }
       if ( (false === $r) || (0 != $rv) )
-         throw new EVy("Exec error: $rv $outs");
+         throw new EVy("\nExec error: $rv $outs");
       return $outs;
    }
    

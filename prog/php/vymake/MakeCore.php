@@ -15,9 +15,10 @@ class MakeCore
 	  parent::__construct( $owner, self::CORE );
 	  $this->addFuncs(["changeExt",
         "echo","exec","exeExt","exists",
-        "format","getEnv", "level","loadFile",
+        "explode","format","getEnv", 
+        "implode","level","loadFile",
         "make","older","purge","replace",
-        "saveFile", "setEnv", "system"]);
+        "saveFile", "setEnv", "setPath", "system"]);
    }
 
    /// környezeti változó lekérése
@@ -35,6 +36,33 @@ class MakeCore
    function exec( $cmd ) {
       passthru( $cmd, $rv );
       return $rv;
+   }
+   
+   /// útvonal beállítása
+   function setPath( $path ) {
+      if ( ! is_array( $path ))
+         $path = [$path];
+      $path = implode(":",$path);
+      $this->appendEnv( "PATH", ":$path" );
+      if ( Tools::LINUX == $this->system() )
+         $this->appendEnv( "LD_LIBRARY_PATH", ":$path" );
+   }
+   
+   /// egy környezeti változó bővítése
+   function appendEnv( $name, $val ) {
+      if ( $old = $this->getEnv( $name ))
+         $val = $old.$val;
+      $this->setEnv( $name, $val );
+   }
+
+   /// tömbből string
+   function implode( $sep, $arr ) {
+      return implode($sep,$arr);
+   }
+
+   /// stringből tömb
+   function explode( $sep, $arr ) {
+      return explode( $sep, $arr );
    }
 
    /// egy fájl módosítási dátuma
@@ -107,14 +135,20 @@ class MakeCore
 
    /// string csere
    function replace( $s, $src, $dst ) {
-	  return str_replace( $src, $dst, $s );
+	   return str_replace( $src, $dst, $s );
    } 
 
    /// kiterjesztés változtatás
   function changeExt( $fname, $ext ) {
+     if ( is_array( $fname )) {
+        $ret = [];
+        foreach ( $fname as $f)
+           $ret [] = $this->changeExt( $f, $ext );
+        return $ret;
+     }
      if ( $ext && "." != substr( $ext, 0, 1 ))
         $ext = ".$ext";
-     if ( preg_match('#^(.*)\.[^.]?$#', $fname, $m ))
+     if ( preg_match('#^(.*)\\.[^.]*$#', $fname, $m ))
         return $m[1].$ext;
         else return $fname.$ext;
   }

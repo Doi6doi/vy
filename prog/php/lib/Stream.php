@@ -105,21 +105,6 @@ class Stream {
          throw new EVy("Unknown char: '$ch' (".ord($ch).")");
    }
 
-   /// sor olvasása
-/*   function readLine() {
-      $ret = "";
-      while ( true ) {
-         $nxt = $this->nextKind();
-         if ( self::EOS == $nxt )
-            return $ret;
-         $part = $this->read();
-         $ret .= $part;
-         if ( self::WS == $nxt && false !== strpos("\n", $part ))
-            return $ret;
-      }
-   }
-*/
-
    function isWS() {
 	  $ch = $this->nextChar(0);
       switch ($ch) {

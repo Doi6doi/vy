@@ -73,13 +73,13 @@ class DoxHtmlWriter extends DoxWriter {
    /// ez egy mezős blokk
    protected function flc() {
       return in_array( $this->block->typ(),
-         [DoxPart::RECORD, DoxPart::FUNC] );
+         [DoxPart::RECORD, DoxPart::FUNC, DoxPart::TOC] );
    }
    
    /// ez egy mező blokk
    protected function fld() {
       return in_array( $this->block->typ(),
-         [DoxPart::FIELD, DoxPart::PARAM, DoxPart::RETURN] );
+         [DoxPart::FIELD, DoxPart::PARAM, DoxPart::RETURN, DoxPart::TOCITEM] );
    }
          
    protected function sep($kind) {

@@ -99,7 +99,7 @@ class DoxReader {
                if ( $p = $this->chop( $r, $i ))
                   $this->addDox( $p );
                $this->setState( self::REF );
-               if ( $r )  $this->chew( $r );
+               if ( $r ) $this->chew( $r );
             } else if ( "\\" == substr( $r, -1 )) {
                $r = substr( $r, 0, -1 ).$this->stream->read();
                $this->chew( $r );
@@ -157,6 +157,8 @@ class DoxReader {
    
    /// állapot változtatás
    protected function setState( $ns, $ref=null ) {
+      if ( self::REF == $ns && $this->block->refs() )
+         $ns = self::OUT;
       $os = $this->state;
       if ( $ref && (self::BLOCK == $os || self::REF == $os))
          $this->addRef( $ref, false );
@@ -177,8 +179,8 @@ class DoxReader {
    /// dox sor hozzáadása
    protected function addDox( $r ) {
       $r = trim($r);
-      if ( preg_match('#^\\\\(\S+)\s+(.*)$#', $r, $m ))
-         $this->addEsc( $m[1], $m[2] );
+      if ( preg_match('#^\\\\(\S+)(\s+(.*))?$#', $r, $m ))
+         $this->addEsc( $m[1], Tools::g( $m, 3 ) );
          else $this->block->addRow( $r );
    }
 
@@ -249,6 +251,7 @@ class DoxReader {
          case DoxPart::REF: return $this->addRef( $r, false );
          case DoxPart::PARAM: return $this->addParam( $r );
          case DoxPart::RETURN: return $this->addReturn( $r );
+         case DoxPart::TOC: return $this->addToc();
          default: $this->block->addRow( "\\$esc $r" );
       }
    }
@@ -257,7 +260,7 @@ class DoxReader {
    protected function addParam( $r ) {
       if ( ! preg_match('#^\s*(\S+)\s+(.*)$#', $r, $m ))
          $m = [null,"?",$r];
-      $p = $this->block->addPart(null);
+      $p = $this->block->addPart();
       $p->setTyp( DoxPart::PARAM );
       $p->addRef( $m[1] );
       $p->addRow( $m[2] );
@@ -265,9 +268,15 @@ class DoxReader {
 
    /// return hozzáadás
    protected function addReturn( $r ) {
-      $p = $this->block->addPart(null);
+      $p = $this->block->addPart();
       $p->setTyp( DoxPart::RETURN );
       $p->addRow( $r );
+   }
+   
+   /// tartalomjegyzék hozzáadás
+   protected function addToc() {
+      $p = $this->block->addPart();
+      $p->setTyp( DoxPart::TOC );
    }
    
 }

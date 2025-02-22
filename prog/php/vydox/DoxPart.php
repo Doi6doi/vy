@@ -15,6 +15,8 @@ class DoxPart {
       PARAM = "param",
       RECORD = "record",
       RETURN = "return",
+      TOC = "toc",
+      TOCITEM = "tocItem",
       TYPE = "type";
       
    /// escape parancsok
@@ -38,9 +40,7 @@ class DoxPart {
       
    function __construct( $owner, $depth ) {
       $this->owner = $owner;
-      $this->parts = [];
-      $this->rows = [];
-      $this->refs = [];
+      $this->clear();
       $this->depth = $depth;
    }
    
@@ -79,8 +79,15 @@ class DoxPart {
          $this->name = $x;
    }
 
+   /// tartalom törlése
+   function clear() {
+      $this->refs = [];
+      $this->rows = [];
+      $this->parts = [];
+   }
+
    /// új alrész
-   function addPart( $depth ) {
+   function addPart( $depth=null ) {
       $ret = new DoxPart($this, $depth );
       $this->parts [] = $ret;
       return $ret;

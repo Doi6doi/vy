@@ -87,9 +87,9 @@ extends Configable
    /// blokk kiírása stringbe
    function write( $block ) {
       $this->block = $block;
-      $f = $this->writeRefs( $block->refs() );
-      $r = $this->writeRows( $block->rows() );
-      $p = $this->writeParts( $block->parts() );
+      $f = $this->writeRefs( $block );
+      $r = $this->writeRows( $block );
+      $p = $this->writeParts( $block );
       return $this->writePart( $f, $r, $p );
    }
 
@@ -116,15 +116,25 @@ extends Configable
    }
 
    /// referencia rész kiírása
-   protected function writeRefs( array $fs ) {
-      if ( ! $fs ) return null;
+   protected function writeRefs( $b ) {
+      if ( ! $fs = $b->refs() ) return null;
       $ret = implode( $this->sep( self::SREF ), $fs );
       return $this->formatPart( self::REFS, [$ret] );
    }
+   
+   /// id építese
+   protected function getId( $b ) {
+      if ( ! $n = $b->name() ) return false;
+      if ( ! $o = $b->owner() ) return false;
+      if ( ! $oo = $o->owner() ) return $n;
+      if ( $on = $this->getId($o) )
+         return $on.".".$n;
+      return false;
+   }
 
    /// szöveges rész kiírása
-   protected function writeRows( array $rs ) {
-      if ( ! $rs ) return null;
+   protected function writeRows( $b ) {
+      if ( ! $rs = $b->rows() ) return null;
       $ret = [];
       foreach ( $rs as $r )
          $ret [] = $this->format( $r );
@@ -133,8 +143,8 @@ extends Configable
    }
    
    /// parts rész kiírása
-   protected function writeParts( array $ps ) {
-      if ( ! $ps ) return null;
+   protected function writeParts( $b ) {
+      if ( ! $ps = $b->parts() ) return null;
       $save = $this->block;
       $ret = [];
       foreach ( $ps as $p ) {

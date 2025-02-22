@@ -38,6 +38,7 @@ class DoxReader {
    static function create( $t ) {
       switch ($t) {
          case self::C: return new DoxCReader();
+         case self::CPP: return new DoxCppReader();
          case self::ANY: return new DoxReader();
          default: throw new EVy("Unknown dox input type: $t");
       }
@@ -157,9 +158,9 @@ class DoxReader {
    
    /// állapot változtatás
    protected function setState( $ns, $ref=null ) {
-      if ( self::REF == $ns && $this->block->refs() )
-         $ns = self::OUT;
       $os = $this->state;
+      if ( self::REF == $ns && self::OUT != $os && $this->block->refs() )
+         $ns = self::OUT;
       if ( $ref && (self::BLOCK == $os || self::REF == $os))
          $this->addRef( $ref, false );
       if ( self::OUT == $os )
@@ -218,7 +219,7 @@ class DoxReader {
       if ( $t = $this->refType( $r, $m ))
          $cont = $this->addRefTyp( $t, $m );
       $this->braces($r);
-      if ( $quit && ! $cont )
+      if ( $quit || ! $cont )
          $this->setState( self::OUT );
    }
 
@@ -237,6 +238,7 @@ class DoxReader {
       $this->block->addRef( $m[1] );
       if ( $n = Tools::g( $m, 2 ))
          $this->block->setName( $n );
+      return false;
    }
 
    /// felsőbb szintre lépés, ha lehet

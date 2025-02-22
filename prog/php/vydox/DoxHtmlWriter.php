@@ -47,12 +47,19 @@ class DoxHtmlWriter extends DoxWriter {
       return '<a href="'.$lnk.'">'.$txt.'</a>';
    }
 
+   protected function writeParts( $b ) {
+      $ret = parent::writeParts( $b );
+      if ( DoxPart::CLS == $b->typ() )
+         $ret = '<div class="parts">'."\n$ret\n</div>";
+      return $ret;
+   }
+   
    protected function writePart( $refs, $rows, $parts ) {
+      $b = $this->block;
       $tt = null;
-      if ( $t = $this->block->typ() ) $tt = " $t";
+      if ( $t = $b->typ() ) $tt = " $t";
       $nn = null;
-      if ( ($n = $this->block->name())
-         && ! in_array( $t, [DoxPart::FIELD, DoxPart::PARAM] ))
+      if ( $n = $this->getId( $b ))
          $nn = ' id="'.$n.'"';
       return '<div class="part'.$tt.'"'.$nn.'>'."\n"
          .parent::writePart( $refs, $rows, $parts )."\n</div>\n";
@@ -70,7 +77,7 @@ class DoxHtmlWriter extends DoxWriter {
       return '<div class="hr"></div>';
    }
 
-   /// ez egy mezős blokk
+   /// ez egy csak mezős blokk
    protected function flc() {
       return in_array( $this->block->typ(),
          [DoxPart::RECORD, DoxPart::FUNC, DoxPart::TOC] );
@@ -93,10 +100,10 @@ class DoxHtmlWriter extends DoxWriter {
       }
    }
          
-   protected function writeRefs( array $fs ) {
-      if ( DoxPart::RETURN == $this->block->typ() )
-         return parent::writeRefs(["return"]);
-      return parent::writeRefs( $fs );
+   protected function writeRefs( $b ) {
+      if ( DoxPart::RETURN == $b->typ() )
+         return $this->formatPart( self::REFS, ["return"]);
+      return parent::writeRefs( $b );
    }
          
    /// teljes html fájl kiírása

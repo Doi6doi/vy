@@ -15,6 +15,7 @@ class DoxPart {
       PARAM = "param",
       RECORD = "record",
       RETURN = "return",
+      SCOPE = "scope",
       TOC = "toc",
       TOCITEM = "tocItem",
       TYPE = "type";

@@ -18,7 +18,7 @@ class MakeCore
         "explode","format","getEnv", 
         "implode", "level","loadFile",
         "make","mkdir","older","path", "purge","replace",
-        "saveFile", "setEnv", "setPath", "system"]);
+        "saveFile", "setEnv", "setPath", "setPerm", "system" ]);
       $this->add( "init", new MakeInit( $this ));
    }
 
@@ -176,6 +176,11 @@ class MakeCore
    function replace( $s, $src, $dst ) {
 	   return str_replace( $src, $dst, $s );
    } 
+
+   /// engedély kezelés
+   function setPerm( $file, $perm="a", $to="a", $on=true ) {
+      Tools::setPerm( $file, $perm, $to, $on );
+   }
 
    /// kiterjesztés változtatás
   function changeExt( $fname, $ext ) {

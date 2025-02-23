@@ -36,37 +36,37 @@ class Gcc extends CppCompiler {
    
    /// mód argumentum linkelésnél
    function modeLinkArg() {
-      return $this->libMode ? "-shared" : "";
+      return $this->get( self::LIBMODE ) ? "-shared" : "";
    }
    
    /// debug argumentum
    function debugArg() {
-      return $this->debug ? "-g": "";
+      return $this->get( self::DEBUG ) ? "-g": "";
    }
    
    /// warning argumentum
    function warnArg() {
-      return $this->warn ? "-w -Werror": "";
+      return $this->get( self::WARN ) ? "-w -Werror": "";
    }
    
    /// mód argumentum fordításnál
    function modeCompArg() {
-      return $this->libMode ? "-fPIC" : "";
+      return $this->get( self::LIBMODE ) ? "-fPIC" : "";
    }
    
    /// include könyvtár parancssori argumentum
    function incDirArg() { 
-      return $this->arrayArg( $this->incDir, "-I " ); 
+      return $this->arrayArg( $this->get( self::INCDIR ), "-I " ); 
    }
       
    /// include könyvtár parancssori argumentum
    function libDirArg() {
-      return $this->arrayArg( $this->libDir, "-L " );
+      return $this->arrayArg( $this->get( self::LIBDIR ), "-L " );
    }
 
    /// használt könyvtár parancssori argumentum
    function libArg() {
-      return $this->arrayArg( $this->lib, "-l" );
+      return $this->arrayArg( $this->get( self::LIB ), "-l" );
    }      
    
    function loadDep( $fname ) {

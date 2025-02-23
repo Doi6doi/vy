@@ -28,7 +28,7 @@ abstract class Git
    abstract function clone( $url );
 
    function __construct() {
-      $this->show = true;
+      $this->set( self::SHOW, true );
    }
    
 }

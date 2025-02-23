@@ -149,4 +149,21 @@ extends Configable
       if ( $r = $part->rows() )
          $p->addRow( $r[0] );
    }
+   
+   protected function confKind( $fld ) {
+      switch ( $fld ) {
+         case self::INTYPE:
+         case self::LANG:
+         case self::LINKHEAD:
+         case self::LINKTAIL:
+         case self::OUTTYPE:
+         case self::STYLE:
+         case self::TITLE:
+         case self::WRAP:
+            return Configable::SCALAR;
+         default:
+            return Configable::NONE;
+      }
+   }
+         
 }

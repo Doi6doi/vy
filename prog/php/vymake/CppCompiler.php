@@ -13,6 +13,10 @@ abstract class CppCompiler
       CLANG = "clang",
       CUSTOM = "custom";
    
+   /// új mezők
+   const
+      INCDIR = "incDir";
+   
    /// fordító gyártása
    static function create( $kind=null ) {
       if ( ! $kind )
@@ -39,7 +43,7 @@ abstract class CppCompiler
 
    function __construct($pp) {
       parent::__construct();
-      $this->incDir = [];
+      $this->set( self::INCDIR, [] );
       $this->pp = $pp;
    }
    
@@ -48,9 +52,11 @@ abstract class CppCompiler
       self::writeSourceRes( $dst, $src, $name );
    }
 
-   /// include könyvtár beállítása
-   function setIncDir( $dir ) { 
-      $this->setArray( $this->incDir, $dir ); 
+   protected function confKind( $fld ) {
+      switch ($fld) {
+         case self::INCDIR: return Configable::ARRAY;
+         default: return parent::confKind( $fld );
+      }
    }
    
 }

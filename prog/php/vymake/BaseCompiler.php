@@ -10,20 +10,36 @@ abstract class BaseCompiler
    const
       CUSTOM = "custom";
 
-   /// könyvtár mód
-   protected $libMode;
-   /// debug mód
-   protected $debug;
-   /// lib könyvtár
-   protected $libDir;
-   /// használt könyvtárak
-   protected $lib;
-   /// figyelmeztetések
-   protected $warn;
+   /// használható mezők
+   const
+      /// könyvtár fordítás
+      LIBMODE = "libMode",
+      /// debug mód
+      DEBUG = "debug",
+      /// lib könyvtár(ak)
+      LIBDIR = "libDir",
+      /// használt könyvtárak
+      LIB = "lib",
+      /// figyelmeztetések
+      WARN = "warn";
 
    function __construct() {
-      $this->libDir = [];
-      $this->lib = [];
+      $this->set( self::LIBDIR, [] );
+      $this->set( self::LIB, [];
+   }
+   
+   protected function confKind( $fld ) {
+      switch ( $fld ) {
+         case self::LIBMODE:
+         case self::DEBUG:
+         case self::WARN:
+            return Configable::SCALAR;
+         case self::LIBDIR:
+         case self::LIB:
+            return Configable::ARRAY;
+         default:
+            return parent::confKind( $fld );
+      }
    }
    
    /// depend fájl készítés
@@ -43,35 +59,6 @@ abstract class BaseCompiler
 
    /// fordítás és linkelés
    abstract function build( $dst, $src );
-
-   /// könyvtár mód 
-   function setLibMode( $value ) { $this->libMode = $value; }
-   
-   /// könyvtár mód 
-   function setWarning( $value ) { $this->warn = $value; }
-   
-   /// debug mód
-   function setDebug( $value ) { $this->debug = $value; }
-
-   /// lib könyvtár beállítása
-   function setLibDir( $dir ) { 
-      $this->setArray( $this->libDir, $dir ); 
-   }
-
-   /// használt könyvtárak beállítása
-   function setLib( $dir ) { 
-      $this->setArray( $this->lib, $dir ); 
-   }
-
-   /// egy tömb adatainak beállítása
-   protected function setArray( & $arr, $x ) {
-      if ( ! $x )
-         $arr = [];
-      else if ( is_array( $x ))
-         $arr = $x;
-      else
-         $arr = [$x];
-   }
 
    /// tömbből összeállított argumentum
    protected function arrayArg( $arr, $pre ) {

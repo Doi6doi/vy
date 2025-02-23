@@ -28,7 +28,7 @@ abstract class Debugger
    abstract function debug( $prg );
 
    function __construct() {
-      $this->show = true;
+      $this->set( self::SHOW, true );
    }
       
    

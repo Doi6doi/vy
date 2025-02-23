@@ -7,6 +7,9 @@ abstract class CCompiler
    extends BaseCompiler
 {
    
+   const
+      INCDIR = "incDir";
+   
    /// fordító gyártása
    static function create( $kind=null ) {
       if ( ! $kind )
@@ -51,12 +54,9 @@ abstract class CCompiler
       ++$n;
    }
    
-   /// include könyvtár
-   protected $incDir;
-
    function __construct() {
       parent::__construct();
-      $this->incDir = [];
+      $this->set( self::INCDIR, [] );
    }
    
    /// erőforrás forrássá alakítása
@@ -64,9 +64,11 @@ abstract class CCompiler
       self::writeSourceRes( $dst, $src, $name );
    }
 
-   /// include könyvtár beállítása
-   function setIncDir( $dir ) { 
-      $this->setArray( $this->incDir, $dir ); 
+   protected function confKind( $fld ) {
+      switch ($fld) {
+         case self::INCDIR: return Configable::ARRAY;
+         default: return parent::confKind( $fld );
+      }
    }
    
 }

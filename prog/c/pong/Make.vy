@@ -44,12 +44,12 @@ make {
          $src := "pong.c";
          $obj := "pong"+C.objExt();
          $prg := "pong"+exeExt();
-//         C.setShow(true);
-         C.setDebug(true);
-         C.setWarning(true);
-         C.setIncDir(["../lib"]);
-         C.setLibDir(["../lib","../sdl"]);
-         C.setLib(["m","vy","vysdl","SDL2"]);
+//         C.set( "show", true);
+         C.set( "debug", true);
+         C.set( "warning", true);
+         C.set( "incDir", ["../lib"]);
+         C.set( "libDir", ["../lib","../sdl"]);
+         C.set( "lib", ["m","vy","vysdl","SDL2"]);
       }
 
       /// object fordítása

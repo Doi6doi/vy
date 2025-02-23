@@ -99,22 +99,20 @@ class CPreproc {
    
    /// egy include függőségei
    protected function dependInclude( $f, & $ret ) {
-	  $dirs = array_merge( ["."], $this->incDir );
-	  foreach ( $dirs as $d ) {
-		 $df = "." == $d ? $f : "$d/$f";
-		 if ( file_exists( $df )) {
-			if ( ! in_array( $df, $ret ))
-			   $ret [] = $df; 
-		    return $this->dependStream( new LStream($df), null, $ret ); 
-		 }
+	   $dirs = array_merge( ["."], $this->incDir );
+	   foreach ( $dirs as $d ) {
+	 	  $df = "." == $d ? $f : "$d/$f";
+		  if ( file_exists( $df )) {
+			  if ( ! in_array( $df, $ret ))
+			     $ret [] = $df; 
+		     return $this->dependStream( new LStream($df), null, $ret ); 
+		  }
 	  }
 	  foreach ( $this->sysInc as $d ) {
-		 if ( file_exists( "$d/$f" )) 
-		    return;
+		  if ( file_exists( "$d/$f" )) 
+		     return;
       }
-	  throw new EVy("Include file not found: $f");
+      throw new EVy("Include file not found: $f");
    }
-	
-		   	
 	
 }

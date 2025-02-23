@@ -126,6 +126,27 @@ class Tools {
 	  }
    }
    
+   /// engedély megadása, vagy törlése
+   static function setPerm( $file, $perm="a", $to="a", $on=true ) {
+      switch ( $s = self::system() ) {
+         case self::LINUX: 
+            return self::setLinuxPerm( $file, $perm, $to, $on );
+         default:
+            throw new EVy("Cannot change permission in system: $s");
+      }
+   }
+   
+   /// asszociatív tömb-e
+   static function isAssoc( $x ) {
+      if ( ! is_array( $x )) return false;
+      foreach ( $x as $k=>$v ) {
+         if ( 0 === $k ) 
+            return false;
+            else return true;
+      }
+      return true;
+   }
+   
    /// tömör exception stack
    static function shortTrace( \Throwable $e ) {
       if ( $p = $e->getPrevious() )
@@ -217,6 +238,65 @@ class Tools {
       } else {
          if ( ! unlink( $x ))
             throw new EVy("Cannot delete file: $x");
+      }
+   }
+   
+   /// Linux engedély beállítás
+   protected static function setLinuxPerm( $file, $perm, $to, $on ) {
+      if ( false === ($v = fileperms($file)))
+         throw new EVy("Cannot get permissions: $file");
+      $v &= 0x1ff;
+      $m = self::permSubjMask( $perm, $to );
+      if ( $on )
+         $v |= $m;
+         else $v &= ~$m;
+      if ( ! chmod( $file, $v ))
+         throw new EVy("Cannot change permissions: $file");
+   }
+
+   /// engedély maszk
+   protected static function permSubjMask( $perm, $to ) {
+      $ret = 0;
+      $s = self::subjMask( $to );
+      $p = self::permMask( $perm );
+      for ( $i=0; $i<3; ++$i) {
+         if ( $s & (1 << $i) )
+            $ret |= ($p << (3*$i));
+      }
+      return $ret;
+   }
+   
+   /// személy maszk
+   protected static function subjMask( $s ) {
+      if ( 1 != strlen( $s )) {
+         $ret = 0;
+         foreach ( $s as $c )
+            $ret |= self::subjMask( $c );
+         return $ret;
+      }
+      switch ( $s ) {
+         case "u": return 4;
+         case "g": return 2;
+         case "o": return 1;
+         case "a": return 7;
+         default: throw new EVy("Unknown subject: $s");
+      }
+   }
+   
+   /// jog maszk
+   protected static function permMask( $p ) {
+      if ( 1 != strlen( $p )) {
+         $ret = 0;
+         foreach ( $p as $c )
+            $ret |= self::permMask( $c );
+         return $ret;
+      }
+      switch ( $p ) {
+         case "r": return 4;
+         case "w": return 2;
+         case "x": return 1;
+         case "a": return 7;
+         default: throw new EVy("Unknown permission: $p");
       }
    }
    

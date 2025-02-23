@@ -77,10 +77,10 @@ make {
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( "Repr.vy" );
-         C.setShow(true);
-         C.setWarning(true);
-         C.setDebug( true );
-         C.setLibMode( true );
+         C.set("show",true);
+         C.set("warning", true);
+         C.set("debug", true );
+         C.set("libMode", true );
          C.setIncDir(".");
       }
 

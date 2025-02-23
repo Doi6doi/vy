@@ -57,12 +57,12 @@ make {
          $dep := "all.dep";
          Comp.setRepo( $vyroot );
          Comp.setReprs( ["../lib/Repr.vy", "Repr.vy"] );
-//         C.setShow(true);
-         C.setDebug(true);
-         C.setLibMode(true);
-         C.setWarning(true);
-         C.setLib(["SDL2","SDL2_ttf"]);
-         C.setIncDir([".","../lib"]);
+//         C.set( "show", true);
+         C.set( "debug", true);
+         C.set( "libMode", true);
+         C.set( "warning", true);
+         C.set( "lib", ["SDL2","SDL2_ttf"]);
+         C.set( "incDir", [".","../lib"]);
       }
 
       /// generált .c fájlok készítése

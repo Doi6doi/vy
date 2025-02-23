@@ -5,21 +5,23 @@ namespace vy;
 /// valamilyen fordító
 class MakeCompiler extends MakeImport {
 
+   const
+      COMPILER = "compiler";
+
    protected $compiler;
 
    function __construct( $owner, $name ) {
       parent::__construct( $owner, $name );
-	   $this->setCompiler( null );
-	   $this->addFuncs( ["setCompiler","build",
-         "compile","depend", "libFile","link",
-         "loadDep","objExt", "setDebug","setLib","setLibDir",
-         "setLibMode","setShow","setWarning","sourceRes"] );
+	   $this->set( self::COMPILER, null );
+	   $this->addFuncs( ["build",
+         "compile","depend", "get", "libFile","link",
+         "loadDep","objExt", "set", "sourceRes"] );
    }
 
    /// fordítás
    function compile( $dst, $src ) {
-	  $this->log( Make::INFO, "Compiling -> $dst" );
-	  $this->compiler->compile( $dst, $src );
+	   $this->log( Make::INFO, "Compiling -> $dst" );
+	   $this->compiler->compile( $dst, $src );
    }
 
    /// összeállítás
@@ -63,44 +65,21 @@ class MakeCompiler extends MakeImport {
 	  return $this->compiler->loadDep( $fname );
    }
 
-   /// include könyvtár beállítása
-   function setIncDir( $dir ) {
-	  return $this->compiler->setIncDir( $dir );
+   /// változó értéke
+   function get( $fld ) {
+      return $this->compiler->get( $fld );
    }
 
-   /// debug mód beállítása
-   function setDebug( $val ) {
-	  return $this->compiler->setDebug( $val );
-   }
-
-   /// lib mód beállítása
-   function setLibMode( $val ) {
-	  return $this->compiler->setLibMode( $val );
-   }
-
-   /// lib könyvtár beállítása
-   function setLibDir( $dir ) {
-	  return $this->compiler->setLibDir( $dir );
-   }
-
-   /// használt könyvtárak beállítása
-   function setLib( $dir ) {
-	  return $this->compiler->setLib( $dir );
-   }
-
-   /// include könyvtár beállítása
-   function setShow( $x ) {
-	  return $this->compiler->setShow( $x );
-   }
-
-   /// warningok beállítása
-   function setWarning( $x ) {
-	  return $this->compiler->setWarning( $x );
+   /// változó beállítása
+   function set( $fld, $val ) {
+      if ( self::COMPILER == $fld )
+         $this->setCompiler( $val );
+         else $this->compiler->set( $fld, $val );
    }
 
    /// fordító beállítása
-   function setCompiler( $cmp ) {
-	  $this->compiler = CCompiler::create( $cmp );
+   function setCompiler( $val ) {
+      throw new EVy("Unknown compiler: $val");
    }
 
    /// erőforrás készítése

@@ -223,6 +223,31 @@ class Tools {
          throw new EVy("Could not copy $src to $dst");
    }
 
+   /// parancs futtatás kimenettel
+   static function exec( $cmd, & $rv=null ) {
+      $out = [];
+      exec( $cmd, $out, $rv );
+      return implode( "\n", $out );
+   }
+
+   /// bináris megkeresése
+   static function which( $bin ) {
+      switch ( $s = self::system() ) {
+         case self::LINUX:
+            $ret = self::exec( "which '$bin'", $rv );
+            if ( $rv )
+               throw new EVy("Could not find: $bin");
+            return $ret;
+         case self::WINDOWS:
+            $ret = self::exec( "where '$bin'", $rv );
+            if ( $rv )
+               throw new EVy("Could not find: $bin");
+            return $ret;
+         default:
+            throw new EVy("Cannot find in: $s");
+      }
+   }
+
    /// Delete file or directory
    static function purge( $x, $recurse = false ) {
       if ( ! file_exists($x) ) return;

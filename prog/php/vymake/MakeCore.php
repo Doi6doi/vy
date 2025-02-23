@@ -15,10 +15,11 @@ class MakeCore
 	  parent::__construct( $owner, self::CORE );
 	  $this->addFuncs(["arch","changeExt","copy",
         "echo","exec","exeExt","exists",
-        "explode","format","getEnv", 
+        "explode","fail", "format","getEnv", 
         "implode", "level","loadFile",
         "make","mkdir","older","path", "purge","replace",
-        "saveFile", "setEnv", "setPath", "setPerm", "system" ]);
+        "saveFile", "setEnv", "setPath", "setPerm", 
+        "system","which" ]);
       $this->add( "init", new MakeInit( $this ));
    }
 
@@ -64,6 +65,11 @@ class MakeCore
    /// stringből tömb
    function explode( $sep, $arr ) {
       return explode( $sep, $arr );
+   }
+
+   /// fájl megkeresése
+   function which( $fname ) {
+      return Tools::which( $fname );
    }
 
    /// könyvtár létrehozása, ha nincs
@@ -229,6 +235,11 @@ class MakeCore
 
    function format() {
 	  return call_user_func_array( "sprintf", func_get_args() );
+   }
+
+   /// összeomlás
+   function fail( $msg = null ) {
+      throw new EVy( $msg );
    }
 
    /// egy időpontnál van újabb fájl, vagy valamelyik nincs

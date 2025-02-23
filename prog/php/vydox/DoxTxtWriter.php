@@ -7,20 +7,24 @@ class DoxTxtWriter extends DoxWriter {
    
    function typ() { return DoxWriter::TXT; }   
 
-   /// egy rész formázása
-   protected function formatPart( $part, $m ) {
-if ( ! array_key_exists( 1, $m ))
-      if ( self::LINK == $part )
-         return parent::formatPart( $part, $m );
-      else if ( array_key_exists( 1, $m ))
-         return $m[1];
-      else
-         return $m[0];
+   protected function formatLink( $txt, $lnk ) { 
+      $ret = "$txt";
+      if ( $lnk && $lnk != $txt && $lnk != "#$txt" )
+         $ret .= "($lnk)";
+      return $ret;
    }
 
-   /// link formázása
-   protected function formatLink( $txt, $lnk ) { 
-      return sprintf("%s (%s)", $txt, $lnk );
+   protected function formatPart( $part, $m ) {
+      switch ( $part ) {
+         case self::CODE: 
+         case self::EM:
+         case self::STRONG:
+            return $m[1];
+         case self::HEAD:
+            return $m[2];
+         default:
+            return parent::formatPart( $part, $m );
+      }
    }
 
 

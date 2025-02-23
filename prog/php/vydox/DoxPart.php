@@ -22,6 +22,7 @@ class DoxPart {
       
    /// escape parancsok
    const
+      NAME = "name",
       REF = "ref";
    
    /// tartalmazó 
@@ -77,7 +78,7 @@ class DoxPart {
    /// név megadása
    function setName($x) {
       if ( ! $this->name )
-         $this->name = $x;
+         $this->name = trim($x);
    }
 
    /// tartalom törlése

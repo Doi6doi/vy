@@ -9,6 +9,7 @@ extends Configable
    
    /// író típusok
    const
+      ANSI = "ansi",
       HTML = "html",
       MAN = "man",
       MD = "md",
@@ -56,6 +57,7 @@ extends Configable
          case self::MD: return new DoxMdWriter();
          case self::HTML: return new DoxHtmlWriter();
          case self::TXT: return new DoxTxtWriter();
+         case self::ANSI: return new DoxAnsiWriter();
          default: throw new EVy("Unknown dox output type: $t");
       }
    }
@@ -72,8 +74,7 @@ extends Configable
          '#\*\*([^*]+)\*\*#'=>self::STRONG,
          '#\*(\S[^*]*)\*#'=>self::EM,
          '#`([^`]+)`#'=>self::CODE,
-         '#\[([^\]]+)\]\(([^ ()]+)\)#'=>self::LINK,
-         '#\[(([^\]]+))\]#'=>self::LINK,
+         '#\[([^\]]+)\](?:\(([^ ()]+)\))?#'=>self::LINK,
          ':^(#+)\s+(.*):'=>self::HEAD,
          '#^\s*\*\s+(.*)#'=>self::LST
       ];
@@ -158,20 +159,35 @@ extends Configable
 
    /// egy rész formázása
    protected function formatPart( $part, $m ) {
-      if ( self::LINK == $part ) {
-         $this->refineLink( $m[1], $m[2] );
-         return $this->formatLink( $m[1], $m[2] );
-      } else          
-         return $m[0];
+      switch ( $part ) {
+         case self::LINK:
+            $lnk = Tools::g( $m, 2 );
+            $this->refineLink( $m[1], $lnk );
+            return $this->formatLink( $m[1], $lnk );
+         case self::LST:
+            return $this->formatList( $m[1] );
+         default:
+            return $m[0];
+      }
    }
 
    /// link formázása
    protected function formatLink( $txt, $lnk ) { 
       return sprintf("[%s](%s)", $txt, $lnk );
    }
+
+   /// listaelem formázása
+   protected function formatList( $txt ) {
+      if ( $b = $this->get( Dox::BULLET ) )
+         $txt = "$b $txt";
+      return $txt;
+   }
+      
    
    /// egy link kiegészítése
    protected function refineLink( & $txt, & $lnk ) {
+      if ( null == $lnk )
+         $lnk = $txt;
       $i = strpos( $lnk, '#' );
       if ( 0 === $i && $txt == $lnk ) {
          $txt = substr($txt,1);

@@ -12,6 +12,8 @@ abstract class BaseCompiler
 
    /// használható mezők
    const
+      /// plusz argumentumok
+      EARG = "earg",
       /// könyvtár fordítás
       LIBMODE = "libMode",
       /// debug mód
@@ -25,7 +27,7 @@ abstract class BaseCompiler
 
    function __construct() {
       $this->set( self::LIBDIR, [] );
-      $this->set( self::LIB, [];
+      $this->set( self::LIB, [] );
    }
    
    protected function confKind( $fld ) {
@@ -37,6 +39,8 @@ abstract class BaseCompiler
          case self::LIBDIR:
          case self::LIB:
             return Configable::ARRAY;
+         case self::EARG:
+            return Configable::ANY;
          default:
             return parent::confKind( $fld );
       }

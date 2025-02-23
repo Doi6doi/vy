@@ -13,6 +13,10 @@ class MakeC extends MakeCompiler {
 
    function setCompiler( $val ) {
       $this->compiler = CCompiler::create( $val );
+   } 
+
+   function literal( $s ) {
+      return CCompiler::literal( $s, 72 );
    }
 
 }

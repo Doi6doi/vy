@@ -14,13 +14,14 @@ class Gcc extends CppCompiler {
    }
    
    function link( $dst, $src ) {
-      $this->run( "%s -o %s %s %s %s", $this->modeLinkArg(), 
+      $this->run( "%s %s -o %s %s %s %s", $this->eArg(), $this->modeLinkArg(), 
          $this->esc($dst), $this->esc($src), $this->libDirArg(), 
          $this->libArg() );
    }
  
    function build( $dst, $src ) {
-      $this->run( "%s %s %s %s %s -o %s %s %s %s", $this->warnArg(), 
+      $this->run( "%s %s %s %s %s %s -o %s %s %s %s", $this->eArg(), 
+         $this->warnArg(), 
          $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 
          $this->modeLinkArg(), $this->esc($dst), $this->esc($src),
          $this->libDirArg(), $this->libArg()
@@ -28,7 +29,8 @@ class Gcc extends CppCompiler {
    }
    
    function compile( $dst, $src ) {
-      $this->run( "%s %s %s -c %s -o %s %s", $this->warnArg(), 
+      $this->run( "%s %s %s %s -c %s -o %s %s", $this->eArg(), 
+         $this->warnArg(), 
          $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 
          $this->esc($dst), $this->esc($src)
       );
@@ -62,6 +64,14 @@ class Gcc extends CppCompiler {
    /// include könyvtár parancssori argumentum
    function libDirArg() {
       return $this->arrayArg( $this->get( self::LIBDIR ), "-L " );
+   }
+
+   /// extra argumentumok
+   function eArg() {
+      $a = $this->get( self::EARG );
+      if ( is_array( $a ))
+         $a = implode(" ",$a);
+      return $a;
    }
 
    /// használt könyvtár parancssori argumentum

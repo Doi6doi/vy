@@ -21,6 +21,7 @@ extends Configable
 
    /// jellemzők
    const
+      BULLET = "bullet",
       INTYPE = "inType",
       LANG = "lang",
       LINKHEAD = "linkHead",
@@ -33,7 +34,7 @@ extends Configable
    const
       /// továbbított jellemzők
       PASSED = [self::LANG, self::LINKHEAD, self::LINKTAIL, self::STYLE, 
-         self::TITLE, self::WRAP];
+         self::TITLE, self::WRAP, self::BULLET];
    
    /// részek
    protected $parts;
@@ -47,6 +48,7 @@ extends Configable
       $this->clear();
       $this->conf = [];
       $this->set( self::WRAP, 72 );
+      $this->set( self::BULLET, "-" );
    }
 
    /// tartalom törlése
@@ -73,9 +75,29 @@ extends Configable
       $this->prepare();
       $t = DoxWriter::guess( $dst );
       $ret = $this->writer($t)->write( $this );
-      if ( $dst )
-         Tools::saveFile( $dst, $ret );
-         else return $ret;
+      return $this->flush( $ret, $dst );
+   }
+
+   /// egy rész kiírása
+   function writePart( $part, $dst ) {
+      $ret = "";
+      if ( is_array( $part )) {
+         $ret = "";
+         foreach ( $part as $p )
+            $ret .= $this->writePart( $p );
+      } else if ( "" === $part || null === $part ) {
+         ;
+      } else {
+         $t = DoxWriter::guess( $dst );
+         $w = $this->writer( $t );
+         foreach ( $this->parts as $p ) {
+            if ( $p->name() == $part ) {
+               $ret = $w->write( $p );
+               break;
+            }
+         }
+      }
+      return $this->flush( $ret, $dst );
    }
 
    function owner() { return null; }
@@ -96,6 +118,13 @@ extends Configable
       $ret = new DoxPart($this);
       $this->parts [] = $ret;
       return $ret;
+   }
+
+   /// eredméyn kiírása
+   protected function flush( $ret, $dst ) {
+      if ( $dst )
+         Tools::saveFile( $dst, $ret );
+         else return $ret;
    }
 
    /// előkészülés (rendezés, stb..) írás előtt
@@ -152,6 +181,7 @@ extends Configable
    
    protected function confKind( $fld ) {
       switch ( $fld ) {
+         case self::BULLET:
          case self::INTYPE:
          case self::LANG:
          case self::LINKHEAD:

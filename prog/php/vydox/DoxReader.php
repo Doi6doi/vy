@@ -232,6 +232,11 @@ class DoxReader {
       return null;
    }
 
+   /// reguláris kifejezések a referencia olvasáshoz
+   protected function refRexs() {
+      return [];
+   }
+
    /// referencia hozzáadás típussal
    protected function addRefTyp( $t, $m ) {
       $this->block->setTyp( $t );
@@ -250,8 +255,9 @@ class DoxReader {
    /// escape-elt sor
    protected function addEsc( $esc, $r ) {
       switch( $esc ) {
-         case DoxPart::REF: return $this->addRef( $r, false );
+         case DoxPart::NAME: return $this->block->setName( $r );
          case DoxPart::PARAM: return $this->addParam( $r );
+         case DoxPart::REF: return $this->addRef( $r, false );
          case DoxPart::RETURN: return $this->addReturn( $r );
          case DoxPart::TOC: return $this->addToc();
          default: $this->block->addRow( "\\$esc $r" );

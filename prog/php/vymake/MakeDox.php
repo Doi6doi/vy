@@ -16,7 +16,7 @@ class MakeDox
 	   parent::__construct( $owner, self::DOX );
 	   Autoload::addPath( __DIR__."/../vydox" );
 	   $this->dox = new Dox();
-      $this->addFuncs( ["build","get","set","read","write"] );
+      $this->addFuncs( ["build","get","set","read","write","writePart"] );
    }
 	
    /// generate output from input (read+write)
@@ -46,6 +46,11 @@ class MakeDox
       if ( $dst )
          $this->log( Make::INFO, "Writing $dst" );
       return $this->dox->write( $dst );
+   }
+   
+   /// write a part to file 
+   function writePart( $part, $dst = null ) {
+      return $this->dox->writePart( $part, $dst );
    }
    
    /// kimeneti típus beállítása

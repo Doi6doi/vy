@@ -38,13 +38,18 @@ class DoxHtmlWriter extends DoxWriter {
             if ( $this->fld())
                return "<code>$m[0]</code>";
                else return "<pre><code>$m[0]</code></pre>\n";
-         case self::LST: return '<div class="li">'.$m[1].'</div>';
          default: return parent::formatPart( $part, $m );
       }
    }
 
    protected function formatLink( $txt, $lnk ) {
       return '<a href="'.$lnk.'">'.$txt.'</a>';
+   }
+
+   protected function formatList( $txt ) {
+      if ( $b = $this->get(Dox::BULLET))
+         $b = '<span class="bullet">'.$b.'</span>';
+      return '<div class="li">'.$b.$txt.'</div>';
    }
 
    protected function writeParts( $b ) {

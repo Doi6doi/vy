@@ -29,6 +29,16 @@ abstract class CCompiler
       }
    }
 
+   static function literal( $s, $wrap=null ) {
+      $ret = "";
+      while ( 0 < strlen( $s ) ) {
+         if ( $ret )
+            $ret .= "\n";
+         $ret .= self::literalPart( $s, $wrap );
+      }
+      return $ret;
+   }
+
    /// erőforrásfájl kiírása
    static function writeSourceRes( $dst, $src, $name ) {
       if ( ! $name )
@@ -70,5 +80,37 @@ abstract class CCompiler
          default: return parent::confKind( $fld );
       }
    }
+   
+   /// a literal egy része
+   protected static function literalPart( & $s, $wrap ) {
+      $l = strlen( $s );
+      if ( $wrap && $wrap < $l )
+         $l = $wrap;
+      if ( (false !== $i = strpos( $s, "\n" ))
+         && ($i+1 < $l))
+         $l = $i+1;
+      $ret = '"';
+      for ($i=0; $i<$l; ++$i)
+         $ret .= self::literalChar( $s[$i] );
+      $ret .= '"';
+      $s = substr( $s, $l );
+      return $ret;
+   }
+   
+   /// egy karakter literálban
+   protected static function literalChar( $c ) {
+      switch ( $c ) {
+         case "\\": return "\\\\";
+         case '"': return "\\\"";
+         case "\n": return "\\n";
+         case "\t": return "\\t";
+         case "\r": return "\\r";
+         case "\f": return "\\f";
+         case "\0": return "\\0";
+         default: return $c;
+      }
+   }
+         
+   
    
 }

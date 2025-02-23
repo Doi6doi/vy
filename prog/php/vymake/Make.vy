@@ -5,8 +5,7 @@ make {
    init {
       init( "../../../MakeVals.vy" );
 
-      $php := "php";
-      $exe := "vymake";
+      $name := "vymake";
       $ver := "20250222";
 
       $buildDir := "build";
@@ -14,14 +13,41 @@ make {
       $linBinDir := "usr/bin";
       $pkgs := ["lib","vymake","vydox"];
 
+      $exe := $name+exeExt();
       $purge := [$buildDir, "*.deb"];
    }
 
    target {
 
+      /// deb or vypack
+      default {
+         if ( "Linux" = system() )
+            deb();
+            else vypack();
+      }
+
       /// Create debian package
       deb {
          clean();
+         makeDeb();
+      }
+
+      /// package with vypack
+      vypack {
+         makeVypack();
+      }
+
+      /// Purge generated files
+      clean {
+         purge( $purge );
+      }
+
+    }
+
+   function {
+
+      /// Create .deb package
+      makeDeb() {
          mkdir( $buildDir );
          // copy files
          foreach ( d | $pkgs ) {
@@ -42,6 +68,7 @@ make {
          mkdir( bdDir );
          Dox.read("desc.dox");
          Dox.set("outType","txt");
+         ds := replace( Dox.write(), "\n", "\n " );
          // create DEBIAN/control
          cnt := [
             "Package: "+$exe,
@@ -49,17 +76,22 @@ make {
             "Architecture: "+Deb.arch( arch() ),
             "Maintainer: "+$author+" <"+$gitUrl+">",
             "Depends: php-cli",
-            "Description: "+Dox.write()
+            "Description: "+ds
          ];
          saveFile( path( bdDir, "control" ), implode("\n",cnt) );
          // build package
          Deb.build( $buildDir );
       }
 
-      /// Purge generated files
-      clean {
-         purge( $purge );
+      /// pack with vypack
+      makeVypack() {
+         echo("Generating "+$exe);
+         cmd := format( "%s -o %s -x '%s' -a vymake.php -r ../lib -r ../vydox -r ../vymake -v %s",
+            $vypack, $exe, which($php), $ver );
+echo( cmd );
+         exec( cmd );
       }
 
-    }
+   }
+
 }

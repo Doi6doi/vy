@@ -15,7 +15,7 @@ class MakeCompiler extends MakeImport {
 	   $this->set( self::COMPILER, null );
 	   $this->addFuncs( ["build",
          "compile","depend", "get", "libFile","link",
-         "loadDep","objExt", "set", "sourceRes"] );
+         "literal", "loadDep","objExt", "set", "sourceRes"] );
    }
 
    /// fordítás
@@ -59,6 +59,11 @@ class MakeCompiler extends MakeImport {
 	  $this->compiler->link( $dst, $src );
    }
 	   
+   /// literal a fordító által értett nyelven
+   function literal( $s ) {
+      throw new EVy("Cannot create literal");
+   }
+      
    /// dep fájl beolvasása
    function loadDep( $fname ) {
 	  $this->log( Make::INFO, "Loading dependencies: $fname" );

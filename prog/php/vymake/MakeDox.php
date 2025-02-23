@@ -42,9 +42,10 @@ class MakeDox
    }
    
    /// write an output file
-   function write( $dst ) {
-      $this->log( Make::INFO, "Writing $dst" );
-      $this->dox->write( $dst );
+   function write( $dst=null ) {
+      if ( $dst )
+         $this->log( Make::INFO, "Writing $dst" );
+      return $this->dox->write( $dst );
    }
    
    /// kimeneti típus beállítása

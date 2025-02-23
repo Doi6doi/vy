@@ -13,10 +13,6 @@ class MakeFunc
    protected $sign;
    protected $body;
 	
-   function __construct( $owner ) {
-	   parent::__construct( $owner );
-   }
-
    function name() { return $this->name; }
 
    function kind() { return Block::BODY; }
@@ -52,7 +48,7 @@ class MakeFunc
    } 
 
    function run( RunCtx $ctx ) {
-	  return $this->body->run( $ctx );
+	   return $this->body->run( $ctx );
    }
 
    function __toString() { return $this->name; }

@@ -9,9 +9,6 @@ ini_set('zend.exception_ignore_args', 0);
 /// vy make eszköz
 class VyMake {
 
-   const
-      MAKEVY = "Make.vy";
-
    protected $fullStack;
    protected $help;
    protected $file;
@@ -48,7 +45,7 @@ class VyMake {
          while ( $this->getParam( $argv, $at ))
             ;
          if ( ! $this->file )
-            $this->file = self::MAKEVY;
+            $this->file = vy\Make::MAKEVY;
       } catch (Exception $e) {
          $this->usage($e->getMessage());
       }

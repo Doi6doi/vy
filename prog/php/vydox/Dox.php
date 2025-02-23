@@ -73,7 +73,9 @@ extends Configable
       $this->prepare();
       $t = DoxWriter::guess( $dst );
       $ret = $this->writer($t)->write( $this );
-      Tools::saveFile( $dst, $ret );
+      if ( $dst )
+         Tools::saveFile( $dst, $ret );
+         else return $ret;
    }
 
    function owner() { return null; }

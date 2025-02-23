@@ -7,6 +7,9 @@ class Make
 {
 
    const
+      MAKEVY = "Make.vy";
+
+   const
       ERROR = 1,
       WARNING = 2,
       INFO = 3;
@@ -48,6 +51,8 @@ class Make
 	  $this->level = self::INFO;
    }
 
+   function init() { return $this->init; }
+
    /// futtatás célokkal
    function run( $target ) {
 	  $target = $this->refineTarget( $target );
@@ -58,7 +63,7 @@ class Make
    }
 
    /// inicializáló futtatása
-   function runInit() {
+   function runInit( ) {
       if ( ! $this->init ) return;
       $this->init->run( $this->runCtx );
    }
@@ -184,7 +189,7 @@ class Make
 	  $this->add( $this->names, $name, $i );
 	  $s->readWS();
 	  $s->readToken(";");
-	  $i->init();
+	  $i->start();
    }
 
    /// függvény rész beolvasása

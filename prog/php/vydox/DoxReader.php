@@ -27,7 +27,7 @@ class DoxReader {
    static function guess( $fname ) {
       $e = strtolower( Tools::extension( $fname ) );
       switch ( $e ) {
-         case ".txt": return self::ANY;
+         case ".dox": case ".txt": return self::ANY;
          case ".h": case ".c": return self::C;
          case ".hpp": case ".cpp": return self::CPP;
          default: return null;

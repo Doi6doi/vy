@@ -14,6 +14,7 @@ class MakeImport
 		  case MakeC::C: return new MakeC( $owner );
         case MakeCpp::CPP: return new MakeCpp( $owner );
 		  case MakeComp::COMP: return new MakeComp( $owner );
+        case MakeDeb::DEB: return new MakeDeb( $owner );
         case MakeDox::DOX: return new MakeDox( $owner );
         case MakeGit::GIT: return new MakeGit( $owner );
         case MakeDebug::DEBUG: return new MakeDebug( $owner );
@@ -31,7 +32,7 @@ class MakeImport
 	
     function run( RunCtx $ctx ) { return $this; }
 	
-    function init() { }	
+    function start() { }	
 
     function names() { return $this->names; }
 	
@@ -60,8 +61,8 @@ class MakeImport
    function addFunc( $name ) {
       $f = new MakeFunc( $this );
       $f->setCall( $name, [$this,$name] );
-	  $this->add( $name, $f );
-	  return $f;
+	   $this->add( $name, $f );
+	   return $f;
    }
 	
    /// naplózás	

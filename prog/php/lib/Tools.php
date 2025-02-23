@@ -112,6 +112,11 @@ class Tools {
 	  else
 	     return PHP_OS;
    }
+   
+   /// architektúra
+   static function arch() {
+      return php_uname("m");
+   }
 
    /// érték osztállyal   
    static function withClass( $x ) {
@@ -171,6 +176,48 @@ class Tools {
    static function chdir( $dir ) {
       if ( ! chdir( $dir ))
          throw new EVy("Cannot change directory to $dir");
+   }
+
+   /// join arguments as path
+   static function path() {
+      return implode( DIRECTORY_SEPARATOR, func_get_args() );
+   }
+
+   /// Create a directory if not exists
+   static function mkdir( $dir ) {
+      if ( is_dir( $dir )) return;
+      if ( ! mkdir( $dir, 0777, true ) )
+         throw new EVy("Cannot create directory: $dir");
+   }
+
+   /// Copy a file
+   static function copy( $src, $dst, $ovr = false ) {
+      if ( ! file_exists( $src ))
+         throw new EVy("Does not exist: $src");
+      if ( $d = is_dir( $dst ))
+         $dst = self::path( $dst, basename( $src ));
+      if ( ! $ovr && file_exists( $dst ) )
+         throw new EVy("Already exists: $dst");
+      if ( ! copy( $src, $dst ))
+         throw new EVy("Could not copy $src to $dst");
+   }
+
+   /// Delete file or directory
+   static function purge( $x, $recurse = false ) {
+      if ( ! file_exists($x) ) return;
+      $b = basename( $x );
+      if ( in_array( $b, [".",".."] )) return;
+      if ( is_dir($x) ) {
+         if ( $recurse ) {
+            foreach ( glob( self::path( $x, "*" ) ) as $f )
+               self::purge( $f, true );
+         }
+         if ( ! rmdir( $x ))
+            throw new EVy("Cannot delete directory: $x");
+      } else {
+         if ( ! unlink( $x ))
+            throw new EVy("Cannot delete file: $x");
+      }
    }
    
 }

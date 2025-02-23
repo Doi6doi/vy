@@ -13,12 +13,13 @@ class MakeCore
 
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
-	  $this->addFuncs(["changeExt",
+	  $this->addFuncs(["arch","changeExt","copy",
         "echo","exec","exeExt","exists",
         "explode","format","getEnv", 
-        "implode","level","loadFile",
-        "make","older","purge","replace",
+        "implode", "level","loadFile",
+        "make","mkdir","older","path", "purge","replace",
         "saveFile", "setEnv", "setPath", "system"]);
+      $this->add( "init", new MakeInit( $this ));
    }
 
    /// környezeti változó lekérése
@@ -63,6 +64,23 @@ class MakeCore
    /// stringből tömb
    function explode( $sep, $arr ) {
       return explode( $sep, $arr );
+   }
+
+   /// könyvtár létrehozása, ha nincs
+   function mkdir( $ds ) {
+      if ( ! is_array($ds) )
+         $ds = [$ds];
+      foreach ( $ds as $d ) {
+         if ( ! is_dir( $d )) {
+            $this->owner->log( Make::INFO, "Creating dir: $d");
+            Tools::mkdir( $d );
+         }
+      }
+   }
+
+   /// útvonal összeállítás
+   function path() {
+      return call_user_func_array( [Tools::class, "path"], func_get_args() );
    }
 
    /// egy fájl módosítási dátuma
@@ -112,8 +130,29 @@ class MakeCore
            $this->purge( $i );
      } else if ( file_exists( $x )) {
 			$this->owner->log( Make::INFO, "Purging $x");
-			unlink( $x );
+         Tools::purge( $x, true );
 	  }
+   }
+
+   /// fájl másolás
+   function copy( $src, $dst ) {
+	   if ( is_array( $src )) {
+	     foreach ( $src as $i )
+	        $this->copyToDir( $i, $dst );
+      } else if ( preg_match('#\*#', $src )) {
+        foreach ( glob($src) as $i )
+           $this->copyToDir( $i, $dst );
+      } else {
+			$this->owner->log( Make::INFO, "Copying $src -> $dst");
+         Tools::copy( $src, $dst, true );
+	  }
+   }
+   
+   /// könyvtárba másolás
+   protected function copyToDir( $src, $dst ) {
+      if ( ! is_dir( $dst ))
+         throw new EVy("Not a directory: $dst");
+      Tools::copy( $src, $dst, true );
    }
 
    /// make futtatása másik könyvtárban
@@ -167,6 +206,11 @@ class MakeCore
    function system() {
 	  return Tools::system();
    } 
+
+   /// architektúra
+   function arch() {
+      return Tools::arch();
+   }
 
    /// futtatható fájl kiterjesztése
    function exeExt() {

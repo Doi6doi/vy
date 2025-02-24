@@ -230,6 +230,12 @@ class Tools {
       return implode( "\n", $out );
    }
 
+   /// glob rejtett fájlokkal
+   static function glob( $x ) {
+      $x = str_replace("*","{.,}*", $x);
+      return glob( $x, GLOB_BRACE);
+   }
+
    /// bináris megkeresése
    static function which( $bin ) {
       switch ( $s = self::system() ) {
@@ -248,6 +254,20 @@ class Tools {
       }
    }
 
+   /// Create a temporary file
+   static function temp($pre="") {
+      $i = 1;
+      $td = self::tempDir();
+      while ( true ) {
+         $ret = self::path( $td, "$pre$i.tmp" );
+         if ( ! file_exists($ret)) {
+            Tools::saveFile($ret,"");
+            return $ret;
+         }
+         ++$i;
+      }
+   }
+
    /// Delete file or directory
    static function purge( $x, $recurse = false ) {
       if ( ! file_exists($x) ) return;
@@ -255,8 +275,9 @@ class Tools {
       if ( in_array( $b, [".",".."] )) return;
       if ( is_dir($x) ) {
          if ( $recurse ) {
-            foreach ( glob( self::path( $x, "*" ) ) as $f )
+            foreach ( self::glob( self::path( $x, "*" ) ) as $f ) {
                self::purge( $f, true );
+            }
          }
          if ( ! rmdir( $x ))
             throw new EVy("Cannot delete directory: $x");

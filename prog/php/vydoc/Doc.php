@@ -97,7 +97,7 @@ class Doc {
       $pn = "$path/$name";
       if ( is_dir( $pn ))
          return $pn;
-      if ( false === ($arr = glob( "$path/$name*.vy")))
+      if ( false === ($arr = Tools::glob( "$path/$name*.vy")))
          throw new EVy("Unkown path: $path");
       for ( $i = count($arr)-1; 0 <= $i; --$i) {
          $ai = $arr[$i];

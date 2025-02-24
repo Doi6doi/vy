@@ -18,6 +18,7 @@ class MakeCore
         "explode","fail", "format","getEnv", 
         "implode", "level","loadFile",
         "make","mkdir","older","path", "purge","replace",
+        "regexp",
         "saveFile", "setEnv", "setPath", "setPerm", 
         "system","which" ]);
       $this->add( "init", new MakeInit( $this ));
@@ -132,8 +133,9 @@ class MakeCore
 	     foreach ( $x as $i )
 	        $this->purge( $i );
 	  } else if ( preg_match('#\*#', $x )) {
-        foreach ( glob($x) as $i )
+        foreach ( Tools::glob($x) as $i ) {
            $this->purge( $i );
+        }
      } else if ( file_exists( $x )) {
 			$this->owner->log( Make::INFO, "Purging $x");
          Tools::purge( $x, true );
@@ -146,7 +148,7 @@ class MakeCore
 	     foreach ( $src as $i )
 	        $this->copyToDir( $i, $dst );
       } else if ( preg_match('#\*#', $src )) {
-        foreach ( glob($src) as $i )
+        foreach ( Tools::glob($src) as $i )
            $this->copyToDir( $i, $dst );
       } else {
 			$this->owner->log( Make::INFO, "Copying $src -> $dst");
@@ -182,6 +184,22 @@ class MakeCore
    function replace( $s, $src, $dst ) {
 	   return str_replace( $src, $dst, $s );
    } 
+
+   /// regexp csere
+   function regexp( $src, $rxp, $dst=null ) {
+      if ( is_array( $src )) {
+         $ret = [];
+         foreach ( $src as $s )
+            $ret [] = $this->regexp( $s, $rxp, $dst );
+         return $ret;
+      }
+      if ( null == $dst ) {
+         preg_match( $rxp, $src, $m );
+         return $m;
+      } else {
+         return preg_replace( $rxp, $dst, $src );
+      }
+   }
 
    /// engedély kezelés
    function setPerm( $file, $perm="a", $to="a", $on=true ) {

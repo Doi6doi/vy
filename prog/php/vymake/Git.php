@@ -10,6 +10,10 @@ abstract class Git
       CLI = "cli",
       CUSTOM = "custom";
    
+   /// konfig mezők
+   const
+      DEPTH = "depth";
+   
    /// git gyártása
    static function create( $kind=null ) {
       if ( ! $kind )
@@ -29,6 +33,14 @@ abstract class Git
 
    function __construct() {
       $this->set( self::SHOW, true );
+   }
+   
+   /// változó fajtája
+   protected function confKind( $fld ) {
+      switch ( $fld ) {
+         case self::DEPTH: return Configable::SCALAR;
+         default: return parent::confKind( $fld );
+      }
    }
    
 }

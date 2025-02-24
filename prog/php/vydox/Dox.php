@@ -29,12 +29,15 @@ extends Configable
       OUTTYPE = "outType",
       STYLE = "style",
       TITLE = "title",
+      VARS = "vars",
       WRAP = "wrap";
 
    const
-      /// továbbított jellemzők
-      PASSED = [self::LANG, self::LINKHEAD, self::LINKTAIL, self::STYLE, 
-         self::TITLE, self::WRAP, self::BULLET];
+      /// reader-nek továbbított jellemzők
+      RPASSED = [self::VARS],
+      /// writer továbbított jellemzők
+      WPASSED = [self::LANG, self::LINKHEAD, self::LINKTAIL, self::STYLE, 
+         self::TITLE, self::WRAP, self::BULLET ];
    
    /// részek
    protected $parts;
@@ -120,6 +123,19 @@ extends Configable
       return $ret;
    }
 
+   /// saját változó beállítása
+   function setVar( $fld, $val ) {
+      if ( is_array( $fld )) {
+         foreach ( $fld as $k=>$v )
+            $this->setVar( $k, $v );
+      } else {
+         if ( ! $v = $this->get( self::VARS ))
+            $v = [];
+         $v[$fld] = $val;
+         $this->set( self::VARS, $v );
+      }
+   }
+
    /// eredméyn kiírása
    protected function flush( $ret, $dst ) {
       if ( $dst )
@@ -155,6 +171,8 @@ extends Configable
          $tin = $t;
       if ( ! $this->reader || $tin != $this->reader->typ() )
          $this->reader = DoxReader::create( $tin, $this );
+      foreach ( self::RPASSED as $f )
+         $this->reader->set( $f, $this->get($f) );
       return $this->reader;
    }
 
@@ -165,7 +183,7 @@ extends Configable
       if ( ! $this->writer || $tout != $this->writer->typ() ) {
          $this->writer = DoxWriter::create( $tout );
       }
-      foreach ( self::PASSED as $f )
+      foreach ( self::WPASSED as $f )
          $this->writer->set( $f, $this->get($f) );
       return $this->writer;
    }
@@ -191,6 +209,8 @@ extends Configable
          case self::TITLE:
          case self::WRAP:
             return Configable::SCALAR;
+         case self::VARS:
+            return Configable::ANY;
          default:
             return Configable::NONE;
       }

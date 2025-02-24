@@ -9,31 +9,50 @@ class Gcc extends CppCompiler {
    }
    
    function depend( $dst, $src ) {
-      $this->run( "%s -MM %s > %s", $this->incDirArg(),
-         $this->esc( $src ), $this->esc( $dst ));
+      $this->runArgs([
+         $this->incDirArg(),
+         "-MM ".$this->esc($src),
+         ">".$this->esc( $dst )
+      ]);
    }
    
    function link( $dst, $src ) {
-      $this->run( "%s %s -o %s %s %s %s", $this->eArg(), $this->modeLinkArg(), 
-         $this->esc($dst), $this->esc($src), $this->libDirArg(), 
-         $this->libArg() );
+      $this->runArgs([
+         $this->eArg(),
+         $this->modeLinkArg(),
+         "-o ".$this->esc($dst),
+         $this->esc($src),
+         $this->libDirArg(),
+         $this->libArg()
+      ]);
    }
  
    function build( $dst, $src ) {
-      $this->run( "%s %s %s %s %s %s -o %s %s %s %s", $this->eArg(), 
-         $this->warnArg(), 
-         $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 
-         $this->modeLinkArg(), $this->esc($dst), $this->esc($src),
-         $this->libDirArg(), $this->libArg()
-      );
+      $this->runArgs([
+         $this->eArg(),
+         $this->warnArg(),
+         $this->debugArg(),
+         $this->modeCompArg(),
+         $this->incDirArg(),
+         $this->modeLinkArg(),
+         "-o ".$this->esc( $dst ),
+         $this->esc($src),
+         $this->libDirArg(),
+         $this->libArg()
+      ]);
    }
    
    function compile( $dst, $src ) {
-      $this->run( "%s %s %s %s -c %s -o %s %s", $this->eArg(), 
-         $this->warnArg(), 
-         $this->debugArg(), $this->modeCompArg(), $this->incDirArg(), 
-         $this->esc($dst), $this->esc($src)
-      );
+      $this->runArgs([
+         $this->eArg(),
+         "-c",
+         $this->warnArg(),
+         $this->debugArg(),
+         $this->modeCompArg(),
+         $this->incDirArg(),
+         "-o ".$this->esc( $dst ),
+         $this->esc( $src )
+      ]);
    }
    
    /// mód argumentum linkelésnél
@@ -45,7 +64,7 @@ class Gcc extends CppCompiler {
    function debugArg() {
       return $this->get( self::DEBUG ) ? "-g": "";
    }
-   
+
    /// warning argumentum
    function warnArg() {
       return $this->get( self::WARN ) ? "-w -Werror": "";

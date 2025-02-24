@@ -2,7 +2,7 @@
 
 namespace vy;
 
-class MakeGit extends MakeImport {
+class MakeGit extends MakeImportCmd {
    
    const
       GIT = "Git";
@@ -15,6 +15,8 @@ class MakeGit extends MakeImport {
  	   $this->addFuncs( ["clone"] );
    }
 
+   function cmd() { return $this->git; }
+
    /// git beállítása
    function setGit( $git ) {
 	  $this->git = Git::create( $git );
@@ -24,8 +26,5 @@ class MakeGit extends MakeImport {
    function clone( $url ) {
       $this->git->clone( $url );
    }
-   
-   
-   
    
 }

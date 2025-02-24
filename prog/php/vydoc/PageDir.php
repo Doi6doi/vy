@@ -31,7 +31,7 @@ class PageDir {
    function build() {
       $this->items = [];
       $ptn = sprintf( "%s/%s/*", $this->base, $this->path );
-      foreach ( glob( $ptn ) as $f ) {
+      foreach ( Tools::glob( $ptn ) as $f ) {
          if ( preg_match('#^(.*)/(.+?)(@\d+)?\.vy$#', $f, $m )) {
             $name = $m[2];
             $ver = Tools::g( $m, 3 );

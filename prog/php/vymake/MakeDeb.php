@@ -3,7 +3,7 @@
 namespace vy;
 
 /// debian .deb csomagoló
-class MakeDeb extends MakeImport {
+class MakeDeb extends MakeImportCmd {
    
    const
       DEB = "Deb";
@@ -15,6 +15,8 @@ class MakeDeb extends MakeImport {
       $this->deb = new Deb();
  	   $this->addFuncs( ["arch","build"] );
    }
+
+   function cmd() { return $this->deb; }
 
    /// csomag építése
    function build( $dir, $fname=null ) {

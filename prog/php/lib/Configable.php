@@ -87,10 +87,13 @@ class Configable {
             $v = [];
          $v = array_merge( $v, $val );
       } else {
-         if ( null === $val && self::ARRAY == $k )
-            $v = [];
-         else
-            $v = $val;
+         $v = $val;
+         if ( self::ARRAY == $k ) {
+            if ( null === $val )
+               $v = [];
+            else if ( ! is_array($val) )
+               $v = [$val];
+         }
       }
       $this->conf[ $fld ] = $v;
    }

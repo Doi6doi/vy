@@ -2,7 +2,7 @@
 
 namespace vy;
 
-class MakeDebug extends MakeImport {
+class MakeDebug extends MakeImportCmd {
    
    const
       DEBUG = "Debug";
@@ -14,6 +14,8 @@ class MakeDebug extends MakeImport {
       $this->setDebugger( null );
  	   $this->addFuncs( ["debug"] );
    }
+
+   $this->cmd() { return $this->debugger; }
 
    /// debugger beállítása
    function setDebugger( $dbg ) {

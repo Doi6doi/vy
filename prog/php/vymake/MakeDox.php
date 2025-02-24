@@ -16,7 +16,8 @@ class MakeDox
 	   parent::__construct( $owner, self::DOX );
 	   Autoload::addPath( __DIR__."/../vydox" );
 	   $this->dox = new Dox();
-      $this->addFuncs( ["build","get","set","read","write","writePart"] );
+      $this->addFuncs( ["build","get","set","setVar",
+         "read","write","writePart"] );
    }
 	
    /// generate output from input (read+write)
@@ -39,6 +40,11 @@ class MakeDox
    /// set config value
    function set( $fld, $val ) {
       $this->dox->set( $fld, $val );
+   }
+   
+   /// set custom value
+   function setVar( $fld, $val ) {
+      $this->dox->setVar( $fld, $val );
    }
    
    /// write an output file

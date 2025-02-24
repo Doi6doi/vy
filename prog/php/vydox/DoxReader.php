@@ -3,7 +3,9 @@
 namespace vy;
 
 /// dox olvasó
-class DoxReader {
+class DoxReader 
+   extends Configable
+{
    
    /// állapotok
    const
@@ -180,9 +182,16 @@ class DoxReader {
    /// dox sor hozzáadása
    protected function addDox( $r ) {
       $r = trim($r);
+      $r = preg_replace_callback( '#\\\\var\s+([a-zA-Z0-9_]+)#',
+         [$this,"doxVar"], $r );
       if ( preg_match('#^\\\\(\S+)(\s+(.*))?$#', $r, $m ))
          $this->addEsc( $m[1], Tools::g( $m, 3 ) );
          else $this->block->addRow( $r );
+   }
+
+   /// egy változó értékének olvasása
+   protected function doxVar( $x ) {
+      return Tools::g( $this->get( Dox::VARS ), $x[1] );
    }
 
    /// zárójelek kezelése

@@ -24,6 +24,11 @@ make {
             else vypack();
       }
 
+      dl {
+         Net.set("cert",false);
+         echo( Net.fetch("https://google.com") );
+      }
+
       /// Create debian package
       deb {
          makeDeb();
@@ -102,8 +107,28 @@ make {
          bpd := path( $buildDir, $vypPhpDir );
          Arc.set( "same", false );
          Arc.extract( bpf, bpd );
-         foreach ( d | ["sasl2",path("lib","enchant")] )
-            purge( path( bpd, d ));
+         $drops := ["sasl2","lib","dev","libsqlite3.dll",
+            "php7embed.lib","php7phpdbg.dll","phpdbg.exe",
+            "php-cgi.exe","php-win.exe"];
+         $dropExts := ["fileinfo","gd2","imap","ldap","snmp","soap",
+            "tidy","xsl"];
+         $lrgs := ["icudt66.dll","icuin66.dll","icuuc66.dll",
+            "libcrypto-1_1-x64.dll","php7.dll","ext\\php_mbstring.dll"];
+         foreach ( d | $drops )
+            purge( path( bpd, d ) );
+         foreach ( d | $dropExts )
+            purge( format("%s\\ext\\php_%s.dll", bpd, d ));
+         /// upx large files
+         if ( $upx := false ) {
+            foreach ( l | $lrgs ) {
+               echo("UPX-ing "+l);
+               exec( $upx+" -q "+path( bpd, l ));
+            }
+         }
+         /// add php.ini
+         echo( "Adding php.ini");
+         phi := ["extension=curl","extension_dir=.\\ext"];
+         saveFile( bpd+"\\php.ini", implode("\n",phi));
          /// create vymake package
          cmd := format( "%s -o %s -c \"%s\" -a %s -r %s %s -v %s",
             $vypack, $exe,

@@ -13,6 +13,7 @@ class VyMake {
    protected $help;
    protected $file;
    protected $targets;
+   protected $urls;
 
    function __construct() {
       $this->targets = [];
@@ -29,6 +30,7 @@ class VyMake {
             get_class($e), basename( $e->getFile() ),
             $e->getLine(), $e->getMessage() ));
       }
+      flush();
    }
 
    function run( $argv ) {

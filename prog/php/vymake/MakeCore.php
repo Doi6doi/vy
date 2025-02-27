@@ -14,13 +14,12 @@ class MakeCore
    function __construct( $owner ) {
 	  parent::__construct( $owner, self::CORE );
 	  $this->addFuncs(["arch","changeExt","copy",
-        "echo","exec","exeExt","exists",
+	    "cwd", "echo","exec","exeExt","exists",
         "explode","fail", "format","getEnv", 
         "implode", "level","loadFile",
         "make","mkdir","older","path", "purge","replace",
-        "regexp",
-        "saveFile", "setEnv", "setPath", "setPerm", 
-        "system","which" ]);
+        "regexp", "saveFile", "setEnv", "setPath", 
+        "setPerm", "system","which" ]);
       $this->add( "init", new MakeInit( $this ));
    }
 
@@ -258,6 +257,11 @@ class MakeCore
    /// összeomlás
    function fail( $msg = null ) {
       throw new EVy( $msg );
+   }
+
+   /// aktuális könyvtár
+   function cwd() {
+	  return getcwd();
    }
 
    /// egy időpontnál van újabb fájl, vagy valamelyik nincs

@@ -33,6 +33,7 @@ class StmForeach
 	}
 	
    function run( RunCtx $ctx ) {
+      $ret = null;
 	  $ctx->push( self::FOREACH );
 	  try {
          $r = $this->range->run( $ctx );

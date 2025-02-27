@@ -1,20 +1,18 @@
 make {
 
-   import { Deb; Dox; }
+   import { Deb; Dox; Net; Arc; }
 
    init {
-      init( "../../../MakeVals.vy" );
+      init( "../MakeVals.vy" );
 
       $name := "vymake";
       $ver := "20250222";
 
       $buildDir := "build";
-      $linLibDir := "usr/lib/vy";
-      $linBinDir := "usr/bin";
       $pkgs := ["lib","vymake","vydox"];
 
       $exe := $name+exeExt();
-      $purge := [$buildDir, "*.deb"];
+      $purge := [$buildDir, "*.deb", "vymake"+exeExt() ];
    }
 
    target {
@@ -28,7 +26,6 @@ make {
 
       /// Create debian package
       deb {
-         clean();
          makeDeb();
       }
 
@@ -48,6 +45,7 @@ make {
 
       /// Create .deb package
       makeDeb() {
+         echo("Generating .deb package");
          mkdir( $buildDir );
          // copy files
          foreach ( d | $pkgs ) {
@@ -83,13 +81,44 @@ make {
          Deb.build( $buildDir );
       }
 
-      /// pack with vypack
-      makeVypack() {
-         echo("Generating "+$exe);
-         cmd := format( "%s -o %s -x '%s' -a vymake.php -r ../lib -r ../vydox -r ../vymake -v %s",
-            $vypack, $exe, which($php), $ver );
-echo( cmd );
+      // create vypack exe
+      vypack() {
+         echo("Generating vypack-ed executable");
+         if ( ! which( $vypack ))
+            echo("Cannot find "+$vypack);
+         mkdir( $buildDir );
+         // copy files
+         foreach ( d | $pkgs ) {
+            mkdir( path( $buildDir, d ));
+            copy( path("..",d,"*.php"), path($buildDir,d) );
+         }
+         /// download and extract php zip
+         bpf := path( $buildDir, $vypPhpFname );
+         if ( ! exists( bpf )) {
+            Net.set("cert",false);
+            echo("Downloading php release");
+            Net.fetch( $vypPhpUrl, bpf );
+         }
+         bpd := path( $buildDir, $vypPhpDir );
+         Arc.set( "same", false );
+         Arc.extract( bpf, bpd );
+         foreach ( d | ["sasl2",path("lib","enchant")] )
+            purge( path( bpd, d ));
+         /// create vymake package
+         cmd := format( "%s -o %s -c \"%s\" -a %s -r %s %s -v %s",
+            $vypack, $exe,
+            path("%vypack%",$vypPhpDir,"php.exe"),
+            path("%vypack%","vymake","vymake.php"), 
+            bpd, rArgs( $pkgs ), 
+            $ver );
+         echo( cmd );
          exec( cmd );
+      }
+
+      /// -r kapcsolók vymake-hez
+      rArgs( dirs ) {
+         return implode(" ",regexp(dirs, "#^(.*)$#", 
+            "-r "+path($buildDir,"\\\\1")));
       }
 
    }

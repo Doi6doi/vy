@@ -15,7 +15,7 @@ class MakeDebug extends MakeImportCmd {
  	   $this->addFuncs( ["debug"] );
    }
 
-   $this->cmd() { return $this->debugger; }
+   function cmd() { return $this->debugger; }
 
    /// debugger beállítása
    function setDebugger( $dbg ) {

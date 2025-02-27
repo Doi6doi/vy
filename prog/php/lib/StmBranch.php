@@ -19,7 +19,7 @@ class StmBranch
    }
 
    function read( ExprStream $s ) {
-     $this->position = $s->position();
+      $this->position = $s->position();
 	  switch ( $this->bkind ) {
 		 case self::IF: break;
 		 case self::CASE: $this->readCase( $s ); break;
@@ -30,7 +30,9 @@ class StmBranch
 
    /// illeszkedik-e az ág erre az értékre
    function matches( $val ) {
-	  return $this->matchExpr( $this->cond, $val );
+	  if ( $this->cond )
+         return $this->matchExpr( $this->cond, $val );
+	     else return true;
    }
 
    function __toString() {
@@ -71,13 +73,16 @@ class StmBranch
 	
    /// case feltétel olvasása
    protected function readCase( $s ) {
+	  $s->readWS();
+	  if ( $s->readIf("else"))
+	     return;
 	  $t = new Tuple();
 	  $t->add( $this->readCaseItem( $s ) );
 	  while (true) {
 	     $s->readWS();
 	     if ( ! $s->readIf(",") )
  	        break;
-         $ret->add( $this->readCaseItem( $s ) );
+         $t->add( $this->readCaseItem( $s ) );
       }
       $s->readToken(":");
       $ri = $t->items();

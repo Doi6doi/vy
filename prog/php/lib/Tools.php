@@ -211,6 +211,14 @@ class Tools {
          throw new EVy("Cannot create directory: $dir");
    }
 
+   /// százalék kiírása
+   static function percent( $at, $sum ) {
+	  if ( ! $sum )
+	     return "0%";
+	  else
+	     return sprintf( "%d%%", 100*$at/$sum );
+   }
+
    /// Copy a file
    static function copy( $src, $dst, $ovr = false ) {
       if ( ! file_exists( $src ))
@@ -242,12 +250,12 @@ class Tools {
          case self::LINUX:
             $ret = self::exec( "which '$bin'", $rv );
             if ( $rv )
-               throw new EVy("Could not find: $bin");
+               throw new EVy("Could not find executable: $bin");
             return $ret;
          case self::WINDOWS:
-            $ret = self::exec( "where '$bin'", $rv );
+            $ret = self::exec( "where $bin", $rv );
             if ( $rv )
-               throw new EVy("Could not find: $bin");
+               throw new EVy("Could not find executable: $bin");
             return $ret;
          default:
             throw new EVy("Cannot find in: $s");
@@ -286,7 +294,7 @@ class Tools {
             throw new EVy("Cannot delete file: $x");
       }
    }
-   
+
    /// Linux engedély beállítás
    protected static function setLinuxPerm( $file, $perm, $to, $on ) {
       if ( false === ($v = fileperms($file)))

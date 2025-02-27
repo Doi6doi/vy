@@ -39,6 +39,7 @@ extends Configable
    
    /// típus kitalálása a fájlnévből
    static function guess( $fname ) {
+	  if ( ! $fname ) return null;
       $e = strtolower( Tools::extension( $fname ) );
       switch ( $e ) {
          case ".htm": case ".html": return self::HTML;

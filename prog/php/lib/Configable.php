@@ -8,6 +8,7 @@ class Configable {
    const
       NONE = "none",
       ANY = "any",
+      BOOL = "bool",
       ARRAY = "array",
       SCALAR = "scalar";
    
@@ -72,7 +73,7 @@ class Configable {
          case self::ANY:
             return;
       }
-      if ( self::ARRAY == $fk && self::SCALAR == $fk )
+      if ( self::ARRAY == $kind && self::SCALAR == $fk )
          throw new EVy("Can only be scalar value: $fld");
    }
    
@@ -93,7 +94,8 @@ class Configable {
                $v = [];
             else if ( ! is_array($val) )
                $v = [$val];
-         }
+         } else if ( self::BOOL == $k )
+            $v = !!$v;
       }
       $this->conf[ $fld ] = $v;
    }

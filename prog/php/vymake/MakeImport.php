@@ -11,14 +11,16 @@ class MakeImport
 	
 	static function load( $owner, $name ) {
 	   switch ( $name ) {
-		  case MakeC::C: return new MakeC( $owner );
-        case MakeCpp::CPP: return new MakeCpp( $owner );
-		  case MakeComp::COMP: return new MakeComp( $owner );
-        case MakeDeb::DEB: return new MakeDeb( $owner );
-        case MakeDox::DOX: return new MakeDox( $owner );
-        case MakeGit::GIT: return new MakeGit( $owner );
-        case MakeDebug::DEBUG: return new MakeDebug( $owner );
-		  default: throw new EVy("Unknown import: $name");
+	      case MakeArc::ARC: return new MakeArc( $owner );
+          case MakeC::C: return new MakeC( $owner );
+          case MakeCpp::CPP: return new MakeCpp( $owner );
+	      case MakeComp::COMP: return new MakeComp( $owner );
+          case MakeDeb::DEB: return new MakeDeb( $owner );
+          case MakeDox::DOX: return new MakeDox( $owner );
+          case MakeGit::GIT: return new MakeGit( $owner );
+          case MakeNet::NET: return new MakeNet( $owner );
+          case MakeDebug::DEBUG: return new MakeDebug( $owner );
+	 	  default: throw new EVy("Unknown import: $name");
 	   }
 	}
 	

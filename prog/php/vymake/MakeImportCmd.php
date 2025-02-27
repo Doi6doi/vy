@@ -2,7 +2,7 @@
 
 namespace vy;
 
-/// parancssori eszköz importja
+/// eszköz importja
 abstract class MakeImportCmd extends MakeImport {
    
    function __construct( $owner, $name ) {

@@ -119,7 +119,7 @@ make {
          foreach ( d | $dropExts )
             purge( format("%s\\ext\\php_%s.dll", bpd, d ));
          /// upx large files
-         if ( $upx := false ) {
+         if ( $upx ) {
             foreach ( l | $lrgs ) {
                echo("UPX-ing "+l);
                exec( $upx+" -q "+path( bpd, l ));

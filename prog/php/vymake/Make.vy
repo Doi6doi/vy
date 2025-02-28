@@ -109,11 +109,14 @@ make {
          Arc.extract( bpf, bpd );
          $drops := ["sasl2","lib","dev","libsqlite3.dll",
             "php7embed.lib","php7phpdbg.dll","phpdbg.exe",
-            "php-cgi.exe","php-win.exe"];
+            "php-cgi.exe","php-win.exe",
+            "icudt66.dll","icuin66.dll","icuuc66.dll"
+            ];
          $dropExts := ["fileinfo","gd2","imap","ldap","snmp","soap",
             "tidy","xsl"];
-         $lrgs := ["icudt66.dll","icuin66.dll","icuuc66.dll",
-            "libcrypto-1_1-x64.dll","php7.dll","ext\\php_mbstring.dll"];
+         $lrgs := [
+            "libcrypto-1_1-x64.dll","php7.dll",
+            "ext\\php_mbstring.dll"];
          foreach ( d | $drops )
             purge( path( bpd, d ) );
          foreach ( d | $dropExts )
@@ -122,7 +125,7 @@ make {
          if ( $upx ) {
             foreach ( l | $lrgs ) {
                echo("UPX-ing "+l);
-               exec( $upx+" -q "+path( bpd, l ));
+               exec( $upx+" --force -q "+path( bpd, l ));
             }
          }
          /// add php.ini

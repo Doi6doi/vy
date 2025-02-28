@@ -1,0 +1,16 @@
+# Vy
+
+Vy helps you write and distribute software in a form that makes it possible
+for a very wide variety of computers to run.
+
+You can read an [Introduction] about what is this and how it works. 
+It mostly does not at the moment but later it will.
+
+What already does work however, is the make tool. It is called [vymake] and it 
+is quite cool. You can build a C or C++ project with it writing only one 
+makefile which works on different architectures and different compilers.
+Leaving all those autotools/automake/cmake hell out of the game.
+
+
+
+

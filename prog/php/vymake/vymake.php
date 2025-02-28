@@ -30,7 +30,6 @@ class VyMake {
             get_class($e), basename( $e->getFile() ),
             $e->getLine(), $e->getMessage() ));
       }
-      flush();
    }
 
    function run( $argv ) {

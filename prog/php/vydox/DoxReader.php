@@ -23,7 +23,8 @@ class DoxReader
    const
       C = "c",
       CPP = "cpp",
-      ANY = "any";
+      ANY = "any",
+      PHP = "php";
       
    /// típus kitalálása a fájlnévből
    static function guess( $fname ) {
@@ -32,6 +33,7 @@ class DoxReader
          case ".dox": case ".txt": return self::ANY;
          case ".h": case ".c": return self::C;
          case ".hpp": case ".cpp": return self::CPP;
+         case ".php": return self::PHP;
          default: return null;
       }
    }
@@ -42,6 +44,7 @@ class DoxReader
          case self::C: return new DoxCReader();
          case self::CPP: return new DoxCppReader();
          case self::ANY: return new DoxReader();
+         case self::PHP: return new DoxPhpReader();
          default: throw new EVy("Unknown dox input type: $t");
       }
    }

@@ -6,7 +6,7 @@ make {
       init( "../MakeVals.vy" );
 
       $name := "vymake";
-      $ver := "20250222";
+      $ver := "20250228";
 
       $buildDir := "build";
       $pkgs := ["lib","vymake","vydox"];

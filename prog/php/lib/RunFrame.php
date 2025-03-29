@@ -21,7 +21,7 @@ class RunFrame {
    function getVar( $name ) {
 	  if ( array_key_exists( $name, $this->vars ))
 	     return $this->vars[$name];
-	     else throw new EVy("Unknwon variable: $name");
+	     else throw new EVy("Unknown variable: $name");
    }
    
    /// változó értékének beállítása

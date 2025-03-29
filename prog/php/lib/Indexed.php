@@ -10,7 +10,7 @@ class Indexed
 	protected $base;
 	protected $index;
 	
-    function __construct( $base, $index ) {
+   function __construct( $base, $index ) {
 	   $this->base = $base;
 	   $this->index = $index;
 	}

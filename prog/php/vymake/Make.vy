@@ -1,12 +1,12 @@
 make {
 
-   import { Deb; Dox; Net; Arc; }
-
    init {
       init( "../MakeVals.vy" );
 
       $name := "vymake";
       $ver := "20250228";
+
+      $Net := tool("Net");
 
       $buildDir := "build";
       $pkgs := ["lib","vymake","vydox"];
@@ -25,8 +25,8 @@ make {
       }
 
       dl {
-         Net.set("cert",false);
-         echo( Net.fetch("https://google.com") );
+         $Net.set("cert",false);
+         echo( $Net.fetch("https://google.com") );
       }
 
       /// Create debian package
@@ -50,6 +50,8 @@ make {
 
       /// Create .deb package
       makeDeb() {
+         Deb := tool("Deb");
+         Dox := tool("Dox");
          echo("Generating .deb package");
          mkdir( $buildDir );
          // copy files
@@ -88,6 +90,7 @@ make {
 
       // create vypack exe
       vypack() {
+         Arc := tool("Arc");
          echo("Generating vypack-ed executable");
          if ( ! which( $vypack ))
             echo("Cannot find "+$vypack);
@@ -100,9 +103,9 @@ make {
          /// download and extract php zip
          bpf := path( $buildDir, $vypPhpFname );
          if ( ! exists( bpf )) {
-            Net.set("cert",false);
+            $Net.set("cert",false);
             echo("Downloading php release");
-            Net.fetch( $vypPhpUrl, bpf );
+            $Net.fetch( $vypPhpUrl, bpf );
          }
          bpd := path( $buildDir, $vypPhpDir );
          Arc.set( "same", false );

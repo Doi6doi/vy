@@ -100,9 +100,9 @@ class VyDox {
 
 * `-h`: this help
 * `-x`: shows full stack trace on error
-* `-s <field>=<value>`: sets a dox setting
+* `-s <field>=<value>`: sets a dox parameter
 
-### Settings
+### Parameters
 
 */
    function usage( $msg ) {
@@ -110,6 +110,8 @@ class VyDox {
       $ud->read( __FILE__ );
       $ud->set( vy\Dox::OUTTYPE, vy\DoxWriter::TXT );
       fprintf( STDERR, $ud->writePart("usage", null) );
+      $ud->read( __DIR__."/Dox.php" );
+      fprintf( STDERR, $ud->writePart("parameters", null) );
       if ( $msg )
          fprintf( STDERR, "$msg\n" );
       exit(1);

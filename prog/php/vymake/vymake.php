@@ -2,7 +2,7 @@
 
 require_once( __DIR__."/../lib/autoload.php" );
 
-vy\Autoload::addPath( __DIR__ );
+vy\Autoload::addPath( [__DIR__, __DIR__."/../tool"] );
 
 ini_set('zend.exception_ignore_args', 0);
 

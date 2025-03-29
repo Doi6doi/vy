@@ -19,7 +19,17 @@ extends Configable
       CONS = "cons",
       FLD = "fld";
 
-   /// jellemzők
+/** \name params
+\param bullet The bullet character
+\param inType Input file type
+\param lang Language code
+\param linkHead Part to write as links prefix
+\param linkTail Part to write as links suffix
+\param outType Output file type
+\param style Stylesheet for output
+\param title Title of document
+\param wrap Wrap size
+*/
    const
       BULLET = "bullet",
       INTYPE = "inType",

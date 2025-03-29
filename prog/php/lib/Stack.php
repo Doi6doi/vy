@@ -48,6 +48,7 @@ class Stack {
          case "+": case "-": return 30;
          case "*": case "/": case "%": return 40;
          case "(": case ".": case "[": return 90;
+         case ":": return 95;
          default: return null;
       }
    }
@@ -118,6 +119,8 @@ class Stack {
    protected function joinUnary() {
       return $this->joinBraced( Braced::ROUND )
          || $this->joinBraced( Braced::SQUARE )
+         || $this->joinFieldVal()
+         || $this->joinHash()
          || $this->joinMember()
          || $this->joinPrefix();
    }
@@ -142,6 +145,37 @@ class Stack {
       return false;
    }
 
+   /// objektum összevonás
+   protected function joinHash() {
+      if ( "}" != $this->items[0] )
+         return false;
+      if ( 2 <= $this->count() && "{" == $this->items[1] )
+         return $this->join( 2, new Hash() );
+      if ( ! $b = $this->hashBody( $this->items[1] ))
+         return false;
+      if ( 3 <= $this->count() && "{" == $this->items[2] 
+         && $b = $this->hashBody( $this->items[1] ))
+         return $this->join( 3, new Hash($b));
+      return false;
+   }
+
+   /// lehet-e ilyen hash törzs
+   protected function hashBody($x) {
+      $ret = [];
+      if ($x instanceof FieldVal) {
+         $ret[$x->field] = $x->val;
+         return $ret;
+      } else if ($x instanceof Tuple) {
+         foreach ( $x->items() as $i ) {
+            if ( ! ($i instanceof FieldVal))
+               return false;
+            $ret[$i->field] = $i->val;
+         }
+         return $ret;
+      } else
+         return false;
+   }
+
    /// tag összefűzés
    protected function joinMember() {
 	  if ( $this->count() < 3 ) return false;
@@ -150,6 +184,18 @@ class Stack {
 	     && $this->isToken(0) && $this->stream->isIdent( $i0, true )))
 	     return false;
 	  return $this->join( 3, new Member($this->items[2], $i0 ));
+   }
+
+   /// mező: érték összefűzés
+   protected function joinFieldVal() {
+      if ($this->count()<3) return false;
+      $i2 = $this->items[2];
+      if ( ! ( ":" == $this->items[1] && $this->stream->isIdent($i2, true)
+         && $this->isExpr(0) ))
+         return false;
+      $np = $this->precedence( $this->next() );
+      if ( $np && $this->precedence(":") > $np ) return false;
+      return $this->join( 3, new FieldVal( $i2, $this->items[0] ));
    }
 
 
@@ -167,6 +213,7 @@ class Stack {
    /// azonosító kiértékelés
    protected function joinName() {
       if ( ! $this->isToken(0) ) return false;
+      if ( ":" == $this->next() ) return false;
       if ( 1 < $this->count() 
          && in_array( $this->items[1], [".","$"] )) 
          return false;

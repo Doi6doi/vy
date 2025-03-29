@@ -36,6 +36,10 @@ class Tools {
       error_reporting(E_ALL);
    }
 
+   static function notImpl( $obj, $meth ) {
+      return new EVy("Not implemented: ".get_class($obj).".$meth");
+   }
+
    static function loadFile( $fname ) {
       if ( false === ($ret = file_get_contents( $fname )))
          throw new EVy("Could not load file: $fname");

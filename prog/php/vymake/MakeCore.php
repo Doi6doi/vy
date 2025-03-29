@@ -12,14 +12,14 @@ class MakeCore
    protected $owner;
 
    function __construct( $owner ) {
-	  parent::__construct( $owner, self::CORE );
-	  $this->addFuncs(["arch","changeExt","copy",
-	    "cwd", "echo","exec","exeExt","exists",
-        "explode","fail", "format","getEnv", 
-        "implode", "level","loadFile",
-        "make","mkdir","older","path", "purge","replace",
-        "regexp", "saveFile", "setEnv", "setPath", 
-        "setPerm", "system","which" ]);
+	   parent::__construct( $owner, self::CORE );
+	   $this->addFuncs(["arch","changeExt","copy",
+	      "cwd", "echo","exec","exeExt","exists",
+         "explode","fail", "format","getEnv", 
+         "implode", "level","loadFile",
+         "make","mkdir","older","path", "purge","replace",
+         "regexp", "saveFile", "setEnv", "setPath", 
+         "setPerm", "system","tool", "which" ]);
       $this->add( "init", new MakeInit( $this ));
    }
 
@@ -60,6 +60,15 @@ class MakeCore
    /// tömbből string
    function implode( $sep, $arr ) {
       return implode($sep,$arr);
+   }
+
+   /// eszköz létrehozása
+   function tool( $kind, $args=null ) {
+      $cname = "vy\\".Tool::TOOL.$kind;
+      $ret = new $cname();
+      if ( $args )
+         $ret->set( $args );
+      return $ret;
    }
 
    /// stringből tömb

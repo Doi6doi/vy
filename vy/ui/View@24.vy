@@ -6,8 +6,8 @@ interface vy.ui.View @24 {
    }
 
    method {
-      coord( Coord ): Number;
-      setCoord( Coord, Number );
+      coord( Coord ) & Number { oper [] }
+      changed & Bool;
    }
 
 }

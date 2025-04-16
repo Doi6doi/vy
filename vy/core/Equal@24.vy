@@ -3,9 +3,9 @@ interface vy.core.Equal @24 {
    import Bool;
 
    function {
-      equal(Equal,Equal):Bool { infix = }
+      equal(Equal,Equal):Bool { oper = }
 
-      noteq(Equal,Equal):Bool { infix != }
+      noteq(Equal,Equal):Bool { oper != }
    }
 
    provide {

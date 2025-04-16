@@ -1,39 +1,49 @@
 class Pad @25 {
 
+   extend {
+      vy.ui.Sprite;
+   }
+
    import {
+      Pong;
       vy.num.Uint;
       Number = vy.num.Math;
       vy.geom2.Dir;
-      vy.ui.SpriteUI;
+      vy.geom2.Square;
    }
 
    const {
       KEYUP : KeyEventKind = up;
       KEYDOWN : KeyEventKind = down;
 
-      CY : Coord = centery;
+      Y : Coord = y;
    }
 
    field {
-      sprite: Sprite = create;
-      speed: Number;
-      score: Uint;
+      pong & Pong;
+      side: Dir;
       dir: Dir;
-      up: Key;
-      down: Key;
    }
       
    method {
+
+      Pad( pong:Pong, side:Dir ) {
+         super( Filled( Square.square, pong.sideColor(side) ));
+         pong(pong);
+         side(side);
+         transform.scale( pong.PADWIDTH, pong.PADHEIGHT );
+         transform.move( pong.MAXCOORD * pong.dx(side), 0 );
+      }
       
       /// billentyű esemény hattatás egy oldalra
       handleKey( e: KeyEvent ) {
          case (e.key) {
-            up: case (e.kind) {
+            key(Dir.up): case (e.kind) {
                KEYUP: dir := Dir.up;
                KEYDOWN: if ( Dir.up = dir )
                   dir := Dir.none;
             }
-            down: case (e.kind) {
+            key(Dir.down): case (e.kind) {
                KEYUP: dir := Dir.down;
                KEYDOWN:if ( Dir.down = dir ) 
                   dir := Dir.none;
@@ -41,14 +51,17 @@ class Pad @25 {
          }
       }
 
+      /// orányhoz tartozó gomb
+      key(d:Dir): Key { page.sideKey(d) }
+
       /// egy ütő mozgatása
       move {
-         y := sprite.coord( CY );
+         y := coord( Y );
          case (dir) {
             up: y -= speed;
             down: y += speed;
          }
-         sprite.setCoord( CY, y.clamp(-1,1) );
+         coord(Y) := y.clamp(-1,1);
       }
    }
 }

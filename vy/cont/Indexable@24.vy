@@ -6,7 +6,7 @@ interface vy.cont.Indexable @24 {
    }
 
    method {
-      value( Index ): Value;
+      at( Index ): & Value { oper [] };
    }
 
 }

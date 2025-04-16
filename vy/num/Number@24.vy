@@ -8,18 +8,19 @@ interface vy.num.Number @24 {
    const &dec: Number;
 
    function {
-      Number.neg:Number { prefix -; }
-      plus(Number,Number):Number { infix + }
-      minus(Number,Number):Number { infix - }
-      mult(Number,Number):Number { infix * }
-      div(Number,Number):Number { infix / }
+      Number.neg:Number { oper - }
+      plus(Number,Number):Number { oper + }
+      minus(Number,Number):Number { oper - }
+      mult(Number,Number):Number { oper * }
+      div(Number,Number):Number { oper / }
    }
    
    method {
-      pluseq(Number) { infix += }
-      minuseq(Number) { infix -= }
-      multeq(Number) { infix *= }
-      diveq(Number) { infix /= }
+      Number;
+      pluseq(Number) & { oper += }
+      minuseq(Number) & { oper -= }
+      multeq(Number) & { oper *= }
+      diveq(Number) & { oper /= }
    }
 
    provide {

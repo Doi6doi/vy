@@ -8,9 +8,12 @@ interface vy.cont.Array @24 {
       Index = Uint;
    }
 
+   const {
+      &list( Value );
+   }
+
    method {
       length: Index;
-      setValue( Index, Value );
    }
 
 }

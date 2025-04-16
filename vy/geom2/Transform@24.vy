@@ -14,9 +14,9 @@ interface vy.geom2.Transform @24 {
    }
 
    method {
-      scale( Number, Number );
-      rotate( Number );
-      move( Number, Number );
+      scale( Number, Number ) & ;
+      rotate( Number ) & ;
+      move( Number, Number ) & ;
    }
 
 }

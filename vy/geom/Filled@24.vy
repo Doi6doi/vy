@@ -6,11 +6,8 @@ interface vy.geom.Filled @24 {
 
    type Brush;
 
-   function {
-      create( Sub, Brush ): Filled;
-   }
-
    method {
+      Filled( Sub, Brush );
       shape: Sub;
       brush: Brush;
    }

@@ -4,13 +4,13 @@ interface vy.core.Compare @20240117 {
 
    function {
 
-      less(Compare,Compare):Bool { infix < }
+      less(Compare,Compare):Bool { oper < }
 
-      greater(Compare,Compare):Bool { infix > }
+      greater(Compare,Compare):Bool { oper > }
 
-      lesseq(Compare,Compare):Bool { infix <= }
+      lesseq(Compare,Compare):Bool { oper <= }
 
-      greatereq(Compare,Compare):Bool { infix >= }
+      greatereq(Compare,Compare):Bool { oper >= }
 
    }
 

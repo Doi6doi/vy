@@ -1,6 +1,7 @@
 interface vy.char.String @24 {
 
    extend {
+      vy.cont.Array;
       vy.core.Compare;
       vy.core.Assign;
    }
@@ -8,18 +9,17 @@ interface vy.char.String @24 {
    import vy.num.Uint;
 
    type {
-      Char;
-      Index = Uint;
+      Char = Array.Value;
    }
 
    const {
       &ascii: String;
-      &utf: String;   
+      &utf: String;
    }
 
    method {
       length: Index;
-      charAt( Index ): Char;
+      charAt( Index ) & Char;
    }
-   
+
 }

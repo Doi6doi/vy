@@ -4,6 +4,7 @@ interface vy.num.Math {
 
    method {
       abs: Math;
+      clamp( min:Math, max:Math ):Math;
       sqrt: Math;
    }
 

@@ -13,15 +13,15 @@ interface vs.bin.Bits @24 {
 
       Bits.not: Bits;
 
-      and(Bits,Bits):Bits { infix & }
+      and(Bits,Bits):Bits { oper & }
 
-      or(Bits,Bits):Bits { infix | }     
+      or(Bits,Bits):Bits { oper | }     
 
       xor(Bits,Bits):Bits;
 
-      shl(Bits,Uint):Bits { infix << }
+      shl(Bits,Uint):Bits { oper << }
     
-      shr(Bits,Uint):Bits { infix >> }
+      shr(Bits,Uint):Bits { oper >> }
 
       bitLength: Uint;
 

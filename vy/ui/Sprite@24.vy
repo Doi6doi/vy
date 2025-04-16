@@ -7,13 +7,10 @@ interface vy.ui.Sprite @24 {
       vy.geom2.Vec;
    }
 
-   function {
-      create( Shape ): Sprite;
-   }
-
    method {
-      moveTo( Vec );
-      setShape( Shape );
+      Sprite( Shape );
+      transform & Transform;
+      shape & Shape;
    }   
 
 }

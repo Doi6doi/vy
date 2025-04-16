@@ -7,13 +7,10 @@ interface vy.geom2.Caption @24 {
       Font;
    }
 
-   function {
-      create( text: String, font: Font ): Caption;
-   }
-
    method {
-      text: String;
-      font: Font;
+      Caption;
+      text & String;
+      font & Font;
    }
 
 }

@@ -8,7 +8,7 @@ interface vy.geom2.Vec @24 {
    }
 
    method {
-      coord( Coord ): Base;
+      coord( Coord ): & Base { oper [] };
    }
 
    const {

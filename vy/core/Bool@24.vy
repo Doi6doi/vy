@@ -9,20 +9,20 @@ interface vy.core.Bool @24 {
 
       not:Bool { prefix ! }
 
-      assign(Bool) { infix := }
+      assign(Bool) & { oper := }
 
    }
 
    function {
 
-      and(Bool,Bool):Bool { infix && }
+      and(Bool,Bool):Bool { oper && }
 
-      or(Bool,Bool):Bool { infix || }  
+      or(Bool,Bool):Bool { oper || }  
 
 
       xor(Bool,Bool):Bool;
 
-      equal(Bool,Bool): Bool { infix = }
+      equal(Bool,Bool): Bool { oper = }
    }
 
    provide {

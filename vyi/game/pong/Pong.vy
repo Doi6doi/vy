@@ -147,12 +147,12 @@ class vyi.game.pong.Pong @25 {
              else BGCOLOR;
          }
       }
+
+      /// új játék
+      newRound( side: Side ) {
+         ball.appear( side );
+      }
    }
-
-
-
-
-
 
 }
 

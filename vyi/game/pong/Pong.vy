@@ -5,9 +5,14 @@ class vyi.game.pong.Pong @25 {
    import {
       Pad;
       vy.num.Uint;
+      vy.num.Math;
       vy.geom2.Dir;
       vy.cont.Indexable;
       vy.ui.SpriteUI;
+   }
+
+   type {
+      Number = Math;
    }
 
    const {
@@ -50,13 +55,13 @@ class vyi.game.pong.Pong @25 {
       pads: Indexable { Index = Dir; Value = Pad; }
    }
 
-   function {
+   function run {
+      p := Pong();
+      while ( ! p.over )
+         p.step();
+   }
 
-      run {
-         p := Pong();
-         while ( ! p.over )
-            p.step();
-      }
+   method {
 
       /// a játék egy lépése
       step {
@@ -84,6 +89,33 @@ class vyi.game.pong.Pong @25 {
          pads[right].handleKey(e);
       }
 
+      /// kép frissítése
+      tick {
+         next := last.addSecond( TICK );
+         $waitUntil( next );
+         last := next;
+      }
+
+      /// golyó mozgása
+      moveBall {
+         ball.move;
+         checkHit( Dir.left );
+         checkHit( Dir.right );
+      }
+
+      /// visszapattanás vagy új kör
+      checkHit( Dir side ) {
+         bx := ball.sprite.coord( Coord.x );
+         if ( Dir.right = side && bx <= 1 ) return;
+         if ( Dir.left = side && -1 <= bx ) return;
+         p &= pads[side];
+         by := ball.sprite.coord( Coord.y );
+         py := p.sprite.coord( Coord.y );
+         d := py - by;
+         if ( PADHEIGHT/2 < d.abs )
+            score( side.opposite );
+            else bounce( side, d );
+      }
    }
 }
 
@@ -202,64 +234,7 @@ void bounce( Side side, float d ) {
       b->dx = - b->dx;
 }
 
-/// visszapattanás vagy új kör
-void checkHit( Side side ) {
-   Ball * b = &pong.ball;
-   Sprite bs = b->sprite;
-   float bx = sprites.coord( bs, VC_CENTERX );
-   if ( side && bx <= 1 )
-      return;
-   if ( ! side && -1 <= bx )
-      return;
-   Pad * p = &pong.pads[side];
-   float by = sprites.coord( bs, VC_CENTERY );
-   float py = sprites.coord( p->sprite, VC_CENTERY );
-   float d = py - by;
-   if ( PADHEIGHT/2 < fabs( d ) )
-      score( other( side ) );
-      else bounce( side, d );
-}
 
-
-/// golyó mozgása
-void moveBall( ) {
-   Ball * b = &pong.ball;
-   Sprite bs = b->sprite;
-   float bx = sprites.coord( bs, VC_CENTERX ) + b->dx;
-   float by = sprites.coord( bs, VC_CENTERY ) + b->dy;
-   if ( by < -1 || 1 < by ) {
-      b->dy = -b->dy;
-      by += b->dy;
-   }
-   sprites.setCoord( bs, VC_CENTERX, bx );
-   sprites.setCoord( bs, VC_CENTERY, by );
-   checkHit( LEFT );
-   checkHit( RIGHT );
-}
-
-
-/// kép frissítése
-void tick() {
-   VyStamp next = times.addSecond( pong.last, TICK );
-   times.waitUntil( next );
-   pong.last = next;
-}
-
-/// billentyű esemény hattatás egy oldalra
-void handleKeySide( Side side, VyKeyEventKind ek, VyKey k ) {
-   Pad * p = pong.pads+side;
-   if ( p->up == k ) {
-      if ( VKK_DOWN == ek )
-         p->dir = -1;
-      else if ( VKK_UP == ek && -1 == p->dir )
-         p->dir = 0;
-   } else if ( p->down == k ) {
-      if ( VKK_DOWN == ek )
-         p->dir = 1;
-      else if ( VKK_UP == ek && 1 == p->dir )
-         p->dir = 0;
-   }
-}
 
 
 

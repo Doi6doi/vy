@@ -1,8 +1,6 @@
 interface vy.ui.EventKind @24 {
 
-   import vy.core.Equal;
-
-   type EventKind = Equal.Equal;
+   extend vy.core.Equal;
 
    const {
       key: EventKind;

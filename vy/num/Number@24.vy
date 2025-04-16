@@ -1,27 +1,25 @@
 interface vy.num.Number @24 {
 
-   extend vy.core.Equal;
-
-   type Number = Equal.Equal;
+   extend {
+      vy.core.Equal;
+      vy.core.Assign;
+   }
 
    const &dec: Number;
 
    function {
-      neg(Number):Number {
-         prefix -;
-      }
-      plus(Number,Number):Number {
-         infix +;
-      }
-      minus(Number,Number):Number {
-         infix -;
-      }
-      mult(Number,Number):Number {
-         infix *;
-      }
-      div(Number,Number):Number {
-         infix /;
-      }
+      Number.neg:Number { prefix -; }
+      plus(Number,Number):Number { infix + }
+      minus(Number,Number):Number { infix - }
+      mult(Number,Number):Number { infix * }
+      div(Number,Number):Number { infix / }
+   }
+   
+   method {
+      pluseq(Number) { infix += }
+      minuseq(Number) { infix -= }
+      multeq(Number) { infix *= }
+      diveq(Number) { infix /= }
    }
 
    provide {

@@ -2,17 +2,12 @@ interface vy.ui.View @24 {
 
    import {
       vy.num.Number;
-      ViewCoord;
+      vy.geom2.Coord;
    }
 
-   type {
-      View;
-      Coord = Number.Number;
-   }
-
-   function {
-      coord( View, ViewCoord ): Coord;
-      setCoord( View, ViewCoord, Coord );
+   method {
+      coord( Coord ): Number;
+      setCoord( Coord, Number );
    }
 
 }

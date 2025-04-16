@@ -5,6 +5,8 @@ interface vy.ui.EventQueue @24 {
       Event;
    }
 
+   type &nodef;
+
    function {
       empty: Bool;
       poll: Event;

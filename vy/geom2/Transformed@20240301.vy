@@ -1,4 +1,4 @@
-interface vy.geom2.Transformed @20240301 {
+interface vy.geom2.Transformed @24 {
 
    extend vy.geom.Shape;
  
@@ -7,15 +7,13 @@ interface vy.geom2.Transformed @20240301 {
       Transform;
    }
 
-   type {
-      Transformed = Shape.Shape;
-      Sub = Sub.Shape;
+   function {
+      create( Sub ): Transformed;
    }
 
-   function {
-      createTransformed( Sub ): Transformed;
-      transform( Transformed ): Transform;
-      sub( Transformed ): Sub;
+   method {
+      transform: Transform;
+      sub: Sub;
    }
 
 }

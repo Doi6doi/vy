@@ -1,13 +1,15 @@
-interface vy.char.String @20240301 {
+interface vy.char.String @24 {
 
-   extend vy.core.Compare;
+   extend {
+      vy.core.Compare;
+      vy.core.Assign;
+   }
 
    import vy.num.Uint;
 
    type {
       Char;
-      String = Compare.Compare;
-      Index = Uint.Uint;
+      Index = Uint;
    }
 
    const {
@@ -15,8 +17,8 @@ interface vy.char.String @20240301 {
       &utf: String;   
    }
 
-   function {
-      length( String ): Index;
+   method {
+      length: Index;
       charAt( Index ): Char;
    }
    

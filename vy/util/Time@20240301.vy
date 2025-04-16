@@ -1,18 +1,15 @@
-interface vy.time.Time @20240301 {
+interface vy.time.Time @24 {
+
+   extend vy.core.Assign;
 
    import {
       vy.num.Number;
-      vy.core.Bool;
-   }
-
-   type {
-      Stamp;
    }
 
    function {
-      stamp(): Stamp;
-      addSecond( Stamp, Number ): Stamp;
-      waitUntil( Stamp ): Bool;
+      current(): Time;
+      Time.addSecond( Number ): Time;
+      waitUntil( Time );
    }
 
 }

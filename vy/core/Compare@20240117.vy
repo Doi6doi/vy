@@ -2,25 +2,15 @@ interface vy.core.Compare @20240117 {
 
    extend Equal;
 
-   type Compare = Equal.Equal;
-      
    function {
 
-      less(Compare,Compare):Bool {
-         infix <;
-      }
+      less(Compare,Compare):Bool { infix < }
 
-      greater(Compare,Compare):Bool {
-         infix >;
-      }
+      greater(Compare,Compare):Bool { infix > }
 
-      lesseq(Compare,Compare):Bool {
-         infix <=;
-      }
+      lesseq(Compare,Compare):Bool { infix <= }
 
-      greatereq(Compare,Compare):Bool {
-         infix >=;
-      }
+      greatereq(Compare,Compare):Bool { infix >= }
 
    }
 

@@ -1,10 +1,10 @@
 interface vy.ui.Redraw @24 {
 
-   type Redraw;
-   
+   type &nodef;
+
    function {
-      redraw( Redraw );
-      refesh( Redraw );
+      redraw;
+      refesh;
    }
    
 }

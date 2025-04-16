@@ -1,12 +1,9 @@
 make {
 
-   target {
-      
-      /// Create debian packages
-      deb {
-         make( "prog", "deb" );
-      }
-
+   init {
+      /// basic data
+      $author := "Várnagy Zoltán";
+      $gitUrl := "https://github.com/Doi6doi/vy";
    }
 
 }

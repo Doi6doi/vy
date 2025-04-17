@@ -33,6 +33,18 @@ class Version {
          return false;
    }
 
+   /// $v jobb-e a feltételhez, mint $old
+   static function better( Version $v, Version $cond, $old ) {
+      if ( ! $v->matches($cond) ) return false;
+      if ( ! $old ) return true;
+      return $v->day() > $old->day();
+   }      
+
+   /// mai napig feltétel
+   static function untilNow() {
+      return self::parse( "@<=".date("Ymd") );
+   }
+   
    protected $num;
    protected $rel;
 

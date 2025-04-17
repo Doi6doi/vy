@@ -5,44 +5,56 @@ namespace vy;
 /// vy compiler
 class ToolComp extends PToolBase {
 	
+   const
+      FORCE = "force",
+      MAP = "map",
+      REPO = "repo",
+      REPRS = "reprs";   
+   
 	protected $comp;
 	
    function __construct() {
 	   parent::__construct();
 	   Autoload::addPath( __DIR__."/../vyc" );
 	   $this->comp = new Compiler();
-      $this->addFuncs( ["compile", "setForce", "setMap",
+      $this->addFuncs( ["compile"] );
+/*      , "setForce", "setMap",
          "setRepo", "setReprs"] );
+         */
    }
 	
+   function set( $fld, $val=true ) {
+      parent::set( $fld, $val );
+      if ( is_array($fld) ) return;
+      $v = $this->get( $fld );
+      $c = $this->comp;
+      switch ($fld) {
+         case self::FORCE: $c->setForce($v); break;
+         case self::MAP: $c->setTypeMap($v); break;
+         case self::REPO:
+            $c->repo()->clear();
+            $c->repo()->addRepo($v);
+         break;
+         case self::REPRS: $c->setReprs($v); break;
+      }
+   }
+
    /// fordító futtatása
-   function compile( $src, $dst ) {
-	   $this->mlog( "compile", $src, $dst );
+   function compile( $dst, $src ) {
+	   $this->mlog( "compile", $dst, $src );
 	   $this->comp->addInput( $src );
 	   $this->comp->addOutput( $dst );
 	   $this->comp->run();
    }		
-	
-   /// felülírás beállítása
-   function setForce( $x ) {
-	  $this->comp->setForce( $x );
-   }
-	
-   /// megfeleltetés beállítása
-   function setMap( $x ) {
-      $this->comp->setTypeMap( $x );
-   }
    
-	/// repository beállítása
-	function setRepo( $x ) {
-	   $r = $this->comp->repo();
-	   $r->clear();
-	   $r->add( $x );
-	}
-   
-   /// reprezentációk beállítása
-   function setReprs( $x ) {
-      $this->comp->setReprs( $x );
+   protected function confKind( $fld ) {
+      switch ( $fld ) {
+         case self::FORCE: return self::BOOL;
+         case self::MAP: return self::ANY;
+         case self::REPO: return self::ARRAY;
+         case self::REPRS: return self::ARRAY;
+         default: return parent::confKind($fld);
+      }
    }
 
    protected function logFmt( $meth ) {

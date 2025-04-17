@@ -4,7 +4,7 @@ namespace vy;
 
 /// interfész leíró fájl
 class Interf
-   implements ExprCtx
+   implements ExprCtx, RepoItem
 {
 
    const
@@ -55,6 +55,8 @@ class Interf
 
    function pkg() { return $this->pkg; }
 
+   function pkgName() { return $this->pkg.".".$this->name; }
+
    function types() { return $this->types; }
 
    function consts() { return $this->consts; }
@@ -65,7 +67,7 @@ class Interf
 
    /// teljes név útvonallal és verzióval
    function fullName() {
-      return sprintf( "%s.%s@%s", $this->pkg, $this->name, $this->ver->day() );
+      return $this->pkgName()."@".$this->ver->day() );
    }
 
    /// fájl beolvasása
@@ -179,7 +181,7 @@ class Interf
       $this->pkg = implode(".",$path);
       $s->readWS();
       $this->ver = Version::read( $s );
-      $this->repo->addObj( $this->fullName(), $this );
+      $this->repo->addItem( $this );
       $s->readWS();
       $s->readToken("{");
    }

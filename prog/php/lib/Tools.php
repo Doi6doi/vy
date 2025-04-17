@@ -23,11 +23,13 @@ class Tools {
    }
 
    static function debug() {
-      $ret = [];
+      $ret = null;
       foreach (func_get_args() as $x) {
-         $ret [] = $x;
+         if ( null !== $ret )
+            $ret .= ", ";
+         $ret .= self::flatten($x);
       }
-      fprintf( STDERR, "%s", self::flatten($ret)."\n" );
+      fprintf( STDERR, "$ret\n" );
    }
 
    static function allErrors() {
@@ -175,10 +177,15 @@ class Tools {
    static function flatten( $x, $max=null ) {
       $ret = "";
       if ( is_array($x)) {
-         $arr = [];
-         foreach ($x as $i)
-            $arr [] = self::flatten($i,$max);
-         $ret = implode(",",$arr);
+         $ass = self::isAssoc($x);
+         $ret = null;
+         foreach ($x as $k=>$v) {
+            $v = self::flatten($v,$max);
+            if ( null !== $ret )
+               $ret .= ",";
+            $ret .= $ass ? "$k:$v" : $v;
+         }
+         return "[$ret]";
       } else if ( is_object($x)) {
          if ( method_exists( $x, "__toString"))
             $ret = "$x";

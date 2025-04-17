@@ -18,7 +18,6 @@ abstract class Repo {
       }
    }
 
-
    protected $objs;
 
    function __construct() {
@@ -26,33 +25,38 @@ abstract class Repo {
    }
 
    /// hozzadás a tárhoz
-   function addObj( $full, $obj ) {
-// Tools::debug("addObj",$full,":",$this->objs);      
-      if ( array_key_exists($full, $this->objs))
-         throw new EVy("Duplicate name: $full");
-      $this->objs[$full] = $obj;
+   function addItem( RepoItem $item ) {
+      $n = $item->pkgName();
+      $v = $item->ver();
+      if ( ! $g = Tools::g( $this->objs, $n ))
+         $this->objs[$n] = [];
+      if ( Tools::g( $this->objs, $v->day() ))
+         throw new EVy("Duplicate item: $n$v");
+      $this->objs[$n][$v->day()] = $item;
    }
 
-   /// tartalmazza-e a repo a csomagot
-   function contains( $x, Version $ver ) {
-      return null != $this->findObj( $x, $ver );
-   }
-
-   /// csomag kikérése
-   function force( $x, Version $ver ) {
-      if ( $ret = $this->findObj( $x, $ver ))
+   /// elem kényszerítése
+   function force( $pkgName, Version $ver ) {
+      if ( $ret = $this->find( $pkgName, $ver ))
          return $ret;
-      return $this->read( $x, $ver );
+      if ( $ret = $this->read( $pkgName, $ver ))
+         return $ret;
+      throw new EVy("Cannot find $pkgName$ver");
    }
+
+   /// elem beolvasása
+   function read( $pkgName, Version $ver ) { return null; }
 
    /// keresés a tárban
-   function findObj( $x, Version $ver ) {
-      return Tools::g( $this->objs, $x."@".$ver->day() );
-   }
-
-   /// csomag beolvasása
-   protected function read( $x, Version $ver ) {
-      throw new EVy("Not implemented: ".get_class($this).".read");
+   function find( $pkgName, Version $ver ) {
+      $ret = null;   
+      if ( $g = Tools::g( $this->objs, $pkgName )) {
+         foreach ($g as $o) {
+            if ( Version::better( $o, $ver, $ret ))
+               $ret = $o;
+         }
+      }
+      return $ret;
    }
 
    /// stream olvasása

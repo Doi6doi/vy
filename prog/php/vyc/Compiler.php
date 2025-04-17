@@ -109,25 +109,29 @@ class Compiler {
    }
 
    /// típusmegfeleltetés beállítása
-   function setTypeMap( $mapstr ) {
+   function setTypeMap( $maps ) {
       $this->typemap = [];
-      $maps = explode(";",$mapstr);
-      foreach ( $maps as $map ) {
-         if ( preg_match('#^(.*)=(.*)$#', $map, $m ))
-            $this->typemap[ $m[1] ] = $m[2];
-         else if ( $map )
-            throw new EVy("Unknown mapping: $map" );
+      if ( ! is_array( $maps ))
+         $maps = explode(";",$maps);
+      foreach ( $maps as $k=>$v ) {
+         if ( preg_match('#^(.*)=(.*)$#', $v, $m )) {
+            $k = $m[1];
+            $v = $m[2];
+         }
+         $this->typemap[ $k ] = $v;
       } 
    }
 
    /// egy bemenet olvasása
    function forceInput( $i ) {
-      if ( ! preg_match('#^(.+)(@.+)$#',$i,$m)) 
-         throw new EVy("Unkown versioned name: $i");
-      $n = $m[1];
-      $v = Version::parse( $m[2], true );
-      $o = $this->repo->force( $n, $v );
-      $this->objs[ $n.$v ] = $o;
+      if ( preg_match('#^(.+)(@.+)$#',$i,$m)) {
+         $i = $m[1];
+         $v = Version::parse( $m[2], true );
+      } else {
+         $v = Version::untilNow();
+      }
+      $o = $this->repo->force( $i, $v );
+      $this->objs[ $i.$o->ver()->num() ] = $o;
    }
 
    /// c író

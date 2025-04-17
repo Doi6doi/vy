@@ -18,26 +18,30 @@ class RepoMulti extends Repo {
    } 
 
    /// új elem hozzáadása
-   function add( $repo ) {
-      if ( ! ( $repo instanceof Repo ))
-         $repo = Repo::create( $repo );
-      $this->choices [] = $repo;
+   function addRepo( $repo ) {
+      if ( ! is_array($repo))
+         $repo = [$repo];
+      foreach ( $repo as $r ) {
+         if ( ! ( $r instanceof Repo ))
+            $r = Repo::create( $r );
+         $this->choices [] = $r;
+      }
    }
 
-   function force( $x, Version $ver ) {
+   function read( $pkgName, Version $ver ) {
       foreach ( $this->choices as $c ) {
-         if ( $c->contains($x, $ver))
-            return $c->force($x, $ver);
+         if ( $ret = $c->read( $pkgName, $ver ))
+            return $ret;
       }
-      throw new EVy("Item not found: $x$ver");
+      return null;
    }
 
-   function contains( $x, Version $ver ) {
+   function find( $pkgName, Version $ver ) {
       foreach ( $this->choices as $c ) {
-         if ( $c->contains( $i, $ver ))
-            return true;
+         if ( $ret = $c->find( $pkgName, $ver ))
+            return ret;
       }
-      return false;
+      return null;
    }
 
 }

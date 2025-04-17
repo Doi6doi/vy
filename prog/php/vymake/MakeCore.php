@@ -14,12 +14,12 @@ class MakeCore
    function __construct( $owner ) {
 	   parent::__construct( $owner, self::CORE );
 	   $this->addFuncs(["arch","changeExt","copy",
-	      "cwd", "echo","exec","exeExt","exists",
-         "explode","fail", "format","getEnv", 
-         "implode", "level","loadFile",
-         "make","mkdir","older","path", "purge","replace",
+	      "cwd","dir","echo","exec","exeExt","exists",
+         "explode","fail","format","getEnv", 
+         "implode","isDir","level","loadFile",
+         "make","mkdir","older","path","purge","replace",
          "regexp", "saveFile", "setEnv", "setPath", 
-         "setPerm", "system","tool", "which" ]);
+         "setPerm", "system", "tool", "which" ]);
       $this->add( "init", new MakeInit( $this ));
    }
 
@@ -93,6 +93,21 @@ class MakeCore
       }
    }
 
+   /// könyvtár tartalma
+   function dir( $path ) {
+      $ret = [];
+      foreach ( scandir($path) as $f ) {
+         if ( ! in_array( $f, [".",".."] ))
+            $ret [] = $f;
+      }
+      return $ret;
+   }
+         
+   /// könyvtár-e
+   function isDir( $path ) {
+      return is_dir($path);
+   }
+
    /// útvonal összeállítás
    function path() {
       return call_user_func_array( [Tools::class, "path"], func_get_args() );
@@ -127,12 +142,7 @@ class MakeCore
 
    /// kiírás
    function echo( $x ) {
-	  if ( is_array( $x )) {
-	     foreach ( $x as $i )
-	        $this->echo( $i );
-	  } else {
-	     print( "$x\n" );
-	  }
+      print( Tools::flatten($x)."\n" );
    } 
    
    /// fájl törlés

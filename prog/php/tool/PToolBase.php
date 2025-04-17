@@ -53,6 +53,10 @@ class PToolBase
       }
    }
 
+   protected function confKind( $fld ) {
+      throw new EVy("Unknown variable: $fld");
+   }
+
    /// mlog formátum
    protected function logFmt( $meth ) {
       return $meth;

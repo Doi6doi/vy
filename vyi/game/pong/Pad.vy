@@ -1,4 +1,4 @@
-class Pad @25 {
+class vyi.game.pong.Pad @25 {
 
    extend {
       vy.ui.Sprite;

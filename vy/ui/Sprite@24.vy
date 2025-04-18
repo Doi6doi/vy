@@ -4,7 +4,7 @@ interface vy.ui.Sprite @24 {
 
    import {
       vy.geom.Shape;
-      vy.geom2.Vec;
+      vy.geom2.Transform;
    }
 
    method {

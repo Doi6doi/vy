@@ -11,6 +11,7 @@ abstract class Item
    const
       CONST = "const",
       EXTEND = "extend",
+      FLAG = "~",
       FUNCTION = "function",
       METHOD = "method",
       IMPORT = "import",
@@ -20,6 +21,8 @@ abstract class Item
    /// zászlók
    const
       NODEF = "nodef";
+   const
+      ALLFLAGS = [self::NODEF];
 
    /// használt repo
    protected $repo;
@@ -170,6 +173,8 @@ abstract class Item
    protected function inheritTypes( $name, $o ) {
       foreach ( $o->types() as $t ) {
          $tn = $t->name();
+         if ( $tn == $o->defType() )
+            $tn = $name;
          if ( ! $tt = Tools::g( $this->types, $tn )) {
             $tt = new ItemType( $this, $tn );
             $this->add( $this->types, $tn, $tt );
@@ -204,7 +209,7 @@ abstract class Item
       $this->repo->addItem( $this );
       $s->readWS();
       $s->readToken("{");
-      $this->addSelfType();
+      $this->addDefType();
    }
 
    /// egy rész olvasása
@@ -213,6 +218,7 @@ abstract class Item
       switch ( $n = $s->next() ) {
          case self::CONST: $meth = "readConst"; break;
          case self::EXTEND: $meth = "readExtend"; break;
+         case self::FLAG: $meth = "readFlag"; break;
          case self::FUNCTION: $meth = "readFunction"; break;
          case self::IMPORT: $meth = "readImport"; break;
          case self::METHOD: $meth = "readMethod"; break;
@@ -271,6 +277,16 @@ abstract class Item
       $ret = new ItemConst( $this, $this->defType() );
       $ret->read( $s );
       $this->add( $this->consts, $ret->name(), $ret );
+   }
+
+   /// egy zászló olvasása
+   protected function readFlag( $s ) {
+      $s->readWS();
+      $f = $s->readIdent();
+      if ( ! in_array( $f, self::ALLFLAGS ))
+         throw new EVy("Unknown flag: $f");
+      $this->flags[$f] = true;
+      $s->readTerm();
    }
 
    /// extend elem olvasása
@@ -396,7 +412,7 @@ abstract class Item
    }
 
    /// saját típus hozzáadása
-   protected function addSelfType() {
+   protected function addDefType() {
       $n = $this->name();
       $t = new ItemType( $this, $n );
       $this->add( $this->types, $n, $t );

@@ -109,6 +109,13 @@ class Oper {
       $this->guessKind();
    }
 
+   /// kompatibilis-e
+   function checkCompatible( Oper $other ) {
+      if ($this->kind != $other->kind
+         || $this->oper != $other->oper)
+         throw new EVy("Different operators: $this $oper");
+   }
+
    function __toString() {
       return $this->kind.$this->oper;
    }

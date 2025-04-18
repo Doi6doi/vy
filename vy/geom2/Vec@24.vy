@@ -12,7 +12,7 @@ interface vy.geom2.Vec @24 {
    }
 
    method {
-      coord( Coord ) & Base { oper [] };
+      coord( Coord ) & Base { oper [] }
    }
 
 }

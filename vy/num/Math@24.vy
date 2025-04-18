@@ -1,4 +1,4 @@
-interface vy.num.Math {
+interface vy.num.Math @24 {
 
    extend Number;
 

@@ -1,6 +1,6 @@
-interface vy.geom2.Dir {
+interface vy.geom2.Dir @24 {
 
-   extends vy.core.Append;
+   extend vy.core.Append;
 
    method {
       Dir;

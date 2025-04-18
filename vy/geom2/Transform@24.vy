@@ -5,12 +5,8 @@ interface vy.geom2.Transform @24 {
    import vy.num.Number;
 
    const {
-      ident: Transform;
+      ident;
       rotFull: Number;
-   }
-
-   function {
-      ident: Transform;
    }
 
    method {

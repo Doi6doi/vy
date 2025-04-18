@@ -5,43 +5,49 @@ interface vs.bin.Bits @24 {
    import vs.num.Uint;
 
    const {
-      &hex: Bits;
-      all: Bits;
+      &hex;
+      none;
+      all;
    }
 
-   function {
+   method {
 
-      Bits.not: Bits;
+      not : ;
 
-      and(Bits,Bits):Bits { oper & }
+      shl(Uint): { oper << };
 
-      or(Bits,Bits):Bits { oper | }     
-
-      xor(Bits,Bits):Bits;
-
-      shl(Bits,Uint):Bits { oper << }
-    
-      shr(Bits,Uint):Bits { oper >> }
+      shr(Uint): { oper >> };
 
       bitLength: Uint;
 
    }
 
+
+   function {
+
+      and(:,:): { oper & }
+
+      or(:,:): { oper | }     
+
+      xor(:,:): ;
+
+   }
+
    provide {
-      given a: Bits {
+      none.not = all;
+      given (a) {
          a.not.not = a;
-         $0.not = all;
-         a & $0 = $0;
+         a & none = none;
          a & all = a;
          a & a  = a;
-         a | $0 = a;
+         a | none = a;
          a | a = a;
          a | all = a;
-         given b: Bits {
+         given (b) {
             a & b = b & a;
             a | b = b | a;
             xor(a,b) = ( a & b.not ) | ( a.not & b );
-            given c: Bits {
+            given (c) {
                a & (b & c) = (a & b) & c;
                a | (b | c) = (a | b) | c;
             }

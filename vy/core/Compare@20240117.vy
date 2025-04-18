@@ -4,18 +4,18 @@ interface vy.core.Compare @20240117 {
 
    function {
 
-      less(Compare,Compare):Bool { oper < }
+      less(:,:):Bool { oper < }
 
-      greater(Compare,Compare):Bool { oper > }
+      greater(:,:):Bool { oper > }
 
-      lesseq(Compare,Compare):Bool { oper <= }
+      lesseq(:,:):Bool { oper <= }
 
-      greatereq(Compare,Compare):Bool { oper >= }
+      greatereq(:,:):Bool { oper >= }
 
    }
 
    provide {
-      given( a,b:Compare ) {
+      given (a,b) {
          (a > b) = (b < a);
          (a <= b) = !(b < a);
          (a >= b) = !(a < b);

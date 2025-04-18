@@ -21,6 +21,14 @@ class ExprStream
 	     $this->stacks [] = new Stack( $b );
    } 
 
+   /// pontosvesssző olvasása, ha van
+   function readTerm() {
+      $this->readWS();
+      $ret = $this->readIf(";");
+      $this->readWS();
+      return $ret;
+   }
+
    function pop( $withStack ) {
 	  array_pop( $this->blocks );
 	  if ( $withStack )

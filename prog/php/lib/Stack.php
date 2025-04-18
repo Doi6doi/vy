@@ -254,7 +254,7 @@ class Stack {
       if ( ! ( $this->isExpr(0) && $this->isToken(1))) return false;
       if ( 3 <= $n && $this->isExpr(2)) return false;
       $t = $this->items[1];
-      if ( ! Oper::isOper($t, Oper::PREFIX)
+      if ( ! Oper::isOper($t, Oper::PRE)
             || $this->precedence( $t ) < $this->precedence( $this->next() )
          ) return false;
       
@@ -288,7 +288,7 @@ class Stack {
       if ( ! ($this->isExpr(2) && $this->isToken(1) && $this->isExpr(0)))
          return false;
       $t = $this->items[1];
-      if ( ! Oper::isOper($t, Oper::INFIX)
+      if ( ! Oper::isOper($t, Oper::IN)
          || $this->precedence( $t ) < $this->precedence( $this->next() )
       )
          return false;

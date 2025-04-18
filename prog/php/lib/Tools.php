@@ -22,6 +22,16 @@ class Tools {
       return $arr[$fld];
    }
 
+   /// értékadás, vagy tömbként bővítés
+   static function a( & $x, $v ) {
+      if ( null === $x )
+         $x = $v;
+      else if ( is_array($x) )
+         $x [] = $v;
+      else
+         $x = [$x,$v];
+   }
+
    static function debug() {
       $ret = null;
       foreach (func_get_args() as $x) {
@@ -212,7 +222,14 @@ class Tools {
 
    /// join arguments as path
    static function path() {
-      return implode( DIRECTORY_SEPARATOR, func_get_args() );
+      $s = DIRECTORY_SEPARATOR;
+      $ret = "";
+      foreach ( func_get_args() as $d ) {
+         if ( $ret && $d && $s != substr( $ret, -1 ))
+            $ret .= $s;
+         $ret .= $d;
+      }
+      return $ret;
    }
 
    /// Create a directory if not exists

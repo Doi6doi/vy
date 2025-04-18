@@ -1,40 +1,39 @@
 interface vy.core.Bool @24 {
 
    const {
-      true: Bool;
-      false: Bool;
+      true;
+      false;
    }
 
    method {
 
-      not:Bool { prefix ! }
+      not : { oper ! }
 
-      assign(Bool) & { oper := }
+      assign(:) & { oper := }
 
    }
 
    function {
 
-      and(Bool,Bool):Bool { oper && }
+      and(:,:) : { oper && }
 
-      or(Bool,Bool):Bool { oper || }  
+      or(:,:) : { oper || }  
 
+      xor(:,:) : ;
 
-      xor(Bool,Bool):Bool;
-
-      equal(Bool,Bool): Bool { oper = }
+      equal(:,:) : { oper = }
    }
 
    provide {
       true;
       ! false;
-      given ( a: Bool ) {
+      given (a) {
          true && a = a;
          ! (false && a);
          true || a;
          false || a = a;
          ! ! a = a;
-         given ( b: Bool ) {
+         given (b) {
             a && b = b && a;
             a || b = b || a;
             xor(a,b) = !(a=b);

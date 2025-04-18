@@ -5,7 +5,7 @@ interface vy.num.BinInt @24 {
       vy.bin.Bits;
    }
 
-   const &hex: BinInt;
+   const &hex;
 
 }
 

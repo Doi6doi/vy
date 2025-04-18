@@ -59,7 +59,7 @@ class ToolComp extends PToolBase {
 
    protected function logFmt( $meth ) {
       switch ( $meth ) {
-         case "compile": return "Compiling %s";
+         case "compile": return "Compiling -> %s";
          default: return parent::logFmt( $meth );
       }
    }

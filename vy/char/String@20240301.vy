@@ -13,8 +13,8 @@ interface vy.char.String @24 {
    }
 
    const {
-      &ascii: String;
-      &utf: String;
+      &ascii;
+      &utf;
    }
 
    method {

@@ -18,6 +18,10 @@ class ExprCtxForward
       $this->owner->checkType( $type );
    }
 
+   function defType() {
+      return $this->owner->defType();
+   }
+
    function readType( Stream $s ) {
       return $this->owner->readType( $s );
    }

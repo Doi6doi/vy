@@ -5,36 +5,36 @@ interface vy.num.Number @24 {
       vy.core.Assign;
    }
 
-   const &dec: Number;
+   const &dec;
 
    function {
-      Number.neg:Number { oper - }
-      plus(Number,Number):Number { oper + }
-      minus(Number,Number):Number { oper - }
-      mult(Number,Number):Number { oper * }
-      div(Number,Number):Number { oper / }
+      plus(:,:): { oper + }
+      minus(:,:): { oper - }
+      mult(:,:): { oper * }
+      div(:,:): { oper / }
    }
    
    method {
       Number;
-      pluseq(Number) & { oper += }
-      minuseq(Number) & { oper -= }
-      multeq(Number) & { oper *= }
-      diveq(Number) & { oper /= }
+      neg: { oper - }
+      pluseq(:) & { oper += }
+      minuseq(:) & { oper -= }
+      multeq(:) & { oper *= }
+      diveq(:) & { oper /= }
    }
 
    provide {
       -0 = 0;
-      given ( a: Number ) {
+      given (a) {
          a+0 = a;
          a*0 = 0;
          a*1 = a;
          a/1 = a;
-         given ( b: Number ) {
+         given (b) {
             a+b = b+a;
             a-b = a + -b;
             a*b = b*a;
-            given( c: Number ) {
+            given (c) {
                a*(b+c) = a*b + a*c;
                (a+b)/c = a/c + b/c;
             }

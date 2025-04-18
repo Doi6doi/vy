@@ -2,21 +2,14 @@
 
 namespace vy;
 
-/// operátor (prefix, infix, postfix )
+/// operátor (prefix, infix, postfix)
 class Oper {
 
    const
-      INFIX = "infix",
-      POSTFIX = "postfix",
-      PREFIX = "prefix";
-
-   /// egyezés
-   static function same( Oper $a, Oper $b ) {
-      if (!$a) return !$b;
-      if (!$b) return false;
-      return $a->kind() == $b->kind()
-         && $a->oper() == $b->oper();
-   }
+      APP = "app",
+      PRE = "pre",
+      POST = "post",
+      IN = "in";
 
    static function run( $o, $a, $b=null ) {
 	  switch ($o) {
@@ -51,10 +44,10 @@ class Oper {
 
    /// többjegyű operátor folytatása
    static function cont( $pre, $ch ) {
-	  if ( "" === $pre && 2 == strlen($ch)) {
-		 $pre = $ch[0];
-		 $ch = $ch[1];
-	  }
+	   if ( "" === $pre && 2 == strlen($ch)) {
+	      $pre = $ch[0];
+		   $ch = $ch[1];
+	   }
       switch ($pre) {
          case "":
             switch ( $ch ) {
@@ -71,19 +64,21 @@ class Oper {
             return "=" == $ch;
          case "+": case "-":
             return $pre == $ch || "=" == $ch;
+         case "[":
+            return "]" == $ch;
       }
       return false;
    }
 
    /// többjegyű operátor
    static function isOper( $token, $kind ) {
-      if ( self::PREFIX == $kind ) {
-         return in_array( $token, ["!","++","-","--"] );
-      } else if ( self::INFIX == $kind ) {
-         return in_array( $token, [":=","=","<",">","<=",">=","!=",
-            "+","-","*","/","||","&&","+=","-=","*=","/="] );
-      } else
-         return false;
+      switch ( $kind ) {
+         case self::APP: return in_array( $token, ["[]"] );
+         case self::PRE: return  in_array( $token, ["!","++","-","--"] );
+         case self::POST: return  in_array( $token, ["++","--"] );
+         case self::IN: return in_array( $token, 
+            [":=","=","<",">","<=",">=","!=", "+","-","*","/","||","&&","+=","-=","*=","/="] );
+      }
    }
 
    /// értékadó operátor
@@ -91,13 +86,8 @@ class Oper {
 	  return in_array( $token, [":=","+=","-=","/=","*=","++","--"] );
    }
 
-   protected $owner;
    protected $kind;
    protected $oper;
-
-   function __construct( ExprCtx $owner ) {
-      $this->owner = $owner;
-   }
 
    function kind() { return $this->kind; }
 
@@ -111,16 +101,12 @@ class Oper {
    function read( Stream $s ) {
       $s->readWS();
       switch ( $s->next() ) {
-         case self::INFIX: case self::POSTFIX: case self::PREFIX:
+         case self::POST: case self::PRE:
             $this->kind = $s->read();
          break;
-         default:
-            throw $s->notexp( "operator" );
       }
       $this->readOper( $s );
-// Tools::debug("READ OPER", $this->oper);
-      $s->readWS();
-      $s->readToken(";");
+      $this->guessKind();
    }
 
    function __toString() {
@@ -137,6 +123,19 @@ class Oper {
          throw $s->notexp("operator");
    }
 
-
+   protected function guessKind() {
+      $op = $this->oper;
+      if ( ! $this->kind ) {
+         switch ( $op ) {
+            case "--": case "++":
+               throw new EVy("Cannot guess oper kind: ".$op );
+            case "!": $this->kind = self::PRE; break;
+            case "[]": $this->kind = self::APP; break;
+            default: $this->kind = self::IN;
+         }
+      }
+      if ( ! self::isOper( $op, $this->kind ))
+         throw new EVy("Invalid oper: ".$this->kind." $op");
+   }
 
 }

@@ -1,8 +1,8 @@
 interface vy.util.Random @24 {
 
-   import vy.num.Number;
+   ~ nodef;
 
-   type &nodef;
+   import vy.num.Number;
 
    function {
       random( Number ): Number;

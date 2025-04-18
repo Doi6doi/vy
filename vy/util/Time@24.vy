@@ -7,12 +7,12 @@ interface vy.time.Time @24 {
    }
 
    function {
-      now: Time;
-      waitUntil( Time );
+      now: ;
+      waitUntil( : );
    }
 
    method {
-      addSecond( Number ): Time;
+      addSecond( Number ): ;
    }
 
 }

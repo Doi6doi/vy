@@ -1,6 +1,6 @@
 interface vy.ui.Redraw @24 {
 
-   type &nodef;
+   ~ nodef;
 
    function {
       redraw;

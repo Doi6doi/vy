@@ -2,18 +2,18 @@ interface vy.core.Ordinal @20240117 {
 
    extend Equal;
 
-   function {
-      first:Ordinal;
-      last:Ordinal;
+   const {
+      first;
+      last;
    }
 
    method {
-      next:Ordinal;
-      prev:Ordinal;
+      next: ;
+      prev: ;
    }
 
    provide {
-      given( o,u:Ordinal) {
+      given (o,u) {
          (u = o.next) = (o = u.prev);
       }
    }

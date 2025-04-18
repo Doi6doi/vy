@@ -4,22 +4,22 @@ interface vy.geom2.Dir {
 
    method {
       Dir;
-      opposite: Dir;
+      opposite: ;
    }
 
    const {
-      none: Dir;
-      left: Dir;
-      right: Dir;
-      up: Dir;
-      down: Dir;
+      none;
+      left;
+      right;
+      up;
+      down;
    }
 
    provide {
       left.opposite = right;
       up.opposite = down;
       none.opposite = none;
-      given (a:Dir) {
+      given (a) {
          a.opposite.opposite = a;
       }
    }

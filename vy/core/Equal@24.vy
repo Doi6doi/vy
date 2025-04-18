@@ -3,13 +3,13 @@ interface vy.core.Equal @24 {
    import Bool;
 
    function {
-      equal(Equal,Equal):Bool { oper = }
+      equal(:,:):Bool { oper = }
 
-      noteq(Equal,Equal):Bool { oper != }
+      noteq(:,:):Bool { oper != }
    }
 
    provide {
-      given( a,b:Equal ) {
+      given (a,b) {
          (a=b) = (b=a);
          (a!=b) = !(a=b);
       }

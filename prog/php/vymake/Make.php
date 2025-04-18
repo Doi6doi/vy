@@ -53,6 +53,8 @@ class Make
 
    function init() { return $this->init; }
 
+   function defType() { return null; }
+
    /// futtatás célokkal
    function run( $target ) {
 	  $target = $this->refineTarget( $target );

@@ -9,8 +9,8 @@ interface vy.geom2.Transformed @24 {
 
    method {
       Transformed( Sub );
-      transform: & Transform;
-      sub: & Sub;
+      transform & Transform;
+      sub & Sub;
    }
 
 }

@@ -1,11 +1,11 @@
 interface vy.cont.Linear @24 {
 
+   ~ nodef;
+
    import Array;
 
-   type &nodef;
-
    function {
-      search( Array, Value ) : (Bool, Index);
+      search( Array, Value ) :Bool :Index;
    }
 
 }

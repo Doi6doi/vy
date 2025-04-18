@@ -52,7 +52,7 @@ abstract class Repo {
       $ret = null;   
       if ( $g = Tools::g( $this->objs, $pkgName )) {
          foreach ($g as $o) {
-            if ( Version::better( $o, $ver, $ret ))
+            if ( Version::better( $o->ver(), $ver, $ret ))
                $ret = $o;
          }
       }
@@ -65,7 +65,8 @@ abstract class Repo {
          $s->readWS();
          switch ( $n = $s->next() ) {
             case Interf::INTERFACE: $ret = new Interf(); break;
-            throw new EVy("Unknown vy file: $n");
+            case Cls::CLS: $ret = new Cls(); break;
+            default: throw new EVy("Unknown vy file: $n");
          }
          $ret->read( $s, $this );
          return $ret;

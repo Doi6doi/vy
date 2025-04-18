@@ -20,6 +20,8 @@ class Given
 
    function kind() { return Block::COND; }
 
+   function defType() { return $this->owner->defType(); }
+
    function resolve( $token, $kind ) {
       if ( ExprCtx::NAME == $kind ) {
          if ( $ret = Tools::g( $this->vars, $token ))
@@ -67,8 +69,10 @@ class Given
          $first = false;
       $vars = $s->readIdents(",");
       $s->readWS();
-      $s->readToken(":");
-      $type = $this->owner->readType( $s );
+      if ( $s->readIf(":") )
+         $type = $this->owner->readType( $s );
+      else if ( ! $type = $this->defType() )
+         throw $s->notexp( "type" );
       foreach ( $vars as $v )
          $this->addVar( $v, $type );
       return true;

@@ -1,6 +1,6 @@
 interface vy.run.Run @20250411 {
 
-   type &nodef;
+   ~ nodef;
 
    function run();
 

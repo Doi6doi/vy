@@ -3,9 +3,9 @@ interface vy.ui.KeyEventKind @24 {
    extend vy.core.Equal;
    
    const {
-      up: KeyEventKind;
-      down: KeyEventKind;
-      press: KeyEventKind;
+      up;
+      down;
+      press;
    }
 
 }

@@ -1,11 +1,11 @@
 interface vy.ui.EventQueue @24 {
 
+   ~ nodef;
+
    import {
       vy.core.Bool;
       Event;
    }
-
-   type &nodef;
 
    function {
       empty: Bool;

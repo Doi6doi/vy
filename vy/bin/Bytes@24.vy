@@ -15,7 +15,7 @@ interface vy.bin.Bytes @24 {
       Uint8 = Indexable.Value;
    }
 
-   const &hex: Bytes;
+   const &hex;
 
    method {
       length: Uint;

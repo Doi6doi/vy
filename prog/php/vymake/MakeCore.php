@@ -86,7 +86,7 @@ class MakeCore
       if ( ! is_array($ds) )
          $ds = [$ds];
       foreach ( $ds as $d ) {
-         if ( ! is_dir( $d )) {
+         if ( $d && ! is_dir( $d )) {
             $this->owner->log( Make::INFO, "Creating dir: $d");
             Tools::mkdir( $d );
          }
@@ -95,6 +95,7 @@ class MakeCore
 
    /// könyvtár tartalma
    function dir( $path ) {
+      if ( ! $path ) $path = ".";
       $ret = [];
       foreach ( scandir($path) as $f ) {
          if ( ! in_array( $f, [".",".."] ))

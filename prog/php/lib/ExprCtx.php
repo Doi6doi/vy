@@ -10,8 +10,13 @@ interface ExprCtx {
       INTF = "intf",
       NAME = "name";
 
+   /// alapértelmezett típus
+   function defType();
+
+   /// típusnév ellenőrzése
    function checkType( $type );
 
+   /// típusnév olvasása
    function readType( Stream $s );
 
    /// token feloldása

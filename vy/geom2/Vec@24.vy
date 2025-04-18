@@ -7,12 +7,12 @@ interface vy.geom2.Vec @24 {
       Coord;
    }
 
-   method {
-      coord( Coord ): & Base { oper [] };
+   const {
+      zero;
    }
 
-   const {
-      &0: Vec;
+   method {
+      coord( Coord ) & Base { oper [] };
    }
 
 }

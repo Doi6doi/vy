@@ -8,7 +8,7 @@ interface vy.ui.KeyEvent @24 {
    }
 
    method {
-      kind: KeyEventKind;
+      keyKind: KeyEventKind;
       key: Key;
    }
 

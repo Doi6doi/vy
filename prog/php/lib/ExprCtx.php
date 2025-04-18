@@ -5,9 +5,10 @@ namespace vy;
 interface ExprCtx {
 
    const
+      CONS = "cons",
       FUNC = "func",
       INFIX = "infix",
-      INTF = "intf",
+      ITEM = "item",
       NAME = "name";
 
    /// alapértelmezett típus

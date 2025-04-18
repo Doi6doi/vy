@@ -9,7 +9,7 @@ abstract class ItemFunc
 {
 
    /// egyező osztály készítése
-   static function create( $owner, ItemFunc $other ) {
+   static function create( Item $owner, ItemFunc $other ) {
       $dt = $owner->defType();
       if ( $other instanceof ItemConst )
          return new ItemConst( $owner, $dt ); 
@@ -26,9 +26,9 @@ abstract class ItemFunc
    /// argumentumok
    protected $sign;
 
-   function __construct( ExprCtx $owner, $defType = null ) {
+   function __construct( ExprCtx $owner ) {
 	   parent::__construct( $owner );
-      $this->sign = new Sign( $this, true, $defType );
+      $this->sign = new Sign( $this, true );
    }
 
    function name() { return $this->name; }
@@ -36,10 +36,6 @@ abstract class ItemFunc
    function sign() { return $this->sign; }
 
    function defType() { return $this->owner->defType(); }
-
-   function resolve( $token, $kind ) {
-      return null;
-   }
 
    function run( RunCtx $ctx ) {
       return $this;

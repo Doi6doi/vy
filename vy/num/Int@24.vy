@@ -6,7 +6,5 @@ interface vs.num.Int @24 {
       vs.core.Ordinal;
    }
 
-   const &dec: Int;
-
 }
 

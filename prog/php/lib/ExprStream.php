@@ -15,10 +15,10 @@ class ExprStream
 	  $this->stacks = [];
    }
 
-   function push( Block $b, $newStack ) {
-	  $this->blocks [] = $b;
-	  if ( $newStack )
-	     $this->stacks [] = new Stack( $b );
+   function push( ExprCtx $b, $newStack ) {
+	   $this->blocks [] = $b;
+	   if ( $newStack )
+	      $this->stacks [] = new Stack( $b );
    } 
 
    /// pontosvesssző olvasása, ha van
@@ -44,7 +44,7 @@ class ExprStream
    }
 
    function readExpr() {
-	  return $this->stack()->readExpr( $this );
+	   return $this->stack()->readExpr( $this );
    }
 
    function readStm() {

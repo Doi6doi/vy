@@ -29,6 +29,8 @@ class Sign
 
    function defType() { return $this->owner->defType(); }
 
+   function ownerName() { return $this->owner->name(); }
+
    /// olvasás
    function read( Stream $s ) {
       $s->readWS();

@@ -2,7 +2,9 @@
 
 namespace vy;
 
-class ItemType {
+class ItemType 
+   implements Expr
+{
 
    /// tulajdonos
    protected $owner;
@@ -29,6 +31,8 @@ class ItemType {
       $s->readToken(";");
    }
 
+   function run( RunCtx $r ) { return $this; }
+
    function same() { return $this->same; }
 
    function add( $s ) {
@@ -48,6 +52,22 @@ class ItemType {
       return true;
    }
 
+/*
+   /// név feloldása a típuson belül
+   function resolve( $token, $kind ) {
+Tools::debug("ItemType.resolve $token $kind");
+      foreach ( $this->same as $s ) {
+Tools::debug($s);
+         $s = explode(".",$s);
+         if ( $i = $this->owner->resolve( $s[0], ExprCtx::ITEM )) {
+Tools::debug($i);
+            if ( $c = $i->resolve( $s[1], $kind ))
+               return $c;
+         }
+      }
+      return null;
+   }
+*/ 
    /// interfész módosítása az átnevezésekkel
    function updateInterf() {
       $ptn = ".".$this->name;

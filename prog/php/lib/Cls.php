@@ -11,4 +11,6 @@ class Cls
    
    function className() { return self::CLS; }
    
+   function isImplem() { return true; }
+   
 }

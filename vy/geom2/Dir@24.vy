@@ -1,6 +1,6 @@
 interface vy.geom2.Dir @24 {
 
-   extend vy.core.Append;
+   extend vy.core.Equal;
 
    method {
       Dir;

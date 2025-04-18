@@ -6,8 +6,6 @@ interface vy.num.Uint @24 {
       vy.core.Ordinal;
    }
 
-   const &dec: Uint;
-
    provide {
       given( a:Uint ) {
          0 <= a;

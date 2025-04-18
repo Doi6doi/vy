@@ -11,5 +11,7 @@ class Interf
       INTERFACE = "interface";
 
    function className() { return self::INTERFACE; }
+   
+   function isImplem() { return false; }
 
 }

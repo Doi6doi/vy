@@ -4,13 +4,14 @@ namespace vy;
 
 /// vy neves és verziós elem
 abstract class Item
-   implements RepoItem, ExprCtx
+   implements RepoItem, ExprCtx, Expr
 {
 
    /// kulcsszavak
    const
       CONST = "const",
       EXTEND = "extend",
+      FIELD = "field",
       FLAG = "~",
       FUNCTION = "function",
       METHOD = "method",
@@ -38,10 +39,10 @@ abstract class Item
    protected $xtends;
    /// importok
    protected $imports;
-   /// konstansok
-   protected $consts;
    /// típusok
    protected $types;
+   /// mezők
+   protected $fields;
    /// függvények
    protected $funcs;
    /// provide rész
@@ -53,7 +54,6 @@ abstract class Item
 
    function __construct() {
       $this->flags = [];
-      $this->consts = [];
       $this->xtends = [];
       $this->imports = [];
       $this->types = [];
@@ -64,6 +64,8 @@ abstract class Item
 
    abstract function className();
 
+   abstract function isImplem();
+
    function name() { return $this->name; }
 
    function pkg() { return $this->pkg; }
@@ -72,11 +74,11 @@ abstract class Item
 
    function types() { return $this->types; }
 
-   function consts() { return $this->consts; }
-
    function funcs() { return $this->funcs; }
 
    function ver() { return $this->ver; }
+
+   function run( RunCtx $r ) { return $this; }
 
    function has($flag) {
       return array_key_exists( $flag, $this->flags );
@@ -87,6 +89,11 @@ abstract class Item
       if ( $this->has( self::NODEF ))
          return null;
          return $this->name;
+   }
+
+   /// típus név alapján
+   function itemType( $name ) {
+      return Tools::g( $this->types, $name );
    }
 
    /// teljes név útvonallal és verzióval
@@ -119,8 +126,8 @@ abstract class Item
    /// típus kivétele egy névből
    function removeType( $type ) {
       if ( ! preg_match('#^(.*)\.([^.]+)$#', $type, $m )) return;
-      if ( ! $inf = $this->resolve( $m[1], ExprCtx::INTF ))
-         throw new EVy("Unknown interface: $inf");
+      if ( ! $it = $this->resolve( $m[1], ExprCtx::ITEM ))
+         throw new EVy("Unknown item: $it");
       $t = $m[2];
       $inf->checkType( $t );
       if ( $ret = Tools::g( $this->types, $t )) {
@@ -144,26 +151,30 @@ abstract class Item
    function resolve( $token, $kind ) {
       $arrs = [];
       switch ($kind) {
-         case ExprCtx::FUNC:
-         case ExprCtx::NAME:
-            $arrs = [$this->consts, $this->funcs];
-         break;
-         case ExprCtx::INTF:
-            $arrs = [$this->xtends, $this->imports];
-         break;
+         case ExprCtx::CONS: 
+         case ExprCtx::FUNC: 
          case ExprCtx::INFIX:
-            foreach ($this->funcs as $f) {
-               if ( ($o = $f->oper()) && Oper::IN == $o->kind()
-                  && $o->oper() == $token )
-                  return $f;
-            }
-            return null;
+            $arrs = [$this->funcs];
+         break;
+         case ExprCtx::NAME: 
+            $arrs = [$this->types, $this->funcs, $this->xtends, $this->imports];
+         break;
+         case ExprCtx::ITEM:
+            $arrs = [$this->xtends, $this->imports];
          break;
          default: throw new EVy("Unknown resolve kind: $kind");
       }
       foreach ( $arrs as $a ) {
          if ( $ret = Tools::g( $a, $token )) {
-            return $ret;
+            switch ($kind) {
+               case ExprCtx::CONS: $ok = $ret instanceof ItemConst; break;
+               case ExprCtx::INFIX:
+                  $ok = $ret instanceof ItemFunc
+                     && $ret->oper() && Oper::IN == $ret->oper()->kind();
+               break;
+               default: $ok = true;
+            }
+            if ($ok) return $ret;
          }
       }
       return null;
@@ -179,7 +190,7 @@ abstract class Item
             $tt = new ItemType( $this, $tn );
             $this->add( $this->types, $tn, $tt );
          }
-         $tt->add( $name.".".$tn );
+         $tt->add( "$name.$tn" );
       }
    }
 
@@ -188,8 +199,6 @@ abstract class Item
       if ( $this->funcsTaken ) return;
       $map = $this->typeMap();
       foreach ( $this->xtends as $x ) {
-         foreach ( $x->consts() as $c )
-            $this->inheritFunc( $c, $map );
          foreach ( $x->funcs() as $f )
             $this->inheritFunc( $f, $map );
       }
@@ -218,6 +227,7 @@ abstract class Item
       switch ( $n = $s->next() ) {
          case self::CONST: $meth = "readConst"; break;
          case self::EXTEND: $meth = "readExtend"; break;
+         case self::FIELD: $meth = "readField"; break;
          case self::FLAG: $meth = "readFlag"; break;
          case self::FUNCTION: $meth = "readFunction"; break;
          case self::IMPORT: $meth = "readImport"; break;
@@ -263,8 +273,6 @@ abstract class Item
    /// egy kategóriába eső tömbök
    protected function addArrays( $arr ) {
       switch ( $arr ) {
-         case $this->consts: case $this->funcs:
-            return [$this->consts, $this->funcs];
          case $this->xtends: case $this->imports:
             return [$this->xtends, $this->imports];
          default:
@@ -274,9 +282,9 @@ abstract class Item
 
    /// függvény olvasása
    protected function readConst( $s ) {
-      $ret = new ItemConst( $this, $this->defType() );
+      $ret = new ItemConst( $this );
       $ret->read( $s );
-      $this->add( $this->consts, $ret->name(), $ret );
+      $this->add( $this->funcs, $ret->name(), $ret );
    }
 
    /// egy zászló olvasása
@@ -346,14 +354,21 @@ abstract class Item
 
    /// függvény olvasása
    protected function readFunction( $s ) {
-      $ret = new ItemFunction( $this, $this->defType() );
+      $ret = new ItemFunction( $this );
       $ret->read( $s );
       $this->add( $this->funcs, $ret->name(), $ret );
    }
 
+   /// mező olvasása
+   protected function readField( $s ) {
+      $ret = new ItemField( $this );
+      $ret->read( $s );
+      $this->add( $this->fields, $ret->name(), $ret );
+   }
+
    /// metódus olvasása
    protected function readMethod( $s ) {
-      $ret = new ItemMethod( $this, $this->defType() );
+      $ret = new ItemMethod( $this );
       $ret->read( $s );
       $this->add( $this->funcs, $ret->name(), $ret );
    }
@@ -378,6 +393,7 @@ abstract class Item
 
    /// függvény öröklése
    protected function inheritFunc( ItemFunc $f, $map ) {
+// Tools::debug("inheritFunc ".$f->owner()->name().".".$f->name() );      
       $name = $f->name();
       $fmap = $this->mapSlice( $map, $f->owner()->name() );
       if ( $g = Tools::g( $this->funcs, $name ) ) {

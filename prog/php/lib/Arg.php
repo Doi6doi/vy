@@ -48,6 +48,8 @@ class Arg
 
    function defType() { return $this->owner->defType(); }
 
+   function ownerName() { return $this->owner->ownerName(); }
+
    function read( Stream $s, $typed ) {
       $uk = $this->updateKind($s);
       $s->readWS();
@@ -96,7 +98,8 @@ class Arg
    }
 
    protected function notComp( Arg $other, $reason ) {
-      return new EVy("Not comaptible arg: ".$this->name().": ".$reason );
+      return new EVy(sprintf("Not compatible arg: %s.%s: %s",
+         $this->ownerName(), $this->name(), $reason ));
    }
 
 

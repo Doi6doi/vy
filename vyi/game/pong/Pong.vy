@@ -14,7 +14,7 @@ class vyi.game.pong.Pong @25 {
 
    const {
 
-      BGCOLOR : Color = #000000;
+      BGCOLOR: Color = #000000;
 
       BALLSPEED = 0.05;
       BALLSIZE = 0.02;
@@ -43,11 +43,11 @@ class vyi.game.pong.Pong @25 {
 
       ESCAPE: Key = "esc"; 
 
-      X: Coord = x;
-      Y: Coord = y;
+      X = Coord.x;
+      Y = Coord.y;
 
-      L: Dir = left;
-      R: Dir = right;
+      L = Dir.left;
+      R = Dir.right;
    }
 
    field {

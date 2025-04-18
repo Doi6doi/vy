@@ -10,13 +10,14 @@ class vyi.game.pong.Pad @25 {
       Number = vy.num.Math;
       vy.geom2.Dir;
       vy.geom2.Square;
+      vy.ui.KeyEvent;
    }
 
    const {
-      KEYUP : KeyEventKind = up;
-      KEYDOWN : KeyEventKind = down;
+      KEYUP = KeyEventKind.up;
+      KEYDOWN = KeyEventKind.down;
 
-      Y : Coord = y;
+      Y = Coord.y;
    }
 
    field {

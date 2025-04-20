@@ -2,7 +2,9 @@
 
 namespace vy;
 
-class CWriter {
+class CWriter 
+   extends CompWriter
+{
 	
    /// fázisok
    const
@@ -19,23 +21,16 @@ class CWriter {
       TYPEDECL = "typeDecl",
       TYPEDEF = "typeDef";	
 	
-   /// kiíró
-   protected $stream;
-   /// Típus lekérdezés
-   protected $map;
    /// kiírandó elemek
    protected $items;
    /// interfész
    protected $intf;
-   /// reprezentációk
-   protected $reprs;
    /// egyetlen saját típus
    protected $onlyOwn;
 
    function __construct() {
-      $this->map = [];
+      parent::__construct();
       $this->items = [];
-      $this->reprs = [];
    }
    
    /// objektum alapján c header kiírása
@@ -63,57 +58,9 @@ class CWriter {
 	  }
    }
 
-   function typeMap() { return $this->map; }
-
-   /// típusmegfeleltetés beállítása
-   function setTypeMap( array $map ) {
-      $this->map = $map;
-   }
-   
-   /// reprezentációk beállítása
-   function setReprs( $r ) {
-      if ( is_array( $r ))
-         $this->reprs = $r;
-      else if ( $r )
-         $this->reprs = [$r];
-      else $this->reprs = [];
-   }
-   
-   /// itt definiált típus
-   function own( $name ) {
-      if ( $t = Tools::g( $this->map, $name ))
-         return "*" == substr( $t, 0, 1 );
-      return false;
-   }
-   
-   /// egy típus reprezentációja
-   function repr( $name ) {
-      $t = "".Tools::g( $this->map, $name );
-      if ( "*" == substr( $t, 0, 1 ))
-         $t = substr( $t, 1 );
-      if ( ! $t )
-         $t = $name;   
-      return $this->getRepr( $t );
-   }
-
-   /// egy reprezentáció
-   protected function getRepr( $name ) {
-      $rs = $this->reprs;
-      for ($i = count($rs)-1; 0 <= $i; --$i) {
-         if ( $ret = $rs[$i]->get($name))
-            return $ret;
-      }
-      return null;
-   }
-
    /// a modul neve
    protected function module() {
       return pathinfo( $this->filename(), PATHINFO_FILENAME );
-   }
-
-   /// a kimeneti fájl neve
-   protected function filename() {
-      return $this->stream->filename();
    }
 
    /// elemek elkészítése

@@ -6,6 +6,7 @@ namespace vy;
 class Stream {
 
    const
+      COMMENT = "comment",
       EOS = "eos",
       IDENT = "ident",
       NUM = "num",
@@ -64,13 +65,30 @@ class Stream {
       $this->data = file_get_contents( $filename );
       if ( false === $this->data )
         throw new EVy("Could not load file '$filename'");
-      $this->at=0;
+      $this->at = 0;
       $this->row = 1;
       $this->col = 1;
    }
 
+   /// aktuális hely
+   function at() { return $this->at; }
+   
+   /// ugrás egy helyre
+   function jump( $x ) { $this->at = $x; }
+
    function position() {
       return sprintf("%s (%d:%d)", $this->filename, $this->row, $this->col );
+   }
+
+   function readComment() {
+      $ret = [];
+      while (true) {
+         switch ( $this->nextKind()) {
+            case self::COMMENT: $ret [] = $this->read(); break;
+            case self::WS: $this->read(); break;
+            default: return $ret;
+         }
+      }
    }
 
    function readWS() {

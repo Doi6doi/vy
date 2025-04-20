@@ -17,8 +17,8 @@ class Compiler {
    protected $outputs;
    /// típus megfeleltetés
    protected $typemap;
-   /// c író
-   protected $cWriter;
+   /// író
+   protected $writer;
    /// létező fájl felüírása
    protected $force;
    
@@ -80,27 +80,24 @@ class Compiler {
 
    /// minden bemenet beolvasása
    function forceInputs() {
-      foreach ($this->inputs as $i) {
-         if ( ! array_key_exists( $i, $this->objs ))
-            $this->forceInput( $i );
+      for ( $i =0; $i<count($this->inputs); ++$i ) {
+         if ( ! Tools::g( $this->objs, $i ))
+            $this->forceInput($i);
       }
    }
 
    /// egy kimenet kiírása
    function write( $obj, $out ) {
-      switch ($ext = Tools::extension($out)) {
-         case ".h": $this->cWriter()->writeHeader($obj,$out); break;
-         case ".c": $this->cWriter()->writeBody($obj,$out); break;
-         case ".vy": $this->vyWriter()->write( $obj, $out ); break;
-         default: throw new EVy("Unknown output extension: $ext");
-      }
+      $obj->readPhase(true);
+      $this->setWriter( $this->extWriter( Tools::extension($out) ) );
+      $this->writer->writeFile($obj, $out);
    }
-
+   
    /// szükséges kimenetek kiírása
    function writeAll() {
       for ( $i=0; $i<count($this->outputs); ++$i) {
          $ii = Tools::g( $this->inputs, $i );
-         $bi = Tools::g( $this->objs, $ii );
+         $bi = Tools::g( $this->objs, $i );
          $oi = $this->outputs[$i];
          if ( ! $this->force && file_exists($oi))
             throw new EVy("File already exists: $oi");
@@ -122,32 +119,43 @@ class Compiler {
       } 
    }
 
+   /// író beállítása
+   function setWriter( CompWriter $w ) {
+      if ( $this->writer && get_class($this->writer) == get_class($w) )
+         return;
+      $this->writer = $w;
+      $w->setReprs( $this->reprs );
+      $w->setTypeMap( $this->typemap );
+   }
+
+   /// író kiterjesztés alapján
+   protected function extWriter( $ext ) {
+      switch ($ext) {
+         case ".h": case ".c": return new CWriter();
+         case ".php": return new PhpWriter();
+         default: throw new EVy("Unknown output extension: $ext");
+      }
+   }
+
+   /// fordítás utáni takarítás
+   protected function done() {
+	  $this->inputs = [];
+	  $this->outputs = [];
+	  $this->objs = [];
+   }
+
    /// egy bemenet olvasása
-   function forceInput( $i ) {
-      if ( preg_match('#^(.+)(@.+)$#',$i,$m)) {
-         $i = $m[1];
+   protected function forceInput( $i ) {
+      $inp = $this->inputs[$i];
+      if ( preg_match('#^(.+)(@.+)$#',$inp,$m)) {
+         $inp = $m[1];
          $v = Version::parse( $m[2], true );
       } else {
          $v = Version::untilNow();
       }
-      $o = $this->repo->force( $i, $v );
-      $this->objs[ $i.$o->ver()->num() ] = $o;
-   }
-
-   /// c író
-   function cWriter() {
-      if ( ! $this->cWriter )
-         $this->cWriter = new CWriter();
-      $this->cWriter->setReprs( $this->reprs );
-      $this->cWriter->setTypeMap( $this->typemap );
-      return $this->cWriter;
-   }
-
-   /// fordítás utáni takarítás
-   function done() {
-	  $this->inputs = [];
-	  $this->outputs = [];
-	  $this->objs = [];
+      $o = $this->repo->force( $inp, $v );
+      $o->readPhase(true);
+      $this->objs[ $i ] = $o;
    }
 
 }

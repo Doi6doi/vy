@@ -323,6 +323,13 @@ class Tools {
       }
    }
 
+   /// comment hozzadása
+   static function addComment( & $cmt, Stream $s ) {
+      if ( $c = $s->readComment() )
+         $cmt = array_merge( $cmt, $c );
+   }
+   
+
    /// Linux engedély beállítás
    protected static function setLinuxPerm( $file, $perm, $to, $on ) {
       if ( false === ($v = fileperms($file)))

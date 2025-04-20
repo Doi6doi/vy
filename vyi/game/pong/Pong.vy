@@ -9,9 +9,6 @@ class vyi.game.pong.Pong @25 {
       vy.cont.Indexable;
    }
 
-   cast {
-   
-
    const {
       BGCOLOR: Color = #000000;
 

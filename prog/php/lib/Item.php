@@ -47,13 +47,13 @@ abstract class Item
    protected $funcs;
    /// provide rész
    protected $provides;
-   /// kifejezés olvasó verem
-   protected $stack;
+   /// megjegyzések
+   protected $comment;
 
-   /// az örökölt függvények már átvéve
-   protected $funcsTaken;
-   /// az örökölt mezők már átvéve
-   protected $fieldsTaken;
+   /// olvasási fázis
+   protected $readPhase;
+   /// átugrott folyam
+   protected $skipped;
 
    function __construct() {
       $this->flags = [];
@@ -62,8 +62,9 @@ abstract class Item
       $this->types = [];
       $this->fields = [];
       $this->funcs = [];
-      $this->provides = new Conds( $this );
-      $this->stack = new Stack( $this );
+      $this->provides = [];
+      $this->comment = [];
+      $this->phase = 0;
    }
 
    abstract function className();
@@ -76,24 +77,42 @@ abstract class Item
 
    function pkgName() { return $this->pkg.".".$this->name; }
 
-   function types() { return $this->types; }
+   function types() { 
+      $this->readPhase(2);
+      return $this->types; 
+   }
 
-   function funcs() { return $this->funcs; }
+   function xtends() {
+      $this->readPhase(2);
+      return $this->xtends;
+   }
 
-   function fields() { return $this->fields; }
+   function funcs() { 
+      $this->readPhase(2);
+      return $this->funcs; 
+   }
+
+   function fields() { 
+      $this->readPhase(2);
+      return $this->fields; 
+   }
 
    function ver() { return $this->ver; }
+
+   function comment() { return $this->comment; }
 
    function run( RunCtx $r ) { return $this; }
 
    function blockKind() { return Block::NONE; }
 
    function has($flag) {
+      $this->readPhase(2);
       return array_key_exists( $flag, $this->flags );
    }
 
    /// alapértelmezett típus
    function defType() {
+      $this->readPhase(2);
       if ( $this->has( self::NODEF ))
          return null;
          return $this->name;
@@ -101,7 +120,7 @@ abstract class Item
 
    /// típus név alapján
    function itemType( $name ) {
-      return Tools::g( $this->types, $name );
+      return Tools::g( $this->types(), $name );
    }
 
    /// teljes név útvonallal és verzióval
@@ -113,19 +132,45 @@ abstract class Item
    function read( ExprStream $s, Repo $repo ) {
       $this->repo = $repo;
       $this->readHead( $s );
-      while (true) {
-         $s->readWS();
-         if ( $s->readIf("}"))
+      $this->skipped( $s );
+      $this->phase = 1;
+   }
+
+   /// legalább $phase-ig olvasás
+   /// 1: név és verzió
+   /// 2: típusok és függvénynevek
+   /// 3: függvények paraméterei
+   /// 4: törzsek
+   function readPhase( $phase ) {
+      if ( true === $phase )
+         $phase = 4;
+      while ( $this->phase < $phase ) {
+         $s = $this->skipped();
+         switch ($this->phase) {
+            case 1:
+               $s->readWS();
+               if ( $s->readIf("}"))
+                  break;
+               $this->readPart( $s );
             break;
-         else
-            $this->readPart( $s );
+            case 2:
+               foreach ( $this->funcs as $f )
+                  $f->readPhase(2);
+            break;
+            case 3:
+               foreach ( $this->funcs as $f )
+                  $f->readPhase(true);
+               foreach ( $this->provides as $p )    
+                  $p->readPhase(true);
+            break;
+         }
+         ++ $this->phase;
       }
-      $this->inheritFields();
-      $this->inheritFuncs();
    }
    
    /// típus olvasása
    function readType( $s ) {
+      $this->readPhase(2);
       $s->readWS();
       $ret = $s->readIdent();
       $this->checkType( $ret );
@@ -134,6 +179,7 @@ abstract class Item
 
    /// típus kivétele egy névből
    function removeType( $type ) {
+      $this->readPhase(2);
       if ( ! preg_match('#^(.*)\.([^.]+)$#', $type, $m )) return;
       if ( ! $it = $this->resolve( $m[1], ExprCtx::ITEM ))
          throw new EVy("Unknown item: $it");
@@ -147,6 +193,7 @@ abstract class Item
 
    /// típus ellenőrzése
    function checkType( $type ) {
+      $this->readPhase(2);
       if ( ! array_key_exists($type, $this->types) )
          throw new EVy("Unknown type: $type" );
    }
@@ -158,6 +205,7 @@ abstract class Item
 
    /// azonosító feloldás
    function resolve( $token, $kind ) {
+      $this->readPhase(2);
       $arrs = [];
       switch ($kind) {
          case ExprCtx::CONS: 
@@ -188,6 +236,17 @@ abstract class Item
          }
       }
       return null;
+   }
+
+   /// átugrott részek olvasása
+   protected function skipped( $s=null ) {
+      if ( $ret = $this->skipped ) {
+         $ret[0]->jump( $ret[1] );
+         $ret = $ret[0];
+      }
+      if ( $s )
+         $this->skipped = [$s,$s->at()];
+      return $ret;
    }
 
    /// típusok átvétele
@@ -224,10 +283,10 @@ abstract class Item
             $this->inheritField( $f, $map );
       }
    }
-      
+
    /// fejrész beolvasása
    protected function readHead( $s ) {
-      $s->readWS();
+      Tools::addComment( $this->comment, $s );
       $s->readToken( $this->className() );
       $s->readWS();
       $path = $s->readIdents(".");
@@ -252,11 +311,7 @@ abstract class Item
          case self::FUNCTION: $meth = "readFunction"; break;
          case self::IMPORT: $meth = "readImport"; break;
          case self::METHOD: $meth = "readMethod"; break;
-         case self::PROVIDE:
-            $meth = "readProvide";
-            $this->inheritFuncs();
-            $this->inheritFields();
-         break;
+         case self::PROVIDE: $meth = "readProvide"; break;
          case self::TYPE: $meth = "readTypePart"; break;
          default: throw new EVy("Unknown part: $n");
       }
@@ -397,7 +452,9 @@ abstract class Item
 
    /// provide olvasása
    protected function readProvide( $s ) {
-      $this->provides->readPart( $s );
+      $ret = new Conds( $this );
+      $ret->read( $s );
+      $this->provides [] = $ret;
    }
 
    /// kifejezés olvasása

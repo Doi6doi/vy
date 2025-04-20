@@ -27,6 +27,8 @@ abstract class ItemFunc
    protected $sign;
    /// függvény törzse
    protected $body;
+   /// olvasás átugorva innnentől
+   protected $skipped;
 
    function __construct( ExprCtx $owner ) {
 	   parent::__construct( $owner );

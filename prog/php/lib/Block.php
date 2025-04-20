@@ -20,8 +20,8 @@ class Block
    protected $position;
 
    function __construct( ExprCtx $owner ) {
-	  parent::__construct( $owner );
-	  $this->stms = [];
+	   parent::__construct( $owner );
+	   $this->stms = [];
    }
 
    function blockKind() { return $this->owner->blockKind(); }

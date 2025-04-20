@@ -14,6 +14,8 @@ class ItemFunction
    protected $oper;
 
    function oper() { return $this->oper; }
+   
+   function body() { return $this->body; }
 
    /// egy részlet olvasása
    protected function readDetail( $s ) {

@@ -25,10 +25,14 @@ abstract class ItemFunc
    protected $name;
    /// argumentumok
    protected $sign;
+   /// függvény törzse
+   protected $body;
 
    function __construct( ExprCtx $owner ) {
 	   parent::__construct( $owner );
       $this->sign = new Sign( $this, true );
+      if ( $this->owner->isImplem() )
+         $this->body = new Block( $this );
    }
 
    function name() { return $this->name; }
@@ -36,6 +40,10 @@ abstract class ItemFunc
    function sign() { return $this->sign; }
 
    function defType() { return $this->owner->defType(); }
+
+   function blockKind() {
+      return $this->body ? Block::BODY : Block::NONE;
+   }
 
    function run( RunCtx $ctx ) {
       return $this;
@@ -77,7 +85,7 @@ abstract class ItemFunc
       $s->readToken("{");
       while ( true ) {
          $s->readWS();
-         if ( false !== $this->readDetail( $s ))
+         if ( ! $this->readDetail( $s ))
             break;
       }
       $s->readToken("}");
@@ -88,7 +96,9 @@ abstract class ItemFunc
       switch ( $s->next() ) {
          case "}": return false;
          default:
-            throw $s->notexp("detail");
+            if ( $this->body )
+               return $this->body->readPart( $s );
+               else throw $s->notexp("detail");
       }
    }
 

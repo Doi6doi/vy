@@ -111,6 +111,7 @@ class Stack {
    protected function joinNullary() {
       return $this->joinOper()
          || $this->joinLiteral()
+         || $this->joinThis()
          || $this->joinGlobal()
          || $this->joinName();
    }
@@ -240,6 +241,12 @@ class Stack {
       if ( ! $this->isToken(0)) return false;
       if ( ! $ret = $this->makeLiteral( $this->items[0] )) return false;
       return $this->join( 1, $ret );
+   }
+
+   /// this azonosító
+   protected function joinThis() {
+      if ( "this" === $this->items[0] )
+         return $this->join( 1, new This() );
    }
 
    /// következő stream elem

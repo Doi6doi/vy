@@ -6,5 +6,5 @@ class Conds
    extends Block
 {
 
-   function kind() { return Block::COND; }
+   function blockKind() { return Block::COND; }
 }

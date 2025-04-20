@@ -5,6 +5,7 @@ namespace vy;
 class RunCtx {
 	
 	protected $globl;
+   protected $thisObj;
 	protected $frames;
 	
 	function __construct() {
@@ -12,7 +13,11 @@ class RunCtx {
 	   $this->frames = [];
 	}
 
-    function globl() { return $this->globl; }
+   /// globális környzet
+   function globl() { return $this->globl; }
+   
+   /// aktuális objektum környezet
+   function thisObj() { return $this->thisObj; }
 	
 	function push( $name ) {
 	   $this->frames [] = new RunFrame( $name );

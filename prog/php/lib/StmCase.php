@@ -18,8 +18,6 @@ class StmCase
 	  $this->branches = [];
    }
       
-   function kind() { return $this->owner->kind(); }   
-      
    /// if olvasása
    function read( ExprStream $s ) {
       $s->readWS();

@@ -4,17 +4,10 @@ namespace vy;
 
 /// make változó
 class MakeVar 
-   implements Vari
+   extends Vari
 {
 
-   protected $name;
    protected $value;
-   
-   function __construct( $name ) {
-	  $this->name = $name;
-   }
-   
-   function name() { return $this->name; }
    
    function setValue( $x ) { $this->value = $x; }
    
@@ -28,10 +21,4 @@ class MakeVar
 	     throw new EVy("Cannot call ".$this->name );
    }
    
-   function run( RunCtx $ctx ) {
-	  return $ctx->getVar( $this->name );
-   }
-   
-   function __toString() { return $this->name; }	
-	
 }

@@ -4,12 +4,15 @@ namespace vy;
 
 interface ExprCtx {
 
+   /// resolve lehetőségek
    const
       CONS = "cons",
       FUNC = "func",
       INFIX = "infix",
       ITEM = "item",
       NAME = "name";
+
+   function blockKind();
 
    /// alapértelmezett típus
    function defType();

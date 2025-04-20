@@ -9,7 +9,8 @@ class Block
 
    const
       BODY = "body",
-      COND = "cond";
+      COND = "cond",
+      NONE = "none";
 
    /// kifejezés verem
    protected $stack;
@@ -23,7 +24,7 @@ class Block
 	  $this->stms = [];
    }
 
-   function kind() { return $this->owner->kind(); }
+   function blockKind() { return $this->owner->blockKind(); }
 
    /// törzsrész olvasása
    function read( ExprStream $s ) {
@@ -34,16 +35,17 @@ class Block
 
    /// esetleg zárójelzett rész olvasása
    function readPart( ExprStream $s, $mustBlock = false ) {
-	  $s->readWS();
-	  $s->push( $this, true );
-	  if ( $mustBlock || "{" == $s->next() ) {
-		 $s->readToken( "{" );
-		 while ( $this->addStm( $s ) )
-		    ;
-		 $s->readToken( "}" );
-	  } else
-	     $this->addStm( $s );
+      $s->readWS();
+	   $s->push( $this, true );
+	   if ( $mustBlock || "{" == $s->next() ) {
+		    $s->readToken( "{" );
+		    while ( $ret = $this->addStm( $s ) )
+		       ;
+		    $s->readToken( "}" );
+	   } else
+	      $ret = $this->addStm( $s );
       $s->pop( true );
+      return $ret;
    }
 
    // blokk futtatása

@@ -13,7 +13,7 @@ class MakeInit
    
    function name() { return self::INIT; }
 
-   function kind() { return Block::BODY; }
+   function blockKind() { return Block::BODY; }
 
    function call( RunCtx $ctx, $args ) {
       if ( ! $path = Tools::g( $args, 0 ))

@@ -51,6 +51,8 @@ class Make
 	  $this->level = self::INFO;
    }
 
+   function blockKind() { return Block::BODY; }
+
    function init() { return $this->init; }
 
    function defType() { return null; }

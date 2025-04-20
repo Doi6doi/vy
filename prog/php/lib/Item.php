@@ -49,14 +49,18 @@ abstract class Item
    protected $provides;
    /// kifejezés olvasó verem
    protected $stack;
+
    /// az örökölt függvények már átvéve
    protected $funcsTaken;
+   /// az örökölt mezők már átvéve
+   protected $fieldsTaken;
 
    function __construct() {
       $this->flags = [];
       $this->xtends = [];
       $this->imports = [];
       $this->types = [];
+      $this->fields = [];
       $this->funcs = [];
       $this->provides = new Conds( $this );
       $this->stack = new Stack( $this );
@@ -76,9 +80,13 @@ abstract class Item
 
    function funcs() { return $this->funcs; }
 
+   function fields() { return $this->fields; }
+
    function ver() { return $this->ver; }
 
    function run( RunCtx $r ) { return $this; }
+
+   function blockKind() { return Block::NONE; }
 
    function has($flag) {
       return array_key_exists( $flag, $this->flags );
@@ -112,6 +120,7 @@ abstract class Item
          else
             $this->readPart( $s );
       }
+      $this->inheritFields();
       $this->inheritFuncs();
    }
    
@@ -157,7 +166,8 @@ abstract class Item
             $arrs = [$this->funcs];
          break;
          case ExprCtx::NAME: 
-            $arrs = [$this->types, $this->funcs, $this->xtends, $this->imports];
+            $arrs = [$this->fields, $this->funcs, $this->types, 
+               $this->xtends, $this->imports];
          break;
          case ExprCtx::ITEM:
             $arrs = [$this->xtends, $this->imports];
@@ -180,7 +190,7 @@ abstract class Item
       return null;
    }
 
-   /// típusok és függvények átvétele
+   /// típusok átvétele
    protected function inheritTypes( $name, $o ) {
       foreach ( $o->types() as $t ) {
          $tn = $t->name();
@@ -205,6 +215,16 @@ abstract class Item
       $this->funcsTaken = true;
    }
 
+   /// mezők átvétele
+   protected function inheritFields() {
+      if ( $this->fieldsTaken ) return;
+      $map = $this->typeMap();
+      foreach ( $this->xtends as $x ) {
+         foreach ( $x->fields() as $f )
+            $this->inheritField( $f, $map );
+      }
+   }
+      
    /// fejrész beolvasása
    protected function readHead( $s ) {
       $s->readWS();
@@ -235,6 +255,7 @@ abstract class Item
          case self::PROVIDE:
             $meth = "readProvide";
             $this->inheritFuncs();
+            $this->inheritFields();
          break;
          case self::TYPE: $meth = "readTypePart"; break;
          default: throw new EVy("Unknown part: $n");
@@ -306,6 +327,7 @@ abstract class Item
       $s->readToken(";");
       $this->inheritTypes( $name, $ret );
       $this->funcsTaken = false;
+      $this->fieldsTaken = false;
    }
 
    /// alias olvasása
@@ -402,6 +424,19 @@ abstract class Item
          $g = ItemFunc::create( $this, $f );
          $g->inherit( $f, $fmap );
          $this->funcs[ $name ] = $g;
+      }
+   }
+
+   /// mező öröklése
+   protected function inheritField( ItemField $f, $map ) {
+      $name = $f->name();
+      $fmap = $this->mapSlice( $map, $f->owner()->name() );
+      if ( $g = Tools::g( $this->fields, $name ) ) {
+         throw new EVy("Field already exists: $name");
+      } else {
+         $g = new ItemField($this);
+         $g->inherit( $f, $fmap );
+         $this->fields[ $name ] = $g;
       }
    }
 

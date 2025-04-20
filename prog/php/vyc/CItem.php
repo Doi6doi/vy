@@ -10,7 +10,7 @@ class CItem {
 	   CONS = "cons",
 	   FUNC = "func";
 	
-    protected $writer;
+   protected $writer;
 	protected $kind;
 	protected $obj;
 	protected $only;

@@ -15,7 +15,7 @@ class MakeFunc
 	
    function name() { return $this->name; }
 
-   function kind() { return Block::BODY; }
+   function blockKind() { return Block::BODY; }
 
    /// hívható beállítása
    function setCall( $name, $call ) {

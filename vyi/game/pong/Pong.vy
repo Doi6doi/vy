@@ -13,7 +13,6 @@ class vyi.game.pong.Pong @25 {
    
 
    const {
-
       BGCOLOR: Color = #000000;
 
       BALLSPEED = 0.05;

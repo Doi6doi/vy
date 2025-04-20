@@ -101,6 +101,8 @@ class Sign
       return $this->defType();
    }
 
+   function blockKind() { return Block::NONE; }
+
    function resolve( $token, $kind ) { return null; }
 
    function __toString() { return $this->dump(); }

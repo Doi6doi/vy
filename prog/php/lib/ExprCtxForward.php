@@ -30,6 +30,10 @@ class ExprCtxForward
 	  return $this->owner->canCall( $x );
    }
 
+   function blockKind() {
+      return $this->owner->blockKind();
+   }
+
    function resolve( $token, $kind ) {
       return $this->owner->resolve( $token, $kind );
    }

@@ -29,7 +29,7 @@ class MakeTarget
    
    function name() { return $this->name; }	
 	
-   function kind() { return Block::BODY; }	
+   function blockKind() { return Block::BODY; }	
 	
    /// cél olvasása	
    function read( ExprStream $s ) {

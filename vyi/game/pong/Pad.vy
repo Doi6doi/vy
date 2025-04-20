@@ -8,6 +8,7 @@ class vyi.game.pong.Pad @25 {
       Pong;
       vy.num.Uint;
       Number = vy.num.Math;
+      vy.geom.Filled;
       vy.geom2.Dir;
       vy.geom2.Square;
       vy.ui.KeyEvent;
@@ -23,13 +24,13 @@ class vyi.game.pong.Pad @25 {
    field {
       pong & Pong;
       side: Dir;
-      dir: Dir;
+      dir: Dir = Dir.none;
    }
       
    method {
 
       Pad( pong:Pong, side:Dir ) {
-         super( Filled( Square.square, pong.sideColor(side) ));
+         this.Sprite( Filled( Square.square, pong.sideColor(side) ));
          pong(pong);
          side(side);
          transform.scale( pong.PADWIDTH, pong.PADHEIGHT );

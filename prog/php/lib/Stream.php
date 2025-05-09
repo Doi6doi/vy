@@ -285,6 +285,12 @@ class Stream {
       return new EVy( "$exp expected but ".$this->next()." found" );
    }
 
+   /// kivétel újradobása hellyel
+   function reThrow( \Exception $e ) {
+      throw new EVy( $this->position().":".$e->getMessage(), $e->getCode(),
+         $e );
+   }
+
    function readAll() {
       $ret = substr( $this->data, $this->at );
       $this->at = strlen( $this->data );

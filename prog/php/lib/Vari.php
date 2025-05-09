@@ -12,6 +12,7 @@ class Vari
       $ret = $s->next();
       if ( in_array( $ret, [self::DEF, self::VAL, self::REF ] )) {
          $s->read();
+         $s->readWS();
          return $ret;
       }
       return null;

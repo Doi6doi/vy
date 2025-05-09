@@ -17,7 +17,6 @@ class RepoDir extends Repo {
       $rpp = $this->root."/".str_replace(".","/",$pkgName);
       foreach ( glob( "$rpp*.vy" ) as $f ) {
          if ( preg_match( '#^'.preg_quote($rpp).'(|@\d+)\.vy$#', $f )) {
-Tools::debug("reading $f");            
             $i = $this->readStream( new ExprStream($f));
             $this->addItem($i);
             if ( Version::better( $i->ver(), $ver, $ret ))

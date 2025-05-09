@@ -15,16 +15,14 @@ class MakeTarget
       parent::__construct( $owner );
    }	
 	
-   function run( RunCtx $ctx ) {
+   function run( RunCtx $ctx ) { return $this; }
+   
+   function call( RunCtx $ctx, $args ) {
       $ctx->push( $this->name );
       $ret = parent::run( $ctx );
       Cont::term( $ret, Cont::FUNC );
       $ctx->pop();
       return $ret;
-   }
-   
-   function call( RunCtx $ctx, $args ) {
-      return $this->run( $ctx );
    } 
    
    function name() { return $this->name; }	

@@ -1,4 +1,4 @@
-class vyi.game.pong.Score @24 {
+class vyi.game.pong.Score @25 {
 
    extend {
       vy.ui.Sprite;

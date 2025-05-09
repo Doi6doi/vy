@@ -1,7 +1,11 @@
                     GNU GENERAL PUBLIC LICENSE
+                    WITH No-AI RESTRICTION
                        Version 3, 29 June 2007
 
  Copyright (C) 2025 Várnagy Zoltán <https://github.com/Doi6doi/vy>
+
+ The license for my work is GPL for people, but it does not allow
+ any training or reproducing parts by LLM-s (like ChatGPT, Copilot, etc...)
 
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.

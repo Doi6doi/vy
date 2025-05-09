@@ -9,7 +9,7 @@ class ToolComp extends PToolBase {
       FORCE = "force",
       MAP = "map",
       REPO = "repo",
-      REPRS = "reprs";   
+      REPR = "repr";   
    
 	protected $comp;
 	
@@ -18,9 +18,6 @@ class ToolComp extends PToolBase {
 	   Autoload::addPath( __DIR__."/../vyc" );
 	   $this->comp = new Compiler();
       $this->addFuncs( ["compile"] );
-/*      , "setForce", "setMap",
-         "setRepo", "setReprs"] );
-         */
    }
 	
    function set( $fld, $val=true ) {
@@ -35,7 +32,7 @@ class ToolComp extends PToolBase {
             $c->repo()->clear();
             $c->repo()->addRepo($v);
          break;
-         case self::REPRS: $c->setReprs($v); break;
+         case self::REPR: $c->setReprs($v); break;
       }
    }
 
@@ -52,7 +49,7 @@ class ToolComp extends PToolBase {
          case self::FORCE: return self::BOOL;
          case self::MAP: return self::ANY;
          case self::REPO: return self::ARRAY;
-         case self::REPRS: return self::ARRAY;
+         case self::REPR: return self::ARRAY;
          default: return parent::confKind($fld);
       }
    }

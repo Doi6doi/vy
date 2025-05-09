@@ -58,7 +58,8 @@ class Block
          }
          return $ret;
       } catch (\Exception $e) {
-		 throw new EVy( $this->position.": ".$e->getMessage(), $e->getCode(), $e );
+		   throw new EVy( $this->position.": "
+            .$e->getMessage(), $e->getCode(), $e );
       }
    }
 

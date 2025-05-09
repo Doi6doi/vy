@@ -27,8 +27,11 @@ abstract class ItemFunc
    protected $sign;
    /// függvény törzse
    protected $body;
+   
    /// olvasás átugorva innnentől
-   protected $skipped;
+   protected $skip;
+   /// olvasási fázis
+   protected $phase;
 
    function __construct( ExprCtx $owner ) {
 	   parent::__construct( $owner );
@@ -53,11 +56,33 @@ abstract class ItemFunc
 
    function __toString() { return "<".$this->name().">"; }
 
-   function read( Stream $s ) {
+   function read( ExprStream $s ) {
       $this->name = $s->readIdent();
-      $this->sign->read( $s );
-      $s->readWS();
-      $this->readDetails( $s );
+      $this->skip = Skip::mark( $s );
+      $this->phase = 1;
+      $this->sign->skip($s);
+      if ( ! $s->readTerm() )
+         $s->skipBraces();
+   }
+
+   function readPhase( $phase ) {
+      if ( true === $phase )
+         $phase = 3;
+      while ( $this->phase < $phase ) {
+         $s = Skip::jump( $this->skip );
+         ++ $this->phase;
+Tools::debug("readPhase",$this,$this->phase);
+         switch ($this->phase) {
+            case 2:
+               $this->sign->read( $s );
+               $this->skip = Skip::mark($s);
+            break;
+            case 3:
+               $this->readDetails($s);
+               $this->skip = null;
+            break;
+         }
+      }
    }
 
    /// jellemzők öröklése
@@ -82,6 +107,7 @@ abstract class ItemFunc
 
    /// további részletek olvasása
    protected function readDetails( $s ) {
+      $s->readWS();
       if ( $s->readIf(";") ) 
          return;      
       $s->readToken("{");

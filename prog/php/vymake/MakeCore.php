@@ -15,7 +15,7 @@ class MakeCore
 	   parent::__construct( $owner, self::CORE );
 	   $this->addFuncs(["arch","changeExt","copy",
 	      "cwd","dir","echo","exec","exeExt","exists",
-         "explode","fail","format","getEnv", 
+         "exit", "explode","fail","format","getEnv", 
          "implode","isDir","level","loadFile",
          "make","mkdir","older","path","purge","replace",
          "regexp", "saveFile", "setEnv", "setPath", 

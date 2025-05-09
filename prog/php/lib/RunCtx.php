@@ -2,6 +2,7 @@
 
 namespace vy;
 
+/// futtatási környezet, globális változók, this, frame-ek
 class RunCtx {
 	
 	protected $globl;
@@ -47,6 +48,7 @@ class RunCtx {
 	function getVar( $name ) {
 	   if ( $f = $this->find( $name ))	
 	      return $f->getVar( $name );
+      
 	      else throw new EVy("Unknown variable: $name");
 	}
 	

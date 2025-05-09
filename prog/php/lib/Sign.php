@@ -32,7 +32,7 @@ class Sign
    function ownerName() { return $this->owner->name(); }
 
    /// olvasás
-   function read( Stream $s ) {
+   function read( ExprStream $s ) {
       $s->readWS();
       if ( $s->readIf("(") ) {
          while ( $this->readArg($s) )
@@ -43,6 +43,18 @@ class Sign
       $this->readResult( $s );
    }
 
+   /// átugrás
+   function skip( ExprStream $s ) {
+      $s->readWS();
+      if ( "(" == $s->next() )
+         $s->skipBraces();
+      while ( Vari::readKind($s) ) {
+         if ( Stream::IDENT == $s->nextKind() )
+            $s->read();
+      }
+   }
+         
+
    /// argumentumok értékének beáálítása
    function setArgs( RunCtx $ctx, array $args ) {
 	  for ( $i=0; $i < count($this->args); ++$i )
@@ -52,7 +64,7 @@ class Sign
    /// visszatérési típus olvasása
    function readResult( Stream $s ) {
       if ( ! $this->typed ) return;
-      while ( $k = Arg::readKind( $s ) ) {
+      while ( $k = Vari::readKind( $s ) ) {
          $typ = $this->readType( $s );
          $this->result [] = new Arg( $this, null, $typ, $k );
       }

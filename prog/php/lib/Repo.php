@@ -71,7 +71,7 @@ abstract class Repo {
          $ret->read( $s, $this );
          return $ret;
       } catch ( \Exception $e ) {
-         throw new EVy( $s->position().": ".$e->getMessage(), 0, $e );
+         $s->reThrow($e);
       }
    }
 

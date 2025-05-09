@@ -69,14 +69,14 @@ class Make
    /// inicializáló futtatása
    function runInit( ) {
       if ( ! $this->init ) return;
-      $this->init->run( $this->runCtx );
+      $this->init->call( $this->runCtx, [] );
    }
 
    /// egy cél futtatása
    function runTarget( $target ) {
 	  if ( ! $t = Tools::g( $this->targets, $target ))
 	     throw new EVy("Unknown target: $target");
-	  $t->run( $this->runCtx );
+	  $t->call( $this->runCtx, [] );
    }
 
    function checkType( $type ) {
@@ -102,16 +102,15 @@ class Make
    }
 
    function resolve( $token, $kind ) {
-	  switch ( $kind ) {
-		 case ExprCtx::NAME:
-	        if ( array_key_exists( $token, $this->names ))
-	           return $this->names[ $token ];
-	        $ret = new MakeVar($token);
-	        $this->names[$token] = $ret;
-	        return $ret;
-	        
+      switch ( $kind ) {
+		   case ExprCtx::NAME:
+	         if ( $n = Tools::g( $this->names, $token ))
+	            return $n;
+	         $ret = new MakeVar($token);
+	         $this->names[$token] = $ret;
+	         return $ret;
 		}
-	  throw new EVy("Cannot resolve $kind: $token " );
+   	throw new EVy("Cannot resolve $kind: $token " );
    }
 
    /// make file beolvasása

@@ -50,27 +50,27 @@ class ExprStream
    }
 
    function readStm() {
-	  $this->readWS();
-	  $ret = null;
-	  $n = $this->next();
-	  $top = $this->top();
-	  $bkind = $top->blockKind();
-	  $semi = false;
-     switch ( $bkind ) {
-	     case Block::COND:
-		     if ( Given::GIVEN == $n )
-		         $ret = new Given( $top );
-        break;
-        case Block::BODY:
-           switch ( $n ) {
-              case StmReturn::RETURN:
-		           $ret = new StmReturn(); 
-		           $semi = true;
-              break;
-              case StmThrow::THROW:
-		           $ret = new StmThrow();
-		           $semi = true;
-		        break;
+	   $this->readWS();
+	   $ret = null;
+	   $n = $this->next();
+	   $top = $this->top();
+	   $bkind = $top->blockKind();
+	   $semi = false;
+      switch ( $bkind ) {
+	      case Block::COND:
+		      if ( Given::GIVEN == $n )
+		          $ret = new Given( $top );
+         break;
+         case Block::BODY:
+            switch ( $n ) {
+               case StmReturn::RETURN:
+		            $ret = new StmReturn(); 
+		            $semi = true;
+               break;
+               case StmThrow::THROW:
+		            $ret = new StmThrow();
+		            $semi = true;
+		         break;
            }
 		  break;
         case Block::NONE:
@@ -100,6 +100,27 @@ class ExprStream
             else return 1;
       }
       return parent::nextLength();      
+   }
+ 
+   /// zárójelezésnek megfelelő nyitó-záró részek átugrása
+   function skipBraces() {
+      $brs = [];
+      $opn = ["{","(","["];
+      $cls = ["}",")","]"];
+      $this->readWS();
+      if ( ! in_array( $this->next(), $opn )) return;
+      $brs [] = $this->read();
+      while ($brs) {
+         if ( $this->eos())
+            throw new EVy("End of stream before closing brace");
+         $n = $this->read();
+         if (in_array($n,$opn)) {
+            $brs [] = $n;
+         } else if (in_array($n,$cls)) {
+            if ( $n != Braced::pair(array_pop( $brs )))
+               throw new EVy("Wrong closing brace");
+         }
+      }
    }
  
 }

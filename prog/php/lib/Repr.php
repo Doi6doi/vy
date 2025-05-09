@@ -5,15 +5,15 @@ namespace vy;
 /// egy reprezentációs elem
 class Repr {
 	
-	const
+   const
 	   PUBLIC = "public";
 
-    const
-       CUSTOM = "custom",
-       INHERIT = "inherit",
-       NATIVE = "native",
-       REFCOUNT = "refcount",
-       MANAGED = "managed";
+   const
+      CUSTOM = "custom",
+      INHERIT = "inherit",
+      NATIVE = "native",
+      REFCOUNT = "refcount",
+      MANAGED = "managed";
 	
 	protected $name;
 	protected $public;
@@ -29,8 +29,8 @@ class Repr {
 	
 	function fields() { return $this->fields; }
 
-    function public() { return $this->public; }
-	
+   function public() { return $this->public; }
+
 	function str() {
        switch ( $this->kind ) {
 		  case self::CUSTOM:
@@ -43,7 +43,7 @@ class Repr {
 	   }
 	}
 
-    function read( Stream $s ) {
+   function read( Stream $s ) {
 	   $s->readWS();
 	   $this->name = $s->readIdent();
 	   $s->readWS();
@@ -56,9 +56,13 @@ class Repr {
           $s->readToken(";");
 	}
 	
-    function unKind() {
-       return new EVy("Unknown representation kind:".$this->kind);
-    }	   
+   function unKind() {
+      return new EVy("Unknown representation kind:".$this->kind);
+   }	   
+
+   function __toString() {
+      return $this->name;
+   }
 
 	/// fajta olvasása
 	protected function readKind( $s ) {

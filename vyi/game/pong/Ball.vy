@@ -1,4 +1,4 @@
-class vyi.game.pong.Ball @24 {
+class vyi.game.pong.Ball @25 {
 
    extend {
       vy.ui.Sprite;
@@ -10,13 +10,14 @@ class vyi.game.pong.Ball @24 {
    }
 
    const {
-      X: Coord = x;
-      Y: Coord = y;
+      X = Coord.x;
+      Y = Coord.y;
    }
 
    field {
       speed: Number;
-      dx, dy: Number;
+      dx: Number;
+      dy: Number;
    }
 
    method {

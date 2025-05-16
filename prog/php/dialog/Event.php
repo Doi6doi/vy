@@ -12,13 +12,38 @@ class Event {
       LAYOUT = "layout",
       MOVE = "move",
       QUIT = "quit",
-      TYPE = "type",
+      TEXT = "text",
       RESIZE = "resize",
       SCROLL = "scroll";
 
+   /// billentyűk
+   const
+      ENTER = "enter",
+      ESC = "esc",
+      BACKSPACE = "backspace",
+      SPACE = "space",
+      TAB = "tab",
+      HOME = "home",
+      PAGEUP = "pageup",
+      DELETE = "delete",
+      END = "end",
+      PAGEDOWN = "pagedown",
+      RIGHT = "right",
+      LEFT = "left",
+      DOWN = "down",
+      UP = "up";
+
+   /// módosítók
+   const
+      SHIFT = 0x1,
+      CTRL = 0x2,
+      ALT = 0x4;
+
    public $kind;
+   public $text;
    public $down;
    public $index;
+   public $mod;
    public $loc;
    public $view;
 
@@ -35,7 +60,7 @@ class Event {
    }
 
    function unKind() {
-      return new EVyg("Unknown event kind: ".$this->kind );
+      return new EVy("Unknown event kind: ".$this->kind );
    }
 
 }

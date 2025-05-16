@@ -16,6 +16,9 @@ class Sdl
    const
       SDL_QUIT = 0x100,
       SDL_WINDOWEVENT = 0x200,
+      SDL_KEYDOWN = 0x300,
+      SDL_KEYUP = 0x301,
+      SDL_TEXTINPUT = 0x303,
       SDL_MOUSEMOTION = 0x400,
       SDL_MOUSEBUTTONDOWN = 0x401, 
       SDL_MOUSEBUTTONUP = 0x402,
@@ -31,6 +34,27 @@ class Sdl
    const
       SDL_WINDOW_RESIZABLE = 0x20,
       SDL_WINDOWPOS_CENTERED = 0x2FFF0000;
+
+   const
+      SDL_SCANCODE_RETURN = 40,
+      SDL_SCANCODE_ESCAPE = 41,
+      SDL_SCANCODE_BACKSPACE = 42,
+      SDL_SCANCODE_TAB = 43,
+      SDL_SCANCODE_SPACE = 44,
+      SDL_SCANCODE_HOME = 74,
+      SDL_SCANCODE_PAGEUP = 75,
+      SDL_SCANCODE_DELETE = 76,
+      SDL_SCANCODE_END = 77,
+      SDL_SCANCODE_PAGEDOWN = 78,
+      SDL_SCANCODE_RIGHT = 79,
+      SDL_SCANCODE_LEFT = 80,
+      SDL_SCANCODE_DOWN = 81,
+      SDL_SCANCODE_UP = 82;
+
+   const
+      KMOD_SHIFT = 0x3,
+      KMOD_CTRL = 0xc0,
+      KMOD_ALT = 0x300;
 
    const
       NINTS = 4,
@@ -114,7 +138,10 @@ class Sdl
          case Event::MOVE:
          case Event::SCROLL:
          case Event::RESIZE:
+         case Event::KEY:
+         case Event::TEXT:
             return $this->handleView( $e );
+            
          default:
             throw $e->unKind();
       }
@@ -324,7 +351,9 @@ class Sdl
             $e->loc = $v->coords( $e->loc, Coord::FROMWINDOW );
             $e->view = $v;
          }
-         $w->hovered = $v;
+      } else if ( in_array( $e->kind, [Event::KEY, Event::TEXT] )) {
+         if ( $w->focused )
+            $e->view = $w->focused;
       }
       $e->view->handle( $e );
       if ( Event::BUTTON == $e->kind )
@@ -393,6 +422,10 @@ class Sdl
          case self::SDL_FINGERUP:
          case self::SDL_FINGERMOTION:
             return $this->createPointerEvent();
+         case self::SDL_KEYDOWN:
+         case self::SDL_KEYUP:
+         case self::SDL_TEXTINPUT:
+            return $this->createKeyEvent();
          case self::SDL_QUIT: return new Event( Event::QUIT );
          case self::SDL_WINDOWEVENT: return $this->createWindowEvent();
          default: return null;
@@ -458,6 +491,64 @@ class Sdl
          default:
             $ret->loc = new Point( $ew->x, $ew->y );
       }
+      return $ret;
+   }
+
+   /// esemény készítése gombnyomás alapján
+   protected function createKeyEvent() {
+      $e = $this->event;
+      $ret = new Event();
+      switch ( $t = $this->event->type ) {
+         case self::SDL_KEYDOWN:
+         case self::SDL_KEYUP:
+            $ret->kind = Event::KEY;
+            $ew = $e->key;
+            $ret->index = $ew->keysym->scancode;
+            $ret->mod = $this->fromMod( $ew->keysym->mod );
+            $ret->text = $this->fromKey( $ret->index );
+            $ret->down = self::SDL_KEYDOWN == $t;
+         break;
+         case self::SDL_TEXTINPUT:
+            $ret->kind = Event::TEXT;
+            $ew = $e->text;
+            $ret->text = \FFI::string($ew->text);
+         break;
+         default: throw $e->unKind();
+      }
+      $ret->view = $this->window( $ew->windowID, 0 );
+      return $ret;
+   }
+
+   /// karakter billentyű kód alapján
+   protected function fromKey( $k ) {
+      switch ($k) {
+         case self::SDL_SCANCODE_RETURN: return Event::ENTER;
+         case self::SDL_SCANCODE_ESCAPE: return Event::ESC;
+         case self::SDL_SCANCODE_BACKSPACE: return Event::BACKSPACE;
+         case self::SDL_SCANCODE_TAB: return Event::TAB;
+         case self::SDL_SCANCODE_SPACE: return Event::SPACE;
+         case self::SDL_SCANCODE_HOME: return Event::HOME;
+         case self::SDL_SCANCODE_PAGEUP: return Event::PAGEUP;
+         case self::SDL_SCANCODE_DELETE: return Event::DELETE;
+         case self::SDL_SCANCODE_END: return Event::END;
+         case self::SDL_SCANCODE_PAGEDOWN: return Event::PAGEDOWN;
+         case self::SDL_SCANCODE_RIGHT: return Event::RIGHT;
+         case self::SDL_SCANCODE_LEFT: return Event::LEFT;
+         case self::SDL_SCANCODE_DOWN: return Event::DOWN;
+         case self::SDL_SCANCODE_UP: return Event::UP;
+         default: return null;
+      }
+   }
+
+   /// módosítók kód alapján
+   protected function fromMod( $m ) {
+      $ret = 0;
+      if ( $m & self::KMOD_SHIFT )
+         $ret |= Event::SHIFT;
+      if ( $m & self::KMOD_CTRL )
+         $ret |= Event::CTRL;
+      if ( $m & self::KMOD_ALT )
+         $ret |= Event::ALT;
       return $ret;
    }
 

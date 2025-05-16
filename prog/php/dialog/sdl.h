@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 typedef uint8_t Uint8;
+typedef uint16_t Uint16;
 typedef uint32_t Uint32;
 typedef int32_t Sint32;
 typedef int64_t Sint64;
@@ -86,8 +87,39 @@ typedef struct SDL_WindowEvent {
     Sint32 data2;
 } SDL_WindowEvent;
 
+typedef struct SDL_TextInputEvent {
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    char text[32];
+} SDL_TextInputEvent;
+
+typedef enum SDL_Scancode {SDL_SCANCODE_UNKNOWN} SDL_Scancode;
+
+typedef Sint32 SDL_Keycode;
+
+typedef struct SDL_Keysym {
+    SDL_Scancode scancode;
+    SDL_Keycode sym;
+    Uint16 mod;
+    Uint32 unused;
+} SDL_Keysym;
+
+typedef struct SDL_KeyboardEvent {
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint8 state;
+    Uint8 repeat;
+    Uint8 padding2;
+    Uint8 padding3;
+    SDL_Keysym keysym;
+} SDL_KeyboardEvent;
+
 typedef union SDL_Event {
     Uint32 type;
+    SDL_KeyboardEvent key;
+    SDL_TextInputEvent text;
     SDL_MouseButtonEvent button;
     SDL_MouseMotionEvent motion;
     SDL_TouchFingerEvent tfinger;

@@ -42,6 +42,7 @@ class Window
    function __set($fld,$x) {
       switch ($fld) {
          case self::TITLE: return $this->setTitle($x);
+         case self::FOCUSED: return $this->setFocused($x);
          case self::HOVERED: return $this->setHovered($x);
          default: return parent::__set($fld,$x);
       }
@@ -100,6 +101,23 @@ class Window
       }
    }
 
+   /// következő elem fókuszálása
+   function focusNext($forw) {
+      if ( ! $f = $this->focused )
+         if ( ! $f = Tools::g( $this->items, 0 ))
+            return;
+      $g = $f;
+      do {
+         $g = $g->next( $forw, true );
+      } while ( $f != $g && ! $g->focusable() );
+      $this->setFocused($g);
+   }
+
+   protected function next($forw,$in) {
+      if ( ! $c = count($this->items) ) return null;
+      return $forw ? $this->items[0] : $this->items[$c-1];
+   }
+
    protected function setTitle($x) {
       VypGui::gui()->setWindowTitle( $this, $x );
       $this->title = $x;
@@ -112,6 +130,16 @@ class Window
          $this->hovered->setHovered(false);
       if ( $this->hovered = $x )
          $x->setHovered(true);
+   }
+
+   protected function setFocused( $x ) {
+      if ( $this == $x ) $x = null;
+      if ( $x == $this->focused ) return;
+      if ( $x && ! $x->focusable() ) return;
+      if ( $this->focused )
+         $this->focused->setFocused(false);
+      if ( $this->focused = $x )
+         $x->setFocused(true);
    }
 
    protected function clearDirty() {

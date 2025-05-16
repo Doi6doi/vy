@@ -123,7 +123,9 @@ class Skin {
    }
 
    protected function doPaintBorder( Canvas $c, View $v ) {
-      $p = $v->hovered ? $v->theme->high : $v->theme->border;
+      if ( $v->hovered || $v->focused )
+         $p = $v->theme->high;
+         else $p = $v->theme->border;
       VypGui::gui()->drawRect( $c, $this->viewRect($v), $p );
    }
 

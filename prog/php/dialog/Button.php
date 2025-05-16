@@ -44,9 +44,23 @@ class Button extends Group {
       $this->paintItems($c);
    }
 
+   function key( Event $e ) {
+      if ( $e->down && 0 == $e->mod) {
+         switch ( $e->text ) {
+            case Event::ENTER:
+            case Event::SPACE:
+               $this->click();
+            return true;
+         }
+      }
+      return parent::key($e);
+   }
+
    function viewAt( Point $at ) { return $this; }
 
    function coords( Point $p, $mode ) { return View::coords($p,$mode); }
+
+   function focusable() { return true; }
 
    /// a szöveges rész
    protected function text() {

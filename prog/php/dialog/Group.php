@@ -127,6 +127,12 @@ class Group
       parent::resize();
    }
 
+   protected function next($forw,$in) {
+      if ($in && $forw && $this->items)
+         return $this->items[0];
+      return parent::next($forw,$in);
+   }
+
    /// részek építése
    protected function buildItems( $d ) {
       if ( ! $d ) return;

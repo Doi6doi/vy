@@ -6,6 +6,8 @@ class View {
 
    const
        BOUNDS = "bounds",
+       CLICK = "click",
+       FOCUSED = "focused",
        HOVERED = "hovered",
        IMPL = "impl",
        PARENT = "parent",
@@ -22,6 +24,7 @@ class View {
    protected $skin;
    protected $handlers;
    protected $hovered;
+   protected $focused;
 
    function __construct() {
       $this->visible = true;
@@ -34,6 +37,7 @@ class View {
    function __get($fld) {
       switch ($fld) {
          case self::BOUNDS: return $this->bounds;
+         case self::FOCUSED: return $this->focused;
          case self::HOVERED: return $this->hovered;
          case self::IMPL: return $this->impl;
          case self::PARENT: return $this->parent;
@@ -66,6 +70,7 @@ class View {
       $this->skin->build( Tools::g( $d, self::SKIN ));
       $this->bounds->build( Tools::g( $d, self::BOUNDS ));
       Tools::buildProps($this, $d, [self::VISIBLE] );
+      $this->buildHandlers( $d );
    }
 
    /// eseménykezelő beállítása
@@ -78,7 +83,17 @@ class View {
       if ( $h = Tools::g($this->handlers,$e->kind))
          if ( call_user_func( $h, $e )) return;
       switch ($e->kind) {
-         case Event::RESIZE: return $this->resize();
+         case Event::RESIZE: 
+            return $this->resize();
+         case Event::KEY:
+            return $this->key( $e );
+         case Event::TEXT:
+            return $this->type( $e );
+         case Event::MOVE:
+         case Event::BUTTON:
+            return $this->hover();
+         case Event::CLICK:
+            return $this->click();
       }
    }
 
@@ -102,6 +117,45 @@ class View {
    }
 
    function viewAt( Point $at ) { return $this; }
+
+   function key( Event $e ) {
+      if ( $e->down ) {
+         switch ( $e->text ) {
+            case Event::TAB:
+               switch ($e->mod) {
+                  case Event::SHIFT:
+                  case 0:
+                     if ( $this->tab( 0 == $e->mod )) return true;
+                  break;
+               }
+            break;
+         }
+      }
+      if ($this->parent)
+         return $this->parent->key( $e );
+      return false;
+   }
+
+   function focusable() { return false; }
+
+   function type( Event $e ) {
+      if ($this->parent)
+         return $this->parent->key( $e );
+      return false;
+   }      
+
+   function hover() {
+      $this->window()->setHovered($this);
+   }
+
+   function click() {
+      $this->window()->focused = $this;
+      if ( $h = Tools::g($this->handlers,self::CLICK))  {
+Tools::debug($h, get_class($h));         
+         call_user_func( $h );
+      }
+      return true;
+   }
 
    function invalidate( $rect = null ) {
       if ( ! $p = $this->parent ) return;
@@ -146,6 +200,25 @@ class View {
       return "<".get_class($this).">";
    }
 
+   /// tab billentyű
+   protected function tab( $forw ) {
+      $this->window()->focusNext($forw);
+      return true;
+   }
+
+   /// soron következő elem
+   protected function next($forw,$in) {
+      if ( ! $p = $this->parent ) return null;
+      $pis = $p->items();
+      $i = array_search( $this, $pis );
+      if ( $forw && $i+1 < count($pis))
+         return $pis[$i+1];
+      else if ( ! $forw && 0 < $i )
+         return $pis[$i-1];
+      else
+         return $p->next($forw,false);
+   }
+
    protected function preferred() {
       return new Point( $this->bounds->width, $this->bounds->height );
    }
@@ -167,6 +240,12 @@ class View {
       $this->invalidate();
    }
 
+   protected function setFocused( $x ) {
+      if ( $x == $this->focused ) return;
+      $this->focused = $x;
+      $this->invalidate();
+   }      
+
    protected function paintBackground(Canvas $c) {
       $this->skin->paintBackground( $c, $this );
    }
@@ -178,12 +257,33 @@ class View {
    }
 
    protected function setParent($x) {
+      if ( $this->parent == $x ) return;
+      if ( $this->focused )
+         $this->windowFocus(false);
       if ($x && false !== $this->theme->proto)
          $this->theme->proto = $x->theme;
       if ($x && false !== $this->skin->proto)
          $this->skin->proto = $x->skin;
       $this->parent = $x;
+      $this->windowFocus(true);
       $this->invalidate();
+   }
+
+   /// ablak fókusz módosítása, ha érintett
+   protected function windowFocus($on) {
+      if ( ! $w = $this->window() ) return;
+      if ( $on && ! $w->focused )
+         $w->focusNext(true);
+      else if ( ! $on && $this->focused )
+         $w->focused = null;
+   }
+
+   /// kezelők építése
+   protected function buildHandlers( $d ) {
+      foreach ( $d as $k=>$v ) {
+         if ( "on" == substr( $k,0,2 ))
+            $this->on( substr($k,2), $v );
+      }
    }
 
 }

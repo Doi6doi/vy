@@ -8,6 +8,8 @@ class Tools {
       LINUX = "Linux",
       WINDOWS = "Windows";
 
+   protected static $level;
+
    static function g($arr,$fld) {
       if ( is_array($arr) && array_key_exists($fld,$arr))
          return $arr[$fld];
@@ -33,13 +35,25 @@ class Tools {
    }
 
    static function debug() {
-      $ret = null;
-      foreach (func_get_args() as $x) {
-         if ( null !== $ret )
-            $ret .= ", ";
-         $ret .= self::flatten($x);
+      fwrite( STDERR, str_repeat("  ",self::$level));
+      fwrite( STDERR, self::flatten(func_get_args())."\n");
+   }
+
+   /// debug mélység
+   static function debugLevel($on,$s=null) {
+      if ( $s ) $s .= " ";
+      if ( $on ) {
+         self::debug("$s{");
+         ++ self::$level;
+      } else {
+         -- self::$level;
+         self::debug("$s}");
       }
-      fprintf( STDERR, "$ret\n" );
+   }
+ 
+    /// ismeretlen mező
+   static function unFld($fld) {
+      return new EVy("Unknown field: $fld");
    }
 
    static function allErrors() {
@@ -208,6 +222,8 @@ class Tools {
             $ret = "$x";
          else
             $ret = "?".get_class($x);
+      } else if ( is_bool($x)) {
+         $ret = $x ? "true":"false";
       } else {
          $ret = "$x";
       }

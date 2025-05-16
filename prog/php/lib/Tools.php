@@ -68,7 +68,7 @@ class Tools {
       self::checkJson();
       return $ret;
    }
-   
+
    static function jsonEncode( $data, $pretty=false ) {
 	  $ret = json_encode( $data, $pretty ? JSON_PRETTY_PRINT : 0 );
 	  self::checkJson();
@@ -134,35 +134,40 @@ class Tools {
       return php_uname("m");
    }
 
-   /// érték osztállyal   
+   /// érték osztállyal
    static function withClass( $x ) {
 	  switch ( $t = gettype($x) ) {
 		 case "object": return sprintf("%s (%s)", $x, get_class($x));
 		 default: return $x;
 	  }
    }
-   
+
+   /// átfedik egymást a szakaszok
+   static function overs( $al, $ar, $bl, $br ) {
+      return ! ($ar <= $bl || $br <= $al );
+   }
+
    /// engedély megadása, vagy törlése
    static function setPerm( $file, $perm="a", $to="a", $on=true ) {
       switch ( $s = self::system() ) {
-         case self::LINUX: 
+         case self::LINUX:
             return self::setLinuxPerm( $file, $perm, $to, $on );
          default:
             throw new EVy("Cannot change permission in system: $s");
       }
    }
-   
+
    /// asszociatív tömb-e
    static function isAssoc( $x ) {
       if ( ! is_array( $x )) return false;
       foreach ( $x as $k=>$v ) {
-         if ( 0 === $k ) 
+         if ( 0 === $k )
             return false;
             else return true;
       }
       return true;
    }
-   
+
    /// tömör exception stack
    static function shortTrace( \Throwable $e ) {
       if ( $p = $e->getPrevious() )
@@ -197,9 +202,12 @@ class Tools {
          }
          return "[$ret]";
       } else if ( is_object($x)) {
-         if ( method_exists( $x, "__toString"))
+         if ( "FFI\\CData" == get_class($x) )
+            $ret = "cdata";
+         else if ( method_exists( $x, "__toString"))
             $ret = "$x";
-            else $ret = "?";
+         else
+            $ret = "?".get_class($x);
       } else {
          $ret = "$x";
       }
@@ -328,7 +336,15 @@ class Tools {
       if ( $c = $s->readComment() )
          $cmt = array_merge( $cmt, $c );
    }
-   
+
+   /// jellemzők beállítása
+   static function buildProps( $o, $d, $props ) {
+      if ( ! $d ) return;
+      foreach ( $props as $p ) {
+         if ( null !== ($v = self::g( $d, $p )))
+            $o->$p = $v;
+      }
+   }
 
    /// Linux engedély beállítás
    protected static function setLinuxPerm( $file, $perm, $to, $on ) {

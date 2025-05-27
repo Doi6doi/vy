@@ -47,7 +47,7 @@ class Stack {
             return 23;
          case "+": case "-": return 30;
          case "*": case "/": case "%": return 40;
-         case "(": case ".": case "[": return 90;
+         case "(": case ".": case "?.": case "[": return 90;
          case ":": return 95;
          default: return null;
       }
@@ -181,10 +181,11 @@ class Stack {
    protected function joinMember() {
 	  if ( $this->count() < 3 ) return false;
 	  $i0 = $this->items[0];
-	  if ( ! ($this->isExpr(2) && "." == $this->items[1] 
+     $i1 = $this->items[1];
+	  if ( ! ($this->isExpr(2) && ("." == $i1 || "?." == $i1 )
 	     && $this->isToken(0) && $this->stream->isIdent( $i0, true )))
 	     return false;
-	  return $this->join( 3, new Member($this->items[2], $i0 ));
+	  return $this->join( 3, new Member($this->items[2], $i0, "." == $i1 ));
    }
 
    /// mező: érték összefűzés
@@ -216,7 +217,7 @@ class Stack {
       if ( ! $this->isToken(0) ) return false;
       if ( ":" == $this->next() ) return false;
       if ( 1 < $this->count() 
-         && in_array( $this->items[1], [".","$"] )) 
+         && in_array( $this->items[1], [".","$","?."] )) 
          return false;
       $t = $this->items[0];
       if ( ! $this->stream->isIdent( $t[0], true )) return false;

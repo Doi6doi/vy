@@ -87,9 +87,7 @@ class Make
 	  throw new EVy("Cannot read type");
    }
 
-   function canCall( $x ) {
-	  return true;
-   }
+   function canCall( $x ) { return true; }
 
    function setLevel( $v ) {
 	  $this->level = $v;

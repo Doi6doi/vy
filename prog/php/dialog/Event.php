@@ -47,8 +47,9 @@ class Event {
    public $loc;
    public $view;
 
-   function __construct($kind=null) {
+   function __construct($kind=null, $view=null) {
       $this->kind = $kind;
+      $this->view = $view;
    }
 
    function __clone() {

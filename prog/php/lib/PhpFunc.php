@@ -3,7 +3,9 @@
 namespace vy;
 
 /// php függvény
-class PhpFunc {
+class PhpFunc 
+   implements RunCallable
+{
 
    protected $clb;
 

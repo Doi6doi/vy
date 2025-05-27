@@ -101,11 +101,8 @@ class Sdl
    }
 
    function run() {
-      if ( $this->hasVisibleWindows() ) {
-         while ( ! $this->quit ) {
-            $this->processEvent();
-         }
-      }
+      while ( ! $this->quit && $this->hasVisibleWindows() )
+         $this->processEvent();
    }
 
    function sdlLib() { return "libSDL2.so"; }
@@ -113,8 +110,10 @@ class Sdl
    function ttfLib() { return "libSDL2_ttf.so"; }
 
    function hasVisibleWindows() {
-      foreach ($this->windows as $w)
+      foreach ($this->windows as $w) {
          if ( $w[0]->visible ) return true;
+      }
+      $this->quit = true;
       return false;
    }
 
@@ -204,8 +203,9 @@ class Sdl
    }
 
    function destroyFont(Font $f) {
-      if ( ! $this->quit )
-         $this->fft->TTF_CloseFont($f->impl);
+/*      $this->fft->TTF_CloseFont($f->impl);
+      $f->impl = null;
+*/
    }
 
    function defaultFont() { 

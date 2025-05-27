@@ -6,17 +6,19 @@ class View {
 
    const
        BOUNDS = "bounds",
-       CLICK = "click",
        FOCUSED = "focused",
        HOVERED = "hovered",
        IMPL = "impl",
+       NAME = "name",
        PARENT = "parent",
        PREFERRED = "preferred",
        THEME = "theme",
        SKIN = "skin",
+       VALUE = "value",
        VISIBLE = "visible";
 
    protected $parent;
+   protected $name;
    protected $visible;
    protected $impl;
    protected $bounds;
@@ -40,10 +42,12 @@ class View {
          case self::FOCUSED: return $this->focused;
          case self::HOVERED: return $this->hovered;
          case self::IMPL: return $this->impl;
+         case self::NAME: return $this->name;
          case self::PARENT: return $this->parent;
          case self::PREFERRED: return $this->preferred();
          case self::THEME: return $this->theme;
          case self::SKIN: return $this->skin;
+         case self::VALUE: return null;
          case self::VISIBLE: return $this->visible;
          case Coord::BOTTOM:
          case Coord::HEIGHT:
@@ -60,6 +64,7 @@ class View {
       switch ($fld) {
          case self::BOUNDS: return $this->setBounds($x);
          case self::IMPL: return $this->impl = $x;
+         case self::NAME: return $this->name = $x;
          case self::VISIBLE: return $this->setVisible($x);
          default: throw Tools::unFld($fld);
       }
@@ -69,7 +74,7 @@ class View {
       $this->theme->build( Tools::g( $d, self::THEME ));
       $this->skin->build( Tools::g( $d, self::SKIN ));
       $this->bounds->build( Tools::g( $d, self::BOUNDS ));
-      Tools::buildProps($this, $d, [self::VISIBLE] );
+      Tools::buildProps($this, $d, [self::NAME, self::VISIBLE] );
       $this->buildHandlers( $d );
    }
 
@@ -80,8 +85,8 @@ class View {
 
    /// esemény kezelése
    function handle( Event $e ) {
-      if ( $h = Tools::g($this->handlers,$e->kind))
-         if ( call_user_func( $h, $e )) return;
+      if ( $this->callHandler($e->kind, [$e] ))
+         return;
       switch ($e->kind) {
          case Event::RESIZE: 
             return $this->resize();
@@ -91,9 +96,9 @@ class View {
             return $this->type( $e );
          case Event::MOVE:
          case Event::BUTTON:
-            return $this->hover();
+            return $this->pointer( $e );
          case Event::CLICK:
-            return $this->click();
+            return $this->click( $e );
       }
    }
 
@@ -118,44 +123,7 @@ class View {
 
    function viewAt( Point $at ) { return $this; }
 
-   function key( Event $e ) {
-      if ( $e->down ) {
-         switch ( $e->text ) {
-            case Event::TAB:
-               switch ($e->mod) {
-                  case Event::SHIFT:
-                  case 0:
-                     if ( $this->tab( 0 == $e->mod )) return true;
-                  break;
-               }
-            break;
-         }
-      }
-      if ($this->parent)
-         return $this->parent->key( $e );
-      return false;
-   }
-
    function focusable() { return false; }
-
-   function type( Event $e ) {
-      if ($this->parent)
-         return $this->parent->key( $e );
-      return false;
-   }      
-
-   function hover() {
-      $this->window()->setHovered($this);
-   }
-
-   function click() {
-      $this->window()->focused = $this;
-      if ( $h = Tools::g($this->handlers,self::CLICK))  {
-Tools::debug($h, get_class($h));         
-         call_user_func( $h );
-      }
-      return true;
-   }
 
    function invalidate( $rect = null ) {
       if ( ! $p = $this->parent ) return;
@@ -167,11 +135,6 @@ Tools::debug($h, get_class($h));
 
    function paint( Canvas $c ) {
       $this->paintBackground($c);
-   }
-
-   function resize() {
-      if ( $h = Tools::g($this->handlers,Event::RESIZE))
-         call_user_func( $h, $e );
    }
 
    function shown() {
@@ -198,6 +161,56 @@ Tools::debug($h, get_class($h));
 
    function __toString() {
       return "<".get_class($this).">";
+   }
+
+   /// eseménykezelő hívása
+   protected function callHandler( $kind, array $args = [] ) {
+      if ( ! $h = Tools::g( $this->handlers, $kind ))
+         return false;
+      if ( is_callable( $h ))
+         return call_user_func_array( $h, $args );
+      throw new EVy("Unknown handler: ".Tools::flatten($h));
+   }         
+
+   protected function resize() {
+   }
+
+   protected function pointer( $e ) {
+      $this->window()->setHovered( $this );
+   }
+
+   protected function type( Event $e ) {
+      if ($this->parent)
+         return $this->parent->type( $e );
+   }      
+
+   protected function key( Event $e ) {
+      if ( $e->down ) {
+         switch ( $e->text ) {
+            case Event::TAB:
+               switch ($e->mod) {
+                  case Event::SHIFT:
+                  case 0:
+                     if ( $this->tab( 0 == $e->mod )) return true;
+                  break;
+               }
+            break;
+         }
+      }
+      if ($this->parent)
+         return $this->parent->key( $e );
+   }
+
+   protected function click( $e ) {
+      if ( ! $this->focusable() ) return;
+      $this->window()->focused = $this;
+   }
+
+   /// elrejtés, vagy felfedés
+   protected function setVisible($x) {
+      if ( $this->visible == $x ) return;
+      $this->visible = !! $x;
+      $this->invalidate();
    }
 
    /// tab billentyű

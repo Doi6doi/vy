@@ -29,8 +29,8 @@ class PToolBase
       $this->log( $msg );
    }
 
-   function member( $name ) {
-      if ( ! $ret = Tools::g( $this->funcs, $name ))
+   function member( $name, $check ) {
+      if ( ! ($ret = Tools::g( $this->funcs, $name )) && $check )
          throw new EVy( get_class($this)." has no member $name" );
       return $ret;
    }

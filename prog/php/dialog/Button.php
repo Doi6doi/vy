@@ -9,7 +9,7 @@ class Button extends Group {
       BUTTON = "button",
       FONT = "font",
       TEXT = "text";
-
+      
    protected $text;
    protected $bitmap;
 
@@ -44,18 +44,6 @@ class Button extends Group {
       $this->paintItems($c);
    }
 
-   function key( Event $e ) {
-      if ( $e->down && 0 == $e->mod) {
-         switch ( $e->text ) {
-            case Event::ENTER:
-            case Event::SPACE:
-               $this->click();
-            return true;
-         }
-      }
-      return parent::key($e);
-   }
-
    function viewAt( Point $at ) { return $this; }
 
    function coords( Point $p, $mode ) { return View::coords($p,$mode); }
@@ -67,6 +55,18 @@ class Button extends Group {
       if ( ! $this->text )
          $this->text = $this->add( new Text() );
       return $this->text;
+   }
+
+   protected function key( Event $e ) {
+      if ( $e->down && 0 == $e->mod) {
+         switch ( $e->text ) {
+            case Event::ENTER:
+            case Event::SPACE:
+               $this->handle( new Event( Event::CLICK, $this ));
+            return;
+         }
+      }
+      return parent::key($e);
    }
 
 }

@@ -134,7 +134,6 @@ abstract class Item
          while ( $this->phase < $phase ) {
             $s = Skip::jump( $this->skip );
             ++ $this->phase;
-Tools::debug("readPhase",$this,$this->phase);
             switch ($this->phase) {
                case 2:
                   while ( true ) {
@@ -431,7 +430,6 @@ Tools::debug("readPhase",$this,$this->phase);
    protected function readField( $s ) {
       $ret = new ItemField( $this );
       $ret->read( $s );
-Tools::debug("read field: ".$ret );
       $this->add( $this->fields, $ret->name(), $ret );
    }
 

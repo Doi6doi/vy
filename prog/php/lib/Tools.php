@@ -174,11 +174,8 @@ class Tools {
    /// asszociatív tömb-e
    static function isAssoc( $x ) {
       if ( ! is_array( $x )) return false;
-      foreach ( $x as $k=>$v ) {
-         if ( 0 === $k )
-            return false;
-            else return true;
-      }
+      foreach ( $x as $k=>$v )
+         return 0 !== $k;
       return true;
    }
 

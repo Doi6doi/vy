@@ -31,14 +31,14 @@ class Oper {
 
    /// összeadás
    static function plus( $a, $b ) {
-	  if ( is_array($a) ) {
-		 if ( ! is_array( $b ))
-		    $b = [$b];
-		 return array_merge( $a, $b ); 
+	   if ( is_array($a) ) {
+		   if ( ! is_array($b) || Tools::isAssoc($b) )
+		      $b = [$b];
+		   return array_merge( $a, $b ); 
       } else if ( is_string($a)) {
          return $a . $b;
-	  } else
-	     return $a + $b;
+	   } else
+	      return $a + $b;
    }
 
 
@@ -66,6 +66,8 @@ class Oper {
             return $pre == $ch || "=" == $ch;
          case "[":
             return "]" == $ch;
+         case "?":
+            return "." == $ch;
       }
       return false;
    }

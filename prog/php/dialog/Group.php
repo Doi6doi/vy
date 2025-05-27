@@ -66,6 +66,15 @@ class Group
 
    function items() { return $this->items; }
 
+   function values() {
+      $ret = [];
+      foreach ( $this->items as $v ) {
+         if ( $n = $v->name )
+         $ret[$n] = $v->__get(View::VALUE);
+      }
+      return $ret;
+   }
+
    /// tartalom elrendezése
    function layout( $place ) {
       if ( ! $this->shown() ) 
@@ -73,9 +82,9 @@ class Group
       if ( $place )
          $this->invalidate();
       if ($h = Tools::g($this->handlers, Event::LAYOUT))
-         $ret = call_user_func($h,$this,$place);
-         else $ret = $this->defaultLayout($place);
-      return $ret;
+         return $this->callHandler( Event::LAYOUT, [$this,$place] );
+      else 
+         return $this->defaultLayout($place);
    }
 
    function viewAt( Point $at ) {
@@ -121,7 +130,7 @@ class Group
       return $this->preferred;
    }
 
-   function resize() {
+   protected function resize() {
       $this->preferred = null;
       $this->layout(true);
       parent::resize();

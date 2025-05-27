@@ -5,7 +5,7 @@ namespace vy;
 /// Make ben levő függvény
 class MakeFunc 
    extends ExprCtxForward
-   implements Expr    
+   implements Expr, RunCallable
 {
 	
    protected $name;	

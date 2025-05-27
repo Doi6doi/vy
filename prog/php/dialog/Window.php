@@ -17,6 +17,7 @@ class Window
    protected $dirty;
    protected $canvas;
    protected $borders;
+   protected $modalResult;
 
    function __construct() {
       $g = VypGui::gui();
@@ -67,6 +68,7 @@ class Window
    }
 
    function invalidate( $rect = null ) {
+      if ( ! $this->visible ) return;
       if ( ! $rect ) {
          $c = $this->client;
          $rect = new Rect(0,0, $c->width, $c->height );
@@ -74,19 +76,9 @@ class Window
       $this->dirty->unionRect( $rect );
    }
 
-   function exec() {
-      VypGui::run();
-   }
-
    function shown() { return $this->visible; }
 
    function window() { return $this; }
-
-   function resize() {
-      $this->bounds = VypGui::gui()->getWindowBounds( $this );
-      $this->canvas->initCrop();
-      return parent::resize();
-   }
 
    function coords( Point $p, $mode ) {
       switch ($mode) {
@@ -111,6 +103,19 @@ class Window
          $g = $g->next( $forw, true );
       } while ( $f != $g && ! $g->focusable() );
       $this->setFocused($g);
+   }
+
+   /// elrejtés, vagy felfedés
+   protected function setVisible($x) {
+      $this->visible = $x = !! $x;
+      VypGui::gui()->setWindowVisible( $this, $x );
+      $this->invalidate();
+   }
+
+   protected function resize() {
+      $this->bounds = VypGui::gui()->getWindowBounds( $this );
+      $this->canvas->initCrop();
+      return parent::resize();
    }
 
    protected function next($forw,$in) {

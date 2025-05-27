@@ -5,6 +5,7 @@ namespace vy;
 /// make változó
 class MakeVar 
    extends Vari
+   implements RunCallable
 {
 
    protected $value;
@@ -19,12 +20,10 @@ class MakeVar
    
    function call( RunCtx $ctx, $args ) {
       $v = $this->value;
-	   if ( $v instanceof MakeFunc 
-        || $v instanceof MakeTarget
-      )
-	     return $v->call( $ctx, $args );
-	  else
-	     throw new EVy("Cannot call ".$this->name );
+	   if ( $v instanceof RunCallable )
+	      return $v->call( $ctx, $args );
+      else
+	      throw new EVy("Cannot call variable ".$this->name );
    }
    
 }

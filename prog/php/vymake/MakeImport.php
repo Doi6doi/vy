@@ -29,11 +29,14 @@ class MakeImport
 	
 	function __toString() { return $this->name; }
 	
-	function member( $field ) {
-	   if ( ! array_key_exists( $field, $this->names ))
+	function member( $field, $check ) {
+	   if ( array_key_exists( $field, $this->names ))
+	      return $this->names[$field];
+      if ( $check ) {
 	      throw new EVy(sprintf("Unknown member: %s.%s",
 	         $this->name, $field ));
-	   return $this->names[$field];
+      }
+      return null;
 	}
 	
 	protected function add( $name, $val ) {

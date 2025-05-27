@@ -6,11 +6,16 @@ class ToolDialog extends PToolBase {
 
    function __construct() {
       parent::__construct();
-      $this->addFuncs(["exec"]);
+      $this->addFuncs(["exec","menu"]);
    }
 
-   function exec( $dlg ) {
-      return Dialog::build( $dlg )->exec();
+   function exec( $params ) {
+      return (new Dialog( $params ))->exec();
+   }
+   
+   /// menü készítése
+   function menu( $title ) {
+      return new PToolDialogMenu($title);
    }
 
 }

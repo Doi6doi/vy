@@ -8,6 +8,9 @@ class Tools {
       LINUX = "Linux",
       WINDOWS = "Windows";
 
+   const
+      UTF8 = "UTF-8";
+
    protected static $level;
 
    static function g($arr,$fld) {
@@ -49,6 +52,16 @@ class Tools {
          -- self::$level;
          self::debug("$s}");
       }
+   }
+
+   /// utf8 kar. hossz
+   static function uLen($s) {
+      return mb_strlen($s,self::UTF8);
+   }
+
+   /// utf8 karaketerek tömbben
+   static function uSplit($s) {
+      return mb_str_split( $s, 1, self::UTF8 );
    }
  
     /// ismeretlen mező
@@ -159,6 +172,11 @@ class Tools {
    /// átfedik egymást a szakaszok
    static function overs( $al, $ar, $bl, $br ) {
       return ! ($ar <= $bl || $br <= $al );
+   }
+
+   /// benne van-e egy intervallumban
+   static function contains( $at, $n, $i ) {
+      return $at <= $i && $i < $at+$n;
    }
 
    /// engedély megadása, vagy törlése

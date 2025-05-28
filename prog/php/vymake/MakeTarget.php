@@ -5,7 +5,7 @@ namespace vy;
 /// egy make cél
 class MakeTarget 
    extends Block
-   implements Expr
+   implements Expr, RunCallable
 {
 	
    /// cél neve

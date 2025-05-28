@@ -20,16 +20,16 @@ class Window
    protected $modalResult;
 
    function __construct() {
+      parent::__construct();
+      $this->dirty = new Rects();
+      $this->canvas = new Canvas($this);
       $g = VypGui::gui();
       $g->createWindow($this);
-      $this->dirty = new Rects();
-      parent::__construct();
-      $this->bounds = $g->getWindowBounds( $this );
       $this->borders = $g->getWindowBorders( $this );
-      $this->canvas = new Canvas($this);
       $this->skin = Skin::default();
       $this->theme = Theme::default();
       $this->font = $g->defaultFont();
+      $this->resize();
       $this->invalidate();
    }
 

@@ -50,8 +50,8 @@ class Rect {
    }
 
    function contains( Point $p ) {
-      return $this->left <= $p->x && $p->x < $this->right()
-         && $this->top <= $p->y && $p->y < $this->bottom();
+      return Tools::contains( $this->left, $this->width, $p->x )
+         && Tools::contains( $this->top, $this->height, $p->y );
    }
 
    function equals( Rect $o ) {

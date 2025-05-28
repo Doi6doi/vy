@@ -13,7 +13,7 @@ class MakeCore
 
    function __construct( $owner ) {
 	   parent::__construct( $owner, self::CORE );
-	   $this->addFuncs(["arch","changeExt","copy",
+	   $this->addFuncs(["arch","changeExt","cd","copy",
 	      "cwd","dir","echo","exec","exeExt","exists",
          "exit", "explode","fail","format","getEnv", 
          "implode","isDir","level","loadFile",
@@ -55,6 +55,11 @@ class MakeCore
       if ( $old = $this->getEnv( $name ))
          $val = $old.$val;
       $this->setEnv( $name, $val );
+   }
+
+   /// könyvtár váltás
+   function cd($dir) {
+      Tools::chdir($dir);
    }
 
    /// tömbből string

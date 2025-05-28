@@ -26,11 +26,11 @@ class Rects {
             $i->left - $a->left, $i->height ));
       }
       if ( $i->right() < $a->right() ) {
-         $ret->addRect( new Rect($ir->right(), $i->top,
+         $ret->addRect( new Rect($i->right(), $i->top,
             $a->right() - $i->right(), $i->height));
       }
       if ( $i->bottom() < $a->bottom() ) {
-         $ret->addRect( new Rect($a->left, $ir->bottom(),
+         $ret->addRect( new Rect($a->left, $i->bottom(),
             $a->width, $a->bottom()-$i->bottom()));
       }
       return $ret;
@@ -66,12 +66,21 @@ class Rects {
          $this->rects[$k] = clone $v;
    }
 
+   /// benne van-e egy pont
+   function contains( Point $p ) {
+      foreach ($this->rects as $r) {
+         if ( $r->contains( $p ))
+            return true;
+      }
+      return false;
+   }
+
    /// egy téglalap hozzáuniózása
    function unionRect( Rect $rect ) {
       if ( $rect->empty() ) return;
       foreach ( $this->rects as $r ) {
          if ( $rect->overlaps( $r ) ) {
-            if ( $r->covers( $r )) return;
+            if ( $r->covers( $rect )) return;
             $rps = self::rectMinus( $rect, $r );
             foreach ( $rps->rects() as $q )
                $this->unionRect($q);
@@ -88,8 +97,9 @@ class Rects {
       while ( 0 <= $i ) {
          $r = $this->rects[$i];
          if ( Rect::intersect( $rect, $r ) ) {
-            $rps = $r->cut( $rect );
-            $ret->add( $rps );
+            $rps = self::rectMinus( $r, $rect );
+            foreach ($rps->rects as $rr)
+               $ret->addRect( $rr );
             if ( $r->empty() ) {
                array_splice( $this->rects, $i, 1 );
                continue;

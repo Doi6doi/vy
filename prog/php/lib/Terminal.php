@@ -91,7 +91,12 @@ class Terminal {
     
    /// háttérszín beállítása
    function setBack($c) {
-      return $this->setCol(false,$c);
+      return $this->setColor(false,$c);
+   }
+      
+   /// előtérszín beállítása
+   function setFore($c) {
+      return $this->setColor(true,$c);
    }
       
    /// escape szekvencia   
@@ -109,7 +114,7 @@ class Terminal {
       print($x);
    }
 
-   protected function setCol($fore,Color $c) {
+   protected function setColor($fore,Color $c) {
       switch ($this->color) {
          case self::C2: return;
          case self::C8:

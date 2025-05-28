@@ -33,6 +33,14 @@ class Console
    }
 
    function run() {
+/*      $c = $this->con;
+      $c->crop(null);
+      $c->setBack( Color::parse("#0f0"));
+      $c->fillRect( new Rect(5,5,20,10) );
+      $c->setFore( Color::parse("#445"));
+      $c->drawRect( new Rect(8,8,8,4) );
+//      $c->text( new Point(2,4), "Hello, ╞═╡");
+*/
       while ( ! $this->quit && $this->foreWindow ) {
          $this->foreWindow->refresh();
          $this->processEvent();

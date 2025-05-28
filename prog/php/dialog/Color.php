@@ -31,6 +31,13 @@ class Color {
       $this->a = $a;
    }
 
+   function equals( $o ) {
+      if ( ! is_object($o) ) return false;
+      if ( ! ($o instanceof Color)) return false;
+      return $this->r == $o->r && $this->g == $o->g 
+         && $this->b == $o->b && $this->a == $o->a;
+   }
+
    function __toString() {
       $ret = sprintf("#%02x%02x%02x",$this->r, $this->g, $this->b );
       if ( 0xff != $this->a )

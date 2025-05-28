@@ -19,6 +19,8 @@ class Curses
    protected $bbuf;
    /// háttérszín
    protected $back;
+   /// utolsó háttérszín
+   protected $lback;
    /// előtérszín
    protected $fore;
    /// crop terület
@@ -37,7 +39,7 @@ class Curses
    function init() {
       $this->bbuf = new ColorRects();
       $this->back = Color::parse("#000");
-      $this->fore = Color::parse("#fff");
+//      $this->fore = Color::parse("#fff");
       $h = Tools::loadFile( __DIR__."/curses.h" );
       $f = $this->ffi = \FFI::cdef( $h, self::LIBNAME );
          $this->wints = $f->new("wint_t[".self::NWINTS."]");
@@ -89,10 +91,10 @@ class Curses
          return;
       $this->bbuf->minus($r);
       $t = Terminal::ins();
-      $t->setBack($this->back);
+      $this->setForeBack( $this->back );
       $txt = str_repeat( " ",$r->width );
       for ($y=0; $y<$r->height; ++$y) {
-         $this->move( $r->top + $y, $r->left );
+         $this->move( $r->left, $r->top + $y );
          $t->write( $txt );
       }
       $this->bbuf->add($r,$this->back); 
@@ -111,17 +113,18 @@ class Curses
       if ( 1 == $w ) {
          $this->drawVert( $r->left, $r->top, $h, "╥║╨");
       } else {
-         $this->drawVert( $r->left, $r->top+1, $h-2, "║║║");
-         $this->drawVert( $r->right()-1, $r->top+1, $h-2, "║║║");
+         $this->drawVert( $r->left, $r->top+1, $h-2, "│││");
+         $this->drawVert( $r->right()-1, $r->top+1, $h-2, "│││");
       }
    }
    
    function setBack( Color $c ) {
       $this->back = $c;
    }
-   
+
    function setFore( Color $c ) {
-      $this->fore = $c;
+//      $this->fore = $c;
+      Terminal::ins()->setFore($c);
    }
 
    function crop( $r ) {
@@ -142,21 +145,27 @@ class Curses
       if ( ! Tools::contains( $c->top, $c->height, $p->y ) ) return;
       $t = Terminal::ins();
       $chs = Tools::uSplit( $txt );
-      $last = null;
+      $on = false;
       for ($i=0; $i<count($chs); ++$i) {
          $xi = $p->x+$i;
          if ( Tools::contains( $c->left, $c->width, $xi ) ) {
-            if ( ! $last )
+            if ( ! $on )
                $this->move( $xi, $p->y );
+            $on = true;
             $l = $this->bbuf->get( $xi, $p->y );
-            if ( $last != $l ) {
-               $t->setBack( $l );
-               $last = $c;
-            }
+            $this->setForeBack( $l );
             $t->write( $chs[$i] );
          } else if ( $last )
             return;
       }
+   }
+
+   /// háttérszín beállítása kiírásnál
+   protected function setForeBack( $c ) {
+      if ( ! $c || $this->lback && $this->lback->equals($c))
+         return;
+      Terminal::ins()->setBack( $c );
+      $this->lback = $c;
    }
 
    /// vízszintes vonal rajzolása
@@ -189,7 +198,7 @@ class Curses
    protected function move( $x, $y ) {
       if ( $this->head )
          ++ $y;
-      Terminal::ins()->move( $x+1, $y+1 );
+      Terminal::ins()->move( $y+1, $x+1 );
    }
    
    protected function check($x, $meth) {

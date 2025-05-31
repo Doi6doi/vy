@@ -5,7 +5,8 @@ namespace vy;
 abstract class GuiLib {
 
    static function load() {
-      return new Console();
+      return new ReadLine();
+//      return new Console();
 //      return new Sdl();
    }
 

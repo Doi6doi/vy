@@ -39,6 +39,10 @@ class Event {
       CTRL = 0x2,
       ALT = 0x4;
 
+   static function click( $v ) {
+      return new Event( self::CLICK, $v );
+   }
+
    public $kind;
    public $text;
    public $down;

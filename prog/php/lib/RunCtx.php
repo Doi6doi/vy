@@ -10,9 +10,16 @@ class RunCtx {
 	protected $frames;
 	
 	function __construct() {
-	   $this->globl = new RunFrame("global");
+	   $this->globl = new RunFrame("global",false);
 	   $this->frames = [];
 	}
+
+   function dump() {
+      $ret = $this->globl->dump();
+      foreach ($this->frames as $f )
+         $ret = array_merge( $ret, $f->dump() );
+      return implode("\n", $ret );
+   }
 
    /// globális környzet
    function globl() { return $this->globl; }
@@ -20,8 +27,8 @@ class RunCtx {
    /// aktuális objektum környezet
    function thisObj() { return $this->thisObj; }
 	
-	function push( $name ) {
-	   $this->frames [] = new RunFrame( $name );
+	function push( $name, $sub ) {
+	   $this->frames [] = new RunFrame( $name, $sub );
 	}
 	
 	function top() {
@@ -63,7 +70,9 @@ class RunCtx {
 	  for ($i=count($this->frames)-1; 0<=$i; --$i) {
 	     $f = $this->frames[$i];
 	     if ( $f->has( $name ))
-		    return $f;
+		     return $f;
+        if ( ! $f->sub() )
+           return false;
 	  }
 	  return false;
    }

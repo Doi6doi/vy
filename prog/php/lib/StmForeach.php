@@ -34,20 +34,20 @@ class StmForeach
 	
    function run( RunCtx $ctx ) {
       $ret = null;
-	  $ctx->push( self::FOREACH );
-	  try {
+	   $ctx->push( self::FOREACH, true );
+	   try {
          $r = $this->range->run( $ctx );
-	     if ( is_array( $r ) ) {
-		    foreach ( $r as $i ) {
-   	           $ctx->setVar( $this->var, $i );
+	      if ( is_array( $r ) ) {
+		      foreach ( $r as $i ) {
+   	         $ctx->setVar( $this->var, $i );
                $ret = parent::run( $ctx );
-			   if ( Cont::term( $ret, Cont::LOOP )) return $ret;
-	        }
-	     }
-	  } finally {
-		 $ctx->pop();
-	  }
-	  return $ret;
+			      if ( Cont::term( $ret, Cont::LOOP )) return $ret;
+	         }
+	      }
+	   } finally {
+		   $ctx->pop();
+	   }
+	   return $ret;
    }
 	
 	

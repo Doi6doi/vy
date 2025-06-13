@@ -91,14 +91,6 @@ class ToolGcc extends PToolCpp {
       return $this->arrayArg( $this->get( self::LIBDIR ), "-L " );
    }
 
-   /// extra argumentumok
-   function eArg() {
-      $a = $this->get( self::EARG );
-      if ( is_array( $a ))
-         $a = implode(" ",$a);
-      return $a;
-   }
-
    /// használt könyvtár parancssori argumentum
    function libArg() {
       return $this->arrayArg( $this->get( self::LIB ), "-l" );

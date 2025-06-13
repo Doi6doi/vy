@@ -14,7 +14,7 @@ class MakeCore
    function __construct( $owner ) {
 	   parent::__construct( $owner, self::CORE );
 	   $this->addFuncs(["arch","changeExt","cd","copy",
-	      "cwd","dir","echo","exec","exeExt","exists",
+	      "cwd","dir","dumpStack", "echo","exec","exeExt","exists",
          "exit", "explode","fail","format","getEnv", 
          "implode","isDir","level","loadFile",
          "make","mkdir","older","path","purge","replace",
@@ -164,6 +164,11 @@ class MakeCore
 			$this->owner->log( Make::INFO, "Purging $x");
          Tools::purge( $x, true );
 	  }
+   }
+
+   /// stack kiírása
+   function dumpStack() {
+      $this->owner->dumpStack();
    }
 
    /// fájl másolás

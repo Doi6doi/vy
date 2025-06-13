@@ -2,7 +2,7 @@
 
 namespace vy;
 
-class Block 
+class Block
    extends ExprCtxForward
    implements Stm
 {
@@ -20,11 +20,13 @@ class Block
    protected $position;
 
    function __construct( ExprCtx $owner ) {
-	   parent::__construct( $owner );
-	   $this->stms = [];
+      parent::__construct( $owner );
+      $this->stms = [];
    }
 
    function blockKind() { return $this->owner->blockKind(); }
+
+   function stms() { return $this->stms; }
 
    /// törzsrész olvasása
    function read( ExprStream $s ) {
@@ -36,29 +38,29 @@ class Block
    /// esetleg zárójelzett rész olvasása
    function readPart( ExprStream $s, $mustBlock = false ) {
       $s->readWS();
-	   $s->push( $this, true );
-	   if ( $mustBlock || "{" == $s->next() ) {
-		    $s->readToken( "{" );
-		    while ( $ret = $this->addStm( $s ) )
-		       ;
-		    $s->readToken( "}" );
-	   } else
-	      $ret = $this->addStm( $s );
+      $s->push( $this, true );
+      if ( $mustBlock || "{" == $s->next() ) {
+         $s->readToken( "{" );
+         while ( $ret = $this->readStm( $s ) )
+            ;
+         $s->readToken( "}" );
+      } else
+         $ret = $this->readStm( $s );
       $s->pop( true );
       return $ret;
    }
 
    // blokk futtatása
    function run( RunCtx $ctx ) {
-	  try {
-        $ret = null;
-	     foreach( $this->stms as $s ) {
-		    $ret = $s->run( $ctx );
-		    if ( Cont::term( $ret, Cont::BLOCK ) ) return $ret;
+      try {
+         $ret = null;
+         foreach( $this->stms as $s ) {
+            $ret = $s->run( $ctx );
+            if ( Cont::term( $ret, Cont::BLOCK ) ) return $ret;
          }
          return $ret;
       } catch (\Exception $e) {
-		   throw new EVy( $this->position.": "
+	      throw new EVy( $this->position.": "
             .$e->getMessage(), $e->getCode(), $e );
       }
    }
@@ -69,14 +71,14 @@ class Block
          $ret .= "$s\n";
       return $ret;
    }
-   
+
    /// egy elem olvasása
-   protected function addStm( ExprStream $s ) {
+   function readStm( ExprStream $s ) {
       $s->readWS();
       if ( "}" == $s->next() )
          return false;
       $this->stms [] = $s->readStm();
       return true;
    }
-	
+
 }

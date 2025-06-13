@@ -22,7 +22,7 @@ class ExprCtxForward
       return $this->owner->defType();
    }
 
-   function readType( Stream $s ) {
+   function readType( ExprStream $s ) {
       return $this->owner->readType( $s );
    }
    

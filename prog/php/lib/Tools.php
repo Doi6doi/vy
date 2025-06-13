@@ -63,7 +63,12 @@ class Tools {
    static function uSplit($s) {
       return mb_str_split( $s, 1, self::UTF8 );
    }
- 
+
+   /// utf8 kisbetű
+   static function uLower($s) {
+      return mb_strtolower($s,self::UTF8);
+   }
+
     /// ismeretlen mező
    static function unFld($fld) {
       return new EVy("Unknown field: $fld");
@@ -141,9 +146,9 @@ class Tools {
 
    /// első betű kisbetű
    static function firstLower($s) {
-	  if ( 0 == strlen($s))
-	     return $s;
-	  return strtolower( $s[0] ).substr($s,1);
+      if ( 0 == strlen($s))
+         return $s;
+      return strtolower( $s[0] ).substr($s,1);
    }
 
    /// futó operációs rendszer
@@ -261,14 +266,35 @@ class Tools {
 
    /// join arguments as path
    static function path() {
-      $s = DIRECTORY_SEPARATOR;
-      $ret = "";
-      foreach ( func_get_args() as $d ) {
-         if ( $ret && $d && $s != substr( $ret, -1 ))
-            $ret .= $s;
-         $ret .= $d;
+      $args = func_get_args();
+      switch ( count($args)) {
+         case 0: return null;
+         case 1: return $args[0];
+         default:
+            $a = array_shift($args);
+            $b = call_user_func_array([Tools::class,"path"],$args);
+            return self::path2( $a, $b );
+         return null;
       }
-      return $ret;
+   }
+      
+   static function path2($a,$b) {
+      if (!is_array($a))
+         $a = [$a];
+      if (!is_array($b))
+         $b = [$b];
+      $ret = [];
+      $s = DIRECTORY_SEPARATOR;
+      foreach ($a as $i) {
+         foreach ($b as $j) {
+            if ( $j && $s != substr($j,-1))
+               $j = $s.$j;
+            $ret [] = $i.$j;
+         }
+      }
+      if (1 == count($ret))
+         return $ret[0];
+         else return $ret;
    }
 
    /// Create a directory if not exists

@@ -9,11 +9,11 @@ class Hash
 
    protected $body;
 
-   function __construct( $body ) {
+   function __construct( $body=null ) {
       if ( is_array( $body ))
          $this->body = $body;
       else
-         $this->body = null;
+         $this->body = [];
    }
 
    function body() { return $this->body; }

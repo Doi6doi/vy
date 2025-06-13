@@ -64,8 +64,8 @@ class Oper {
             return "=" == $ch;
          case "+": case "-":
             return $pre == $ch || "=" == $ch;
-         case "[":
-            return "]" == $ch;
+//         case "[":
+//            return "]" == $ch;
          case "?":
             return "." == $ch;
       }

@@ -73,6 +73,14 @@ class PToolCompiler extends ToolCmd {
       $this->temps [] = $ret;
       return $ret;
    }
+
+   /// extra argumentumok
+   protected function eArg() {
+      $a = $this->get( self::EARG );
+      if ( is_array( $a ))
+         $a = implode(" ",$a);
+      return $a;
+   }
    
    /// átmeneti fájlok törlése
    protected function delTemps() {

@@ -8,18 +8,18 @@ class ExprStream
 
    protected $blocks;
    protected $stacks;
-   
+
    function __construct( $filename ) {
-	  parent::__construct( $filename );
-	  $this->blocks = [];
-	  $this->stacks = [];
+      parent::__construct( $filename );
+      $this->blocks = [];
+      $this->stacks = [];
    }
 
    function push( ExprCtx $b, $newStack ) {
-	   $this->blocks [] = $b;
-	   if ( $newStack )
-	      $this->stacks [] = new Stack( $b );
-   } 
+       $this->blocks [] = $b;
+       if ( $newStack )
+          $this->stacks [] = new Stack( $b );
+   }
 
    /// pontosvesssző olvasása, ha van
    function readTerm() {
@@ -30,64 +30,64 @@ class ExprStream
    }
 
    function pop( $withStack ) {
-	  array_pop( $this->blocks );
-	  if ( $withStack )
-	     array_pop( $this->stacks );
+      array_pop( $this->blocks );
+      if ( $withStack )
+         array_pop( $this->stacks );
    }
 
    function top() {
-	  return end( $this->blocks );
+      return end( $this->blocks );
    }
 
    function stack() {
-	   if ( ! $ret = end( $this->stacks ) )
+      if ( ! $ret = end( $this->stacks ) )
          throw new EVy("Stream has no stack");
       return $ret;
    }
 
    function readExpr() {
-	   return $this->stack()->readExpr( $this );
+      return $this->stack()->readExpr( $this );
    }
 
    function readStm() {
-	   $this->readWS();
-	   $ret = null;
-	   $n = $this->next();
-	   $top = $this->top();
-	   $bkind = $top->blockKind();
-	   $semi = false;
+      $this->readWS();
+      $ret = null;
+      $n = $this->next();
+      $top = $this->top();
+      $bkind = $top->blockKind();
+      $semi = false;
       switch ( $bkind ) {
-	      case Block::COND:
-		      if ( Given::GIVEN == $n )
-		          $ret = new Given( $top );
+         case Block::COND:
+            if ( Given::GIVEN == $n )
+               $ret = new Given( $top );
          break;
          case Block::BODY:
             switch ( $n ) {
                case StmReturn::RETURN:
-		            $ret = new StmReturn(); 
-		            $semi = true;
+                  $ret = new StmReturn();
+		  $semi = true;
                break;
                case StmThrow::THROW:
-		            $ret = new StmThrow();
-		            $semi = true;
-		         break;
+                  $ret = new StmThrow();
+                  $semi = true;
+               break;
            }
-		  break;
+	break;
         case Block::NONE:
            throw new EVy("NONE block cannot have statements");
-	  }
-	  switch( $n ) {
-        case StmCase::CASE: $ret = new StmCase( $top ); break;
- 		  case StmIf::IF: $ret = new StmIf( $top ); break;
- 		  case StmFor::FOR: $ret = new StmFor( $top ); break;
-		  case StmForeach::FOREACH: $ret = new StmForeach( $top ); break;
-	  }
-	  if ( $ret ) {
+      }
+      switch( $n ) {
+         case StmCase::CASE: $ret = new StmCase( $top ); break;
+         case StmIf::IF: $ret = new StmIf( $top ); break;
+         case StmFor::FOR: $ret = new StmFor( $top ); break;
+         case StmForeach::FOREACH: $ret = new StmForeach( $top ); break;
+      }
+      if ( $ret ) {
          $ret->read( $this );
-     } else {
+      } else {
          $ret = $this->readExpr();
          $semi = true;
-     }
+      }
       if ( $semi )
          $this->readToken(";");
 	  return $ret;
@@ -99,9 +99,9 @@ class ExprStream
             return 2;
             else return 1;
       }
-      return parent::nextLength();      
+      return parent::nextLength();
    }
- 
+
    /// zárójelezésnek megfelelő nyitó-záró részek átugrása
    function skipBraces() {
       $brs = [];
@@ -122,6 +122,6 @@ class ExprStream
          }
       }
    }
- 
+
 }
 

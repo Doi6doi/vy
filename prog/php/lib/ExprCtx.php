@@ -21,7 +21,7 @@ interface ExprCtx {
    function checkType( $type );
 
    /// típusnév olvasása
-   function readType( Stream $s );
+   function readType( ExprStream $s );
 
    /// token feloldása
    function resolve( $token, $kind );

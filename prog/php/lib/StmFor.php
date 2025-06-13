@@ -29,7 +29,7 @@ class StmFor
 	}
 	
    function run( RunCtx $ctx ) {
-	  $ctx->push( self::FOR );
+	  $ctx->push( self::FOR, true );
 	  try {
    	     $ret = $this->init->run( $ctx );
 	     while ( $this->cond->run( $ctx )) {

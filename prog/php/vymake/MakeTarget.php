@@ -18,7 +18,7 @@ class MakeTarget
    function run( RunCtx $ctx ) { return $this; }
    
    function call( RunCtx $ctx, $args ) {
-      $ctx->push( $this->name );
+      $ctx->push( $this->name, false );
       $ret = parent::run( $ctx );
       Cont::term( $ret, Cont::FUNC );
       $ctx->pop();

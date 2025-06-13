@@ -37,8 +37,8 @@ class MakeFunc
 	   if ( $this->call )
 		   return call_user_func_array( $this->call, $args );
       else if ( $this->body ) {
-	      $ctx->push( $this->name );
-   	      $this->setArgs( $ctx, $args );
+	      $ctx->push( $this->name, false );
+   	   $this->setArgs( $ctx, $args );
          $ret = $this->body->run( $ctx );
          Cont::term( $ret, Cont::FUNC );
          $ctx->pop();

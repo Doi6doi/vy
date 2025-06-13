@@ -53,7 +53,6 @@ class Sign
             $s->read();
       }
    }
-         
 
    /// argumentumok értékének beáálítása
    function setArgs( RunCtx $ctx, array $args ) {
@@ -62,7 +61,7 @@ class Sign
    }
 
    /// visszatérési típus olvasása
-   function readResult( Stream $s ) {
+   function readResult( ExprStream $s ) {
       if ( ! $this->typed ) return;
       while ( $k = Vari::readKind( $s ) ) {
          $typ = $this->readType( $s );
@@ -104,7 +103,7 @@ class Sign
 	   return $this->owner->canCall( $x );
    }
 
-   function readType( Stream $s ) {
+   function readType( ExprStream $s ) {
       $s->readWS();
       if ( Stream::IDENT == $s->nextKind() )
          return $this->owner->readType( $s );

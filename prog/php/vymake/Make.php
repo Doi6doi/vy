@@ -22,12 +22,12 @@ class Make
       TARGET = "target";
 
    static function load( $fname ) {
-	  $ret = new Make();
-	  $s = new ExprStream( $fname );
-	  $ret->read( $s );
-	  $s->close();
-	  return $ret;
-   }	
+      $ret = new Make();
+      $s = new ExprStream( $fname );
+      $ret->read( $s );
+      $s->close();
+      return $ret;
+   }
 
    /// inicializáló
    protected $init;
@@ -80,11 +80,11 @@ class Make
    }
 
    function checkType( $type ) {
-	  throw new EVy("Unknown type: $type");
+      throw new EVy("Unknown type: $type");
    }
 
-   function readType( Stream $s ) {
-	  throw new EVy("Cannot read type");
+   function readType( ExprStream $s ) {
+      throw new EVy("Cannot read type");
    }
 
    function canCall( $x ) { return true; }
@@ -109,6 +109,11 @@ class Make
 	         return $ret;
 		}
    	throw new EVy("Cannot resolve $kind: $token " );
+   }
+
+   /// aktuális stack kiírása
+   function dumpStack() {
+      print( $this->runCtx->dump()."\n\n" );
    }
 
    /// make file beolvasása
@@ -199,7 +204,7 @@ class Make
 	  $f->read( $s );
      $this->addFunc( $f );
    }
-   
+
    /// függvény rögzítése a nevekhez
    protected function addFunc( $f ) {
 	  $name = $f->name();

@@ -16,18 +16,18 @@ class Stream {
 
    /// string escape
    static function escape( string $s ) {
-	  $ret = "";
-	  $n = strlen($s);
-	  for ($i=0; $i<$n; ++$i) {
-		 switch ( $ch = $s[$i] ) {
-		    case "\r": $ch = "\\r"; break;
-		    case "\n": $ch = "\\n"; break;
-		    case "\b": $ch = "\\b"; break;
-		    case "\t": $ch = "\\t"; break;
-		    case "\"": $ch = "\\\""; break;
-		    case "\\": $ch = "\\\\"; break;
-		 }
-		 $ret .= $ch;
+      $ret = "";
+      $n = strlen($s);
+      for ($i=0; $i<$n; ++$i) {
+  	 switch ( $ch = $s[$i] ) {
+  	    case "\r": $ch = "\\r"; break;
+  	    case "\n": $ch = "\\n"; break;
+ 	    case "\b": $ch = "\\b"; break;
+ 	    case "\t": $ch = "\\t"; break;
+ 	    case "\"": $ch = "\\\""; break;
+ 	    case "\\": $ch = "\\\\"; break;
+ 	 }
+ 	 $ret .= $ch;
       }
       return "\"$ret\"";
    }
@@ -35,7 +35,7 @@ class Stream {
    /// string unescape
    static function unescape( string $s ) {
 	  $n = strlen( $s );
-	  if ( 2 > $n || '"' != $s[0] || '"' != $s[$n-1] ) 
+	  if ( 2 > $n || '"' != $s[0] || '"' != $s[$n-1] )
 	     throw new EVy("Cannot unescape $s");
 	  $ret = "";
 	  for ($i=1; $i<$n-1; ++$i) {
@@ -72,7 +72,7 @@ class Stream {
 
    /// aktuális hely
    function at() { return $this->at; }
-   
+
    /// ugrás egy helyre
    function jump( $x ) { $this->at = $x; }
 
@@ -100,8 +100,8 @@ class Stream {
 
    function eos() { return $this->at >= strlen( $this->data ); }
 
-   function close() { 
-	  $this->at = 0; 
+   function close() {
+	  $this->at = 0;
 	  $this->data = "";
    }
 

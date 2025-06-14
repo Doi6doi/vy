@@ -18,7 +18,7 @@ class MakeInit
    function call( RunCtx $ctx, $args ) {
       if ( ! $path = Tools::g( $args, 0 ))
          throw new EVy("Missing init argument");
-      if ( ! file_exists( $path ))
+      if ( is_dir( $path ) )
          $path = Tools::path($path, Make::MAKEVY);
       $m = Make::load( $path );
       if ( ! $i = $m->init() )
@@ -26,7 +26,7 @@ class MakeInit
       $dir = dirname( $path );
       $save = getcwd();
       Tools::chdir( $dir );
-      $i->run( $ctx );
+      $i->call( $ctx, [] );
       Tools::chdir( $save );
    }
 

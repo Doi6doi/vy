@@ -26,10 +26,10 @@ class Infix
 	  if ( Oper::isAssign( $this->op ))
 	     $ctx->assign( $this->left, $ret );
 	  return $ret;
-   } 
+   }
 
    function __toString() {
       return sprintf("<%s%s%s>", $this->left, $this->op, $this->right );
    }
-   
+
 }

@@ -3,13 +3,13 @@
 namespace vy;
 
 /// dox C++ olvasó
-class DoxCppReader 
-extends DoxReader
+class DoxCppReader
+   extends DoxReader
 {
-   
+
    /// az olvasó típusa
    function typ() { return DoxReader::CPP; }
- 
+
    protected function refRexs() {
       return [
          ':^#define\s+((\S+)\(.*?\)):' => DoxPart::MACRO,
@@ -20,7 +20,9 @@ extends DoxReader
          '#^(.*?(\S+)\(.*\))\s*(?:;|{)#' => DoxPart::FUNC,
          '#(?:^|\s+)((?:struct|class)\s+(\S+).*?)\s*{#' => DoxPart::CLS,
          '#\S+\s+((\S+));$#' => DoxPart::FIELD,
+         '#^(?:typedef\s+)?(enum\s+(\S+))\s+{#' => DoxPart::ENUM,
+         '#^([a-zA-Z_0-9]+).*(?:,|$)#' => DoxPart::ENUMITEM
       ];
    }
-   
+
 }

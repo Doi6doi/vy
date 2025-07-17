@@ -6,7 +6,7 @@ namespace vy;
 class DoxHtmlWriter extends DoxWriter {
 
    function typ() { return DoxWriter::HTML; }
-   
+
    function write( $b ) {
       switch ( $b->typ() ) {
          case Dox::FILE: return $this->writeFile( $b );
@@ -34,7 +34,7 @@ class DoxHtmlWriter extends DoxWriter {
          case self::STRONG: return "<strong>$m[1]</strong>";
          case self::EM: return "<em>$m[1]</em>";
          case self::CODE: return "<code>$m[1]</code>";
-         case self::REFS: 
+         case self::REFS:
             if ( $this->fld())
                return "<code>$m[0]</code>";
                else return "<pre><code>$m[0]</code></pre>\n";
@@ -58,7 +58,7 @@ class DoxHtmlWriter extends DoxWriter {
          $ret = '<div class="parts">'."\n$ret\n</div>";
       return $ret;
    }
-   
+
    protected function writePart( $refs, $rows, $parts ) {
       $b = $this->block;
       $tt = null;
@@ -85,15 +85,16 @@ class DoxHtmlWriter extends DoxWriter {
    /// ez egy csak mezős blokk
    protected function flc() {
       return in_array( $this->block->typ(),
-         [DoxPart::RECORD, DoxPart::FUNC, DoxPart::TOC] );
+         [DoxPart::RECORD, DoxPart::FUNC, DoxPart::TOC, DoxPart::ENUM] );
    }
-   
+
    /// ez egy mező blokk
    protected function fld() {
       return in_array( $this->block->typ(),
-         [DoxPart::FIELD, DoxPart::PARAM, DoxPart::RETURN, DoxPart::TOCITEM] );
+         [DoxPart::FIELD, DoxPart::PARAM, DoxPart::RETURN,
+          DoxPart::TOCITEM, DoxPart::ENUMITEM] );
    }
-         
+
    protected function sep($kind) {
       switch ($kind) {
          case self::SROW: case self::SREF: return "\n";
@@ -104,13 +105,13 @@ class DoxHtmlWriter extends DoxWriter {
          default: return parent::sep($kind);
       }
    }
-         
+
    protected function writeRefs( $b ) {
       if ( DoxPart::RETURN == $b->typ() )
          return $this->formatPart( self::REFS, ["return"]);
       return parent::writeRefs( $b );
    }
-         
+
    /// teljes html fájl kiírása
    function writeFile( $b ) {
       if ( $l = $this->get( Dox::LANG ))

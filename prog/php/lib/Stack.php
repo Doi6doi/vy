@@ -70,7 +70,7 @@ class Stack {
       return new Literal( $lit );
    }
 
-   /// elemk törlése
+   /// elemek törlése
    protected function clear() {
       $this->items = [];
    }
@@ -216,8 +216,8 @@ class Stack {
    protected function joinName() {
       if ( ! $this->isToken(0) ) return false;
       if ( ":" == $this->next() ) return false;
-      if ( 1 < $this->count() 
-         && in_array( $this->items[1], [".","$","?."] )) 
+      if ( 1 < $this->count()
+         && in_array( $this->items[1], [".","$","?."] ))
          return false;
       $t = $this->items[0];
       if ( ! $this->stream->isIdent( $t[0], true )) return false;
@@ -265,10 +265,9 @@ class Stack {
       if ( ! Oper::isOper($t, Oper::PRE)
             || $this->precedence( $t ) < $this->precedence( $this->next() )
          ) return false;
-      
       return $this->join(2, new Prefix($t,$this->items[0]));
    }
-   
+
 
    /// lista összefűzés
    protected function joinTuple() {

@@ -65,14 +65,14 @@ class ExprStream
             switch ( $n ) {
                case StmReturn::RETURN:
                   $ret = new StmReturn();
-		  $semi = true;
+		            $semi = true;
                break;
                case StmThrow::THROW:
                   $ret = new StmThrow();
                   $semi = true;
                break;
            }
-	break;
+	     break;
         case Block::NONE:
            throw new EVy("NONE block cannot have statements");
       }
@@ -84,6 +84,8 @@ class ExprStream
       }
       if ( $ret ) {
          $ret->read( $this );
+      } else if ($this->readIf(";")) {
+         $ret = new StmSkip();
       } else {
          $ret = $this->readExpr();
          $semi = true;

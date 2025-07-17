@@ -3,10 +3,10 @@
 namespace vy;
 
 /// dox író
-abstract class DoxWriter 
-extends Configable
+abstract class DoxWriter
+   extends Configable
 {
-   
+
    /// író típusok
    const
       ANSI = "ansi",
@@ -36,7 +36,7 @@ extends Configable
       SREFS = "srefs",
       SROW = "srow",
       SROWS = "srows";
-   
+
    /// típus kitalálása a fájlnévből
    static function guess( $fname ) {
 	  if ( ! $fname ) return null;
@@ -45,7 +45,7 @@ extends Configable
          case ".htm": case ".html": return self::HTML;
          case ".md": return self::MD;
          case ".txt": return self::TXT;
-         default: 
+         default:
             if ( preg_match('#^\\.\d$#', $e ))
                return self::MAN;
             return null;
@@ -100,7 +100,7 @@ extends Configable
       return $this->join( $refs, self::SREFS,
          $this->join( $rows, self::SROWS, $parts ));
    }
-   
+
    /// részek összekötése elválasztóval
    protected function join( $a, $sep, $b ) {
       if ( $a && $b )
@@ -111,7 +111,7 @@ extends Configable
    /// elválasztó
    protected function sep($kind) {
       switch ($kind) {
-         case self::SREF: case self::SROW: 
+         case self::SREF: case self::SROW:
             return "\n";
          default: return "\n\n";
       }
@@ -123,8 +123,8 @@ extends Configable
       $ret = implode( $this->sep( self::SREF ), $fs );
       return $this->formatPart( self::REFS, [$ret] );
    }
-   
-   /// id építese
+
+   /// id építése
    protected function getId( $b ) {
       if ( ! $n = $b->name() ) return false;
       if ( ! $o = $b->owner() ) return false;
@@ -143,7 +143,7 @@ extends Configable
       $ret = implode( $this->sep( self::SROW ), $ret );
       return $this->formatPart( self::ROWS, [$ret] );
    }
-   
+
    /// parts rész kiírása
    protected function writeParts( $b ) {
       if ( ! $ps = $b->parts() ) return null;
@@ -173,7 +173,7 @@ extends Configable
    }
 
    /// link formázása
-   protected function formatLink( $txt, $lnk ) { 
+   protected function formatLink( $txt, $lnk ) {
       return sprintf("[%s](%s)", $txt, $lnk );
    }
 
@@ -183,8 +183,7 @@ extends Configable
          $txt = "$b $txt";
       return $txt;
    }
-      
-   
+
    /// egy link kiegészítése
    protected function refineLink( & $txt, & $lnk ) {
       if ( null == $lnk )
@@ -204,7 +203,7 @@ extends Configable
             else $lnk = "$lnk$t";
       }
    }
-   
+
    /// sorok tördelése
    protected function wrap( $txt ) {
       if ( ! $w = $this->get( Dox::WRAP ))

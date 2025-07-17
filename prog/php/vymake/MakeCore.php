@@ -13,7 +13,8 @@ class MakeCore
 
    function __construct( $owner ) {
 	   parent::__construct( $owner, self::CORE );
-	   $this->addFuncs(["arch","changeExt","cd","copy",
+	   $this->addFuncs(["arch","changeExt","cd",
+         "contains","copy",
 	      "cwd","dir","dumpStack", "echo","exec","exeExt","exists",
          "exit", "explode","fail","format","getEnv", 
          "implode","isDir","level","loadFile",
@@ -60,6 +61,16 @@ class MakeCore
    /// könyvtár váltás
    function cd($dir) {
       Tools::chdir($dir);
+   }
+
+   /// benne van-e a tömbben
+   function contains($i,$arr) {
+      return in_array($i,$arr);
+   }
+
+   /// leállás
+   function exit($r=0) {
+      exit($r);
    }
 
    /// tömbből string

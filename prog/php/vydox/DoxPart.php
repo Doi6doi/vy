@@ -8,6 +8,8 @@ class DoxPart {
    /// rész típusok
    const
       CLS = "cls",
+      ENUM = "enum",
+      ENUMITEM = "enumitem",
       FIELD = "field",
       FUNC = "func",
       MACRO = "macro",
@@ -19,13 +21,13 @@ class DoxPart {
       TOC = "toc",
       TOCITEM = "tocItem",
       TYPE = "type";
-      
+
    /// escape parancsok
    const
       NAME = "name",
       REF = "ref";
-   
-   /// tartalmazó 
+
+   /// tartalmazó
    protected $owner;
    /// típus
    protected $typ;
@@ -39,40 +41,40 @@ class DoxPart {
    protected $depth;
    /// elem neve
    protected $name;
-      
+
    function __construct( $owner, $depth ) {
       $this->owner = $owner;
       $this->clear();
       $this->depth = $depth;
    }
-   
+
    function owner() { return $this->owner; }
-   
+
    function rows() { return $this->rows; }
-   
+
    function parts() { return $this->parts; }
-   
-   function typ() { return $this->typ; }   
-   
+
+   function typ() { return $this->typ; }
+
    function refs() { return $this->refs; }
-   
+
    function depth() { return $this->depth; }
-   
+
    function name() { return $this->name; }
-   
+
    /// ref sor hozzáadása
-   function addRef($x) { 
-      $this->refs [] = $x; 
+   function addRef($x) {
+      $this->refs [] = $x;
    }
-   
+
    /// sor hozzáadása
    function addRow( $r ) {
       $this->rows [] = $r;
    }
 
    /// típus megadása
-   function setTyp($x) { 
-      $this->typ = $x; 
+   function setTyp($x) {
+      $this->typ = $x;
    }
 
    /// név megadása
@@ -94,7 +96,5 @@ class DoxPart {
       $this->parts [] = $ret;
       return $ret;
    }
-   
-   
-   
+
 }

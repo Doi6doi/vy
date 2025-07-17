@@ -34,22 +34,22 @@ class Stream {
 
    /// string unescape
    static function unescape( string $s ) {
-	  $n = strlen( $s );
-	  if ( 2 > $n || '"' != $s[0] || '"' != $s[$n-1] )
-	     throw new EVy("Cannot unescape $s");
-	  $ret = "";
-	  for ($i=1; $i<$n-1; ++$i) {
-		 $ch = $s[$i];
-		 if ( "\\" == $ch ) {
-		    $ch = $s[++$i];
-		    switch ( $ch ) {
-		       case "r": $ch = "\r"; break;
-		       case "n": $ch = "\n"; break;
-		       case "b": $ch = "\b"; break;
-		       case "t": $ch = "\t"; break;
-		    }
-		 }
-		 $ret .= $ch;
+      $n = strlen( $s );
+      if ( 2 > $n || '"' != $s[0] || '"' != $s[$n-1] )
+        throw new EVy("Cannot unescape $s");
+      $ret = "";
+      for ($i=1; $i<$n-1; ++$i) {
+         $ch = $s[$i];
+	 if ( "\\" == $ch ) {
+	    $ch = $s[++$i];
+	    switch ( $ch ) {
+	       case "r": $ch = "\r"; break;
+	       case "n": $ch = "\n"; break;
+	       case "b": $ch = "\b"; break;
+	       case "t": $ch = "\t"; break;
+	    }
+	 }
+         $ret .= $ch;
       }
       return $ret;
    }

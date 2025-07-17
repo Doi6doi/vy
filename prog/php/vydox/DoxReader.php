@@ -3,29 +3,35 @@
 namespace vy;
 
 /// dox olvasó
-class DoxReader 
+class DoxReader
    extends Configable
 {
-   
+
    /// állapotok
    const
+      /// blokk kommentben van
       BLOCK = "block",
+      /// a komment utáni rész közvetlenül
       REF = "ref",
+      /// egyéb rész
       OUT = "out";
 
    /// nyitó- záró típusok
    const
+      /// blokk komment nyitó
       CBLOCK = "cblock",
+      /// blokk komment záró
       CEND = "cend",
+      /// sor komment nyitó
       CLINE = "cline";
-   
+
    /// olvasó típusok
    const
       C = "c",
       CPP = "cpp",
       ANY = "any",
       PHP = "php";
-      
+
    /// típus kitalálása a fájlnévből
    static function guess( $fname ) {
       $e = strtolower( Tools::extension( $fname ) );
@@ -48,7 +54,7 @@ class DoxReader
          default: throw new EVy("Unknown dox input type: $t");
       }
    }
-   
+
    /// az aktuális dox blokk
    protected $block;
    /// aktuális állapot
@@ -62,11 +68,11 @@ class DoxReader
 
    /// az olvasó típusa
    function typ() { return self::ANY; }
-   
+
    /// teljes fájl olvasása
    function readFile( $fname, $block ) {
       $this->init( $fname, $block );
-      while ( false !== ($r = $this->stream->read() ))
+      while ( false !== ($r = $this->readLine() ))
          $this->chew( $r );
    }
 
@@ -77,6 +83,14 @@ class DoxReader
       $this->block = $block;
       $this->braces = "";
       $this->on = true;
+   }
+
+   /// egy sor olvasása (záró \ jel felodlással)
+   protected function readLine() {
+      $ret = $this->stream->read();
+      while ($ret && "\\" == substr( $ret, -1 ))
+         $ret = substr( $ret, 0, -1 ).trim( $this->stream->read() );
+      return $ret;
    }
 
    /// egy sor kezelése
@@ -94,9 +108,9 @@ class DoxReader
                $p = $this->chop( $r, $i );
                $this->setState( self::REF, $p );
                $this->addDox( $r );
-            } else if ( self::REF == $s ) 
+            } else if ( self::REF == $s )
                $this->addRef( $r, true );
-            else 
+            else
                $this->braces( $r );
          break;
          case self::BLOCK:
@@ -115,7 +129,7 @@ class DoxReader
          default: throw new EVy("Unknown state: $s");
       }
    }
-         
+
    /// a dox nyitó vagy záró helye
    protected function changer( $r, $kind ) {
       $this->sRex( $sr, $nr );
@@ -135,7 +149,7 @@ class DoxReader
       $s = '(".*(?<!\\\\)"|\'.*(?<!\\\\)\')';
       $n = '[^\'"]';
    }
-   
+
    /// változató előtti rész levágása
    protected function chop( & $r, $i ) {
       $ret = substr( $r, 0, $i );
@@ -150,7 +164,7 @@ class DoxReader
       $r = trim( $r );
       return trim( $ret );
    }
-   
+
    /// aktuális mélység
    protected function depth() {
       return strlen( $this->braces );
@@ -160,7 +174,7 @@ class DoxReader
    protected function addPart() {
       $this->block = $this->block->addPart( $this->depth() );
    }
-   
+
    /// állapot változtatás
    protected function setState( $ns, $ref=null ) {
       $os = $this->state;
@@ -179,7 +193,7 @@ class DoxReader
 
    /// a blokknak lehetnek alblokkjai
    protected function container() {
-      return in_array( $this->block->typ(), [DoxPart::CLS, DoxPart::RECORD] );
+      return in_array( $this->block->typ(), [DoxPart::CLS, DoxPart::RECORD, DoxPart::ENUM] );
    }
 
    /// dox sor hozzáadása
@@ -269,13 +283,13 @@ class DoxReader
       switch( $esc ) {
          case DoxPart::NAME: return $this->block->setName( $r );
          case DoxPart::PARAM: return $this->addParam( $r );
-         case DoxPart::REF: return $this->addRef( $r, false );
+         case DoxPart::REF: return $this->addRef( $r );
          case DoxPart::RETURN: return $this->addReturn( $r );
          case DoxPart::TOC: return $this->addToc();
          default: $this->block->addRow( "\\$esc $r" );
       }
    }
-   
+
    /// paraméter hozzáadás
    protected function addParam( $r ) {
       if ( ! preg_match('#^\s*(\S+)\s+(.*)$#', $r, $m ))
@@ -292,11 +306,11 @@ class DoxReader
       $p->setTyp( DoxPart::RETURN );
       $p->addRow( $r );
    }
-   
+
    /// tartalomjegyzék hozzáadás
    protected function addToc() {
       $p = $this->block->addPart();
       $p->setTyp( DoxPart::TOC );
    }
-   
+
 }

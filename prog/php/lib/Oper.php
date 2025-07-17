@@ -12,33 +12,35 @@ class Oper {
       IN = "in";
 
    static function run( $o, $a, $b=null ) {
-	  switch ($o) {
-		 case ":=": return $b; 
-		 case "+": case "+=": 
-		    return self::plus( $a, $b );
-		 case "++": return ++$a;
-		 case "--": return --$a;
-		 case "<": return $a < $b;
-		 case ">": return $a > $b;
-		 case "<=": return $a <= $b;
-		 case ">=": return $a >= $b;
-		 case "=": return $a == $b;
-		 case "!=": return $a != $b;
-		 case "!": return ! $a;
-		 default: throw new EVy("Cannot run operator $o");
-	  }
+      switch ($o) {
+         case ":=": return $b;
+         case "+": case "+=":
+            return self::plus( $a, $b );
+         case "++": return ++$a;
+         case "--": return --$a;
+         case "<": return $a < $b;
+         case ">": return $a > $b;
+	      case "<=": return $a <= $b;
+  	      case ">=": return $a >= $b;
+   	   case "=": return $a == $b;
+         case "!=": return $a != $b;
+	      case "!": return ! $a;
+         case "&&": return $a && $b;
+         case "||": return $a || $b;
+            default: throw new EVy("Cannot run operator $o");
+      }
    }
 
    /// összeadás
    static function plus( $a, $b ) {
-	   if ( is_array($a) ) {
-		   if ( ! is_array($b) || Tools::isAssoc($b) )
-		      $b = [$b];
-		   return array_merge( $a, $b ); 
+      if ( is_array($a) ) {
+         if ( ! is_array($b) || Tools::isAssoc($b) )
+	    $b = [$b];
+	 return array_merge( $a, $b );
       } else if ( is_string($a)) {
          return $a . $b;
-	   } else
-	      return $a + $b;
+      } else
+         return $a + $b;
    }
 
 
@@ -78,7 +80,7 @@ class Oper {
          case self::APP: return in_array( $token, ["[]"] );
          case self::PRE: return  in_array( $token, ["!","++","-","--"] );
          case self::POST: return  in_array( $token, ["++","--"] );
-         case self::IN: return in_array( $token, 
+         case self::IN: return in_array( $token,
             [":=","=","<",">","<=",">=","!=", "+","-","*","/","||","&&","+=","-=","*=","/="] );
       }
    }

@@ -252,7 +252,7 @@ class Tools {
       return $ret;
    }
 
-   static function shortTraceMsg( \Throwable $e ) {   
+   static function shortTraceMsg( \Throwable $e ) {
       return sprintf( "%s\n%s (%s:%s): %s\n",
          self::shortTrace( $e ),
          get_class($e), basename( $e->getFile() ),
